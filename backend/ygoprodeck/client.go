@@ -2,27 +2,43 @@ package ygoprodeck
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
-	"net/http"
 	"ygodraft/backend/model"
 )
 
+const endpointCardInfo = "https://db.ygoprodeck.com/api/v7"
+
+// YgoProDeckClient is responsible to extract all necessary card information from the ygoprodeck website.
 type YgoProDeckClient struct {
+	BaseUrl string        `json:"base_url,omitempty"`
+	Client  *RLHTTPClient `json:"Client" json:"client,omitempty"`
 }
 
+// NewYgoProDeckClient creates a new instance of the YgoProDeckClient.
 func NewYgoProDeckClient() *YgoProDeckClient {
-	return &YgoProDeckClient{}
+	rateLimitedClient := NewDefaultRateLimitedClient()
+
+	return &YgoProDeckClient{
+		BaseUrl: endpointCardInfo,
+		Client:  rateLimitedClient,
+	}
 }
 
-type response struct {
+type getAllCardsResponse struct {
 	Data []model.Card `json:"data"`
 }
 
+// GetAllCards retrieves all cards from the webserver and returns them as model.Card slice.
 func (ypdc YgoProDeckClient) GetAllCards() (*[]model.Card, error) {
-	resp, err := http.Get("https://db.ygoprodeck.com/api/v7/cardinfo.php")
+	targetUrl := fmt.Sprintf("%s/cardinfo.php", ypdc.BaseUrl)
+	logrus.Debugf("YgoProDeckClient -> GetAllCards -> Requesting [%s]", targetUrl)
+
+	resp, err := ypdc.Client.Client.Get(targetUrl)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get [%s]: %w", ypdc.BaseUrl, err)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -33,13 +49,13 @@ func (ypdc YgoProDeckClient) GetAllCards() (*[]model.Card, error) {
 		}
 	}(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed read body: %w", err)
 	}
 
-	var cards response
+	var cards getAllCardsResponse
 	err = json.Unmarshal(body, &cards)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to unmarshal body: %w", err)
 	}
 
 	return &cards.Data, nil
