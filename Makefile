@@ -3,7 +3,8 @@ ARTIFACT_ID=ygodraft
 VERSION=0.0.1
 
 include make/variables.mk
-include make/build.mk
+include make/backend.mk
+include make/frontend.mk
 
 ##@ General
 
@@ -14,3 +15,8 @@ help: ## Display this help.
 .PHONY: clean
 clean: ## Clean up all artifact data
 	@rm -rf $(BUILD_DIR)
+
+##@ Building
+
+.PHONY: build
+build: build-backend build-frontend ## Builds the backend and frontend of YGODraft.
