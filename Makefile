@@ -3,6 +3,7 @@ ARTIFACT_ID=ygodraft
 VERSION=0.0.1
 
 include make/variables.mk
+include make/go-tools.mk
 include make/backend.mk
 include make/frontend.mk
 
