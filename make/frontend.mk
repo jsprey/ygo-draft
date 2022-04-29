@@ -1,22 +1,24 @@
 ## Variables
+
+UI_BUILD_DIR=$(BUILD_DIR)/ui
+UI_DIR=$(WORKING_DIR)/ui
+
 ##@ Building - Frontend
 
-.PHONY: build-frontend
-build-frontend:
+.PHONY: frontend-build
+frontend-build:
 	@echo "Building frontend..."
+	@cd $(UI_DIR) && yarn install
+	@cd $(UI_DIR) && yarn build
+	@mv $(UI_DIR)/build $(UI_BUILD_DIR)
 
-.PHONY: clean-ui-build
-clean-ui-build:
-	rm -rf ui/build
-	rm -rf ui/node_modules
-	rm -rf target/ui
+.PHONY: frontend-start
+frontend-start:
+	@echo "Starting development server..."
+	@cd $(UI_DIR) && yarn start
 
-target/ui/build: ui/build
-	mkdir -p target/ui
-	cp -r ui/build target/ui/build
-
-ui/build: ui/src ui/public ui/node_modules
-	cd ui && yarn build
-
-ui/node_modules: ui/yarn.lock ui/package.json
-	cd ui && yarn install
+.PHONY: frontend-start-api-mock
+frontend-start-api-mock:
+	@echo "Starting mock api..."
+	cd $(UI_DIR) && npm install -g json-server
+	cd $(UI_DIR)/api-mock && json-server --watch db.json --p 8080 --routes routes.json

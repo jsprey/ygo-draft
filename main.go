@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"ygodraft/backend/card"
 	"ygodraft/backend/config"
 )
 
@@ -38,7 +39,7 @@ func startProgramm() error {
 	return nil
 }
 
-func setupRouter(ygoContext config.YGOContext) (*gin.Engine, error) {
+func setupRouter(ygoContext *config.YGOContext) (*gin.Engine, error) {
 	router := gin.Default()
 	router.BasePath()
 
@@ -51,13 +52,13 @@ func setupRouter(ygoContext config.YGOContext) (*gin.Engine, error) {
 	publicAPI.StaticFile("favicon.ico", "ui/build/favicon.ico")
 	publicAPI.Static("static", "ui/build/static")
 
-	//projectController := api.NewProjectController(ygoContext.ProjectRepository)
-	//publicAPI.GET("/api/v1/projects", projectController.ListProjects)
+	apiV1Group := router.Group("api/v1")
+	card.SetupAPI(apiV1Group, ygoContext)
 
 	return router, nil
 }
 
-func configureLogger(ygoContext config.YGOContext) error {
+func configureLogger(ygoContext *config.YGOContext) error {
 	logLevel, err := logrus.ParseLevel(ygoContext.LogLevel)
 	if err != nil {
 		return fmt.Errorf("failed to parse log level %s: %w", ygoContext.LogLevel, err)
