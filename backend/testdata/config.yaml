@@ -1,0 +1,5 @@
+port: 1234
+project_repository:
+  url: http://localhost:8081/repository/projects/projects.json
+  username: testuser
+  password: testpw

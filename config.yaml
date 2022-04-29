@@ -1,0 +1,3 @@
+ort: 8080
+contextPath: /
+log_level: DEBUG
