@@ -1,3 +1,4 @@
 port: 8080
 contextPath: /
 log_level: DEBUG
+sync_at_startup: false

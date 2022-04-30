@@ -27,12 +27,8 @@ func NewYgoProDeckClient() *YgoProDeckClient {
 	}
 }
 
-type getAllCardsResponse struct {
-	Data []model.Card `json:"data"`
-}
-
-// GetAllCards retrieves all cards from the webserver and returns them as model.Card slice.
-func (ypdc YgoProDeckClient) GetAllCards() (*[]model.Card, error) {
+// GetAllCards retrieves all cards from the ygo pro deck api.
+func (ypdc YgoProDeckClient) GetAllCards() (*[]*model.Card, error) {
 	targetUrl := fmt.Sprintf("%s/cardinfo.php", ypdc.BaseUrl)
 	logrus.Debugf("YgoProDeckClient -> GetAllCards -> Requesting [%s]", targetUrl)
 
@@ -52,7 +48,9 @@ func (ypdc YgoProDeckClient) GetAllCards() (*[]model.Card, error) {
 		return nil, fmt.Errorf("failed read body: %w", err)
 	}
 
-	var cards getAllCardsResponse
+	var cards struct {
+		Data []*model.Card `json:"data"`
+	}
 	err = json.Unmarshal(body, &cards)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal body: %w", err)
@@ -60,3 +58,15 @@ func (ypdc YgoProDeckClient) GetAllCards() (*[]model.Card, error) {
 
 	return &cards.Data, nil
 }
+
+// GetCard retrieves a card with the given id from the ygo pro deck api.
+func (ypdc YgoProDeckClient) GetCard(_ int) (*model.Card, error) {
+	return nil, fmt.Errorf("operation not supported")
+}
+
+func (ypdc YgoProDeckClient) SaveAllCards(_ *[]*model.Card) error {
+	return fmt.Errorf("operation not supported")
+}
+
+// Close is not necessary for the web client
+func (ypdc YgoProDeckClient) Close() error { return nil }

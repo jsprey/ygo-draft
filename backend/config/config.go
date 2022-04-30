@@ -2,16 +2,28 @@ package config
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-
-	"gopkg.in/yaml.v2"
+	"ygodraft/backend/model"
 )
 
 type YGOContext struct {
-	Port        int    `yaml:"port"`
-	LogLevel    string `yaml:"log_level"`
-	ContextPath string `yaml:"context_path"`
+	Port          int             `yaml:"port"`
+	LogLevel      string          `yaml:"log_level"`
+	ContextPath   string          `yaml:"context_path"`
+	SyncAtStartup bool            `yaml:"sync_at_startup"`
+	DataClient    model.YgoClient `yaml:"data_store"`
+}
+
+func NewYgoContext(configPath string, client model.YgoClient) (*YGOContext, error) {
+	context, err := ReadConfig(configPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read the configuration at [%s]: %w", configPath, err)
+	}
+
+	context.DataClient = client
+	return context, nil
 }
 
 func ReadConfig(path string) (*YGOContext, error) {

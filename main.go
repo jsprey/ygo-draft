@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"ygodraft/backend/card"
 	"ygodraft/backend/config"
+	"ygodraft/backend/ygo"
 )
 
 func main() {
@@ -16,7 +17,13 @@ func main() {
 }
 
 func startProgramm() error {
-	ygoContext, err := config.ReadConfig("config.yaml")
+	client, err := ygo.NewYgoClientWithCache()
+	if err != nil {
+		return fmt.Errorf("failed to create new ygoCLientCache: %w", err)
+	}
+	defer client.Close()
+
+	ygoContext, err := config.NewYgoContext("config.yaml", client)
 	if err != nil {
 		return fmt.Errorf("failed to read config config.yaml: %w", err)
 	}
@@ -26,6 +33,8 @@ func startProgramm() error {
 		return fmt.Errorf("failed to configure logger: %w", err)
 	}
 
+	err = synchCards(client, ygoContext)
+
 	router, err := setupRouter(ygoContext)
 	if err != nil {
 		return fmt.Errorf("failed to setup router: %w", err)
@@ -34,6 +43,21 @@ func startProgramm() error {
 	err = router.Run(fmt.Sprintf(":%d", ygoContext.Port))
 	if err != nil {
 		return fmt.Errorf("failed to run server: %w", err)
+	}
+
+	return nil
+}
+
+func synchCards(ygoClient *ygo.YgoClientWithCache, ygoContext *config.YGOContext) error {
+	if ygoContext.SyncAtStartup {
+		logrus.Info("Startup -> Detected data sync at startup")
+
+		err := ygoClient.Sync()
+		if err != nil {
+			return fmt.Errorf("failed to sync cards: %w", err)
+		}
+
+		logrus.Info("Startup -> Sync finished")
 	}
 
 	return nil
@@ -53,7 +77,10 @@ func setupRouter(ygoContext *config.YGOContext) (*gin.Engine, error) {
 	publicAPI.Static("static", "ui/build/static")
 
 	apiV1Group := router.Group("api/v1")
-	card.SetupAPI(apiV1Group, ygoContext)
+	err := card.SetupAPI(apiV1Group, ygoContext)
+	if err != nil {
+		return nil, fmt.Errorf("failed to setup api: %w", err)
+	}
 
 	return router, nil
 }
