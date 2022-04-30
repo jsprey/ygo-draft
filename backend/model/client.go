@@ -8,6 +8,8 @@ type YgoClient interface {
 	GetCard(id int) (*Card, error)
 	// SaveAllCards stores all cards locally.
 	SaveAllCards(cards *[]*Card) error
+	// SaveCard stores a given card locally.
+	SaveCard(card *Card) error
 	// Close closes any constructed connections.
 	Close() error
 }

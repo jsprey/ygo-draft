@@ -5,7 +5,9 @@ import (
 	"github.com/genjidb/genji/document"
 	"github.com/genjidb/genji/types"
 	"github.com/sirupsen/logrus"
+	"strconv"
 	"time"
+	"ygodraft/backend/customerrors"
 	"ygodraft/backend/model"
 )
 
@@ -18,7 +20,10 @@ const (
 )
 
 var (
-	ErrorCardDoesNotExists = fmt.Errorf("the card [%s] does not exist: %w")
+	ErrorCardDoesNotExists = customerrors.WithCode{
+		Code:        "mycode",
+		InternalMsg: "the requested card [%s] does not exists",
+	}
 )
 
 func (yc *YgoCache) createCardsTable() error {
@@ -76,6 +81,10 @@ func (yc *YgoCache) GetCard(id int) (*model.Card, error) {
 
 		return nil
 	})
+
+	if card.ID == 0 {
+		return nil, ErrorCardDoesNotExists.WithParam(strconv.Itoa(id))
+	}
 
 	return &card, nil
 }

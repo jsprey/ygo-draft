@@ -1,6 +1,7 @@
 package ygo
 
 import (
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"ygodraft/backend/cache"
@@ -39,10 +40,31 @@ func (ycwc *YgoClientWithCache) GetAllCards() (*[]*model.Card, error) {
 }
 
 func (ycwc *YgoClientWithCache) GetCard(id int) (*model.Card, error) {
-	logrus.Debugf("YGO-Client -> Retrieve card with id [%s]", id)
-	return ycwc.Cache.GetCard(id)
+	logrus.Debugf("YGO-Client -> Retrieve card with id [%d]", id)
+	card, err := ycwc.Cache.GetCard(id)
+	if errors.Is(err, cache.ErrorCardDoesNotExists) {
+		webCard, webErr := ycwc.WebClient.GetCard(id)
+		if webErr != nil {
+			return nil, fmt.Errorf("failed to get card [%d] from web api: %w", id, webErr)
+		}
+
+		webErr = ycwc.Cache.SaveCard(webCard)
+		if webErr != nil {
+			return nil, fmt.Errorf("failed to save card [%d] to cache: %w", webCard.ID, webErr)
+		}
+
+		return webCard, nil
+	} else if err != nil {
+		return nil, fmt.Errorf("failed to get card [%d] from cache: %w", id, err)
+	}
+
+	return card, nil
 }
 
 func (ycwc *YgoClientWithCache) SaveAllCards(_ *[]*model.Card) error {
 	return fmt.Errorf("invalid operation")
+}
+
+func (ycwc YgoClientWithCache) SaveCard(_ *model.Card) error {
+	return fmt.Errorf("operation not supported")
 }

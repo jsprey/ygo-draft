@@ -55,10 +55,9 @@ func (crh *CardRetrieveHandler) GetCard(ctx *gin.Context) {
 		return
 	}
 
-	message := fmt.Sprintf("Card: %+v", card)
-	logrus.Debug(message)
+	logrus.Debug(card)
 
-	ctx.JSONP(200, message)
+	ctx.JSONP(200, card)
 }
 
 func (crh *CardRetrieveHandler) GetRandomCard(ctx *gin.Context) {
@@ -75,12 +74,6 @@ func (crh *CardRetrieveHandler) GetRandomCard(ctx *gin.Context) {
 	randomCard := cardsBox[rand.Intn(len(cardsBox))]
 
 	logrus.Debug(randomCard)
-
-	//cardBytes, err := json.Marshal(randomCard)
-	//if err != nil {
-	//	_ = ctx.AbortWithError(500, err)
-	//	return
-	//}
 
 	ctx.JSONP(200, randomCard)
 }

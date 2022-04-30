@@ -1,17 +1,21 @@
-import {withRouter} from "react-router-dom";
-import "ces-theme/dist/css/ces.css";
-import {QueryClient, QueryClientProvider} from "react-query";
+import React from 'react';
+import './App.css';
+import {QueryClient, QueryClientProvider,} from 'react-query'
+import DeckViewer from "./components/DeckViewer";
 
+// Create a client
 const queryClient = new QueryClient()
 
 function App() {
+   let testdeck1 = ["89631146", "89631144", "89631144", "33178416", "30576089", "30576089", "30576089", "81254059", "81254059", "28692962", "28692962", "28692962", "160003038", "11302671", "52158283", "67248304", "30382214", "30382214", "30382214", "72855441", "72855441", "72855441", "55410871", "55410871", "55410871", "35659410", "35659410", "35659410", "52628687", "95477924", "160004047", "160004047", "160004047", "61948106", "48934760", "29432790", "13438207", "13438207", "9287078", "9287078", "9287078", "62873545", "43228023", "43228023", "43228023", "23995348", "23995346", "23995347", "56532353", "2129638", "2129638", "11443677", "11443677", "11443677", "16507828", "59822133", "22804410", "45467446", "67248304", "45644898", "79814787", "73398797", "56532353", "59822133", "17655904", "17655904", "17655904", "29432790", "71143015", "71143015", "71143015"]
+
     return (
         <QueryClientProvider client={queryClient}>
-            <div style={{"paddingTop": "60px", "paddingLeft": "300px", "width": "80%"}}>
-                <p>MyApp</p>
+            <div className="App">
+                <DeckViewer deck={testdeck1}/>
             </div>
         </QueryClientProvider>
     );
 }
 
-export default withRouter(App);
+export default App;
