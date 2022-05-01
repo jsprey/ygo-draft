@@ -1,4 +1,8 @@
 port: 8080
-contextPath: /
+context_path: /
 log_level: DEBUG
 sync_at_startup: false
+database_context:
+  database_url: http://localhost:5432
+  username: admin
+  password: admin

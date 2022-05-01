@@ -1,5 +1,8 @@
-port: 1234
-project_repository:
-  url: http://localhost:8081/repository/projects/projects.json
-  username: testuser
-  password: testpw
+port: 8080
+context_path: /
+log_level: DEBUG
+sync_at_startup: false
+database_context:
+  database_url: http://localhost:5432
+  username: admin
+  password: admin

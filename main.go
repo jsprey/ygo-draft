@@ -10,13 +10,13 @@ import (
 )
 
 func main() {
-	err := startProgramm()
+	err := startProgram()
 	if err != nil {
 		logrus.Error(err)
 	}
 }
 
-func startProgramm() error {
+func startProgram() error {
 	client, err := ygo.NewYgoClientWithCache()
 	if err != nil {
 		return fmt.Errorf("failed to create new ygoCLientCache: %w", err)
@@ -48,7 +48,7 @@ func startProgramm() error {
 	return nil
 }
 
-func synchCards(ygoClient *ygo.YgoClientWithCache, ygoContext *config.YGOContext) error {
+func synchCards(ygoClient *ygo.YgoClientWithCache, ygoContext *config.YgoContext) error {
 	if ygoContext.SyncAtStartup {
 		logrus.Info("Startup -> Detected data sync at startup")
 
@@ -63,7 +63,7 @@ func synchCards(ygoClient *ygo.YgoClientWithCache, ygoContext *config.YGOContext
 	return nil
 }
 
-func setupRouter(ygoContext *config.YGOContext) (*gin.Engine, error) {
+func setupRouter(ygoContext *config.YgoContext) (*gin.Engine, error) {
 	router := gin.Default()
 	router.BasePath()
 
@@ -85,7 +85,7 @@ func setupRouter(ygoContext *config.YGOContext) (*gin.Engine, error) {
 	return router, nil
 }
 
-func configureLogger(ygoContext *config.YGOContext) error {
+func configureLogger(ygoContext *config.YgoContext) error {
 	logLevel, err := logrus.ParseLevel(ygoContext.LogLevel)
 	if err != nil {
 		return fmt.Errorf("failed to parse log level %s: %w", ygoContext.LogLevel, err)

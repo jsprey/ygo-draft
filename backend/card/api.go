@@ -12,7 +12,7 @@ import (
 	"ygodraft/backend/model"
 )
 
-func SetupAPI(router *gin.RouterGroup, ctx *config.YGOContext) error {
+func SetupAPI(router *gin.RouterGroup, ctx *config.YgoContext) error {
 	cardRetriever := CardRetrieveHandler{
 		YGOClient: ctx.DataClient,
 	}
