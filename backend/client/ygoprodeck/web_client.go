@@ -7,7 +7,7 @@ type JsonWebClient interface {
 	GetJsonFromTarget(targetUrl string, data any) error
 }
 
-// YgoProDeckClient is responsible to extract all necessary card information from the ygoprodeck website.
+// YgoProDeckClient is responsible to extract all necessary api information from the ygoprodeck website.
 type YgoProDeckClient struct {
 	BaseUrl string        `json:"base_url,omitempty"`
 	Client  JsonWebClient `json:"Client" json:"client,omitempty"`

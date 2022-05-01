@@ -1,8 +1,9 @@
 port: 8080
 context_path: /
-log_level: DEBUG
-sync_at_startup: false
+log_level: TRACE
+sync_at_startup: true
 database_context:
-  database_url: http://localhost:5432
+  database_url: localhost:5432
+  database_name: ygodraft
   username: admin
   password: admin

@@ -89,7 +89,7 @@ func (_m *YgoClient) SaveAllCards(cards *[]*model.Card) error {
 	return r0
 }
 
-// SaveCard provides a mock function with given fields: card
+// SaveCard provides a mock function with given fields: api
 func (_m *YgoClient) SaveCard(card *model.Card) error {
 	ret := _m.Called(card)
 

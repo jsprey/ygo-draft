@@ -5,34 +5,36 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-	"ygodraft/backend/model"
 )
 
 // YgoContext contains various configuration values used while running ygo draft.
 type YgoContext struct {
-	Port            int             `yaml:"port"`
-	LogLevel        string          `yaml:"log_level"`
-	ContextPath     string          `yaml:"context_path"`
-	SyncAtStartup   bool            `yaml:"sync_at_startup"`
-	DataClient      model.YgoClient `yaml:"data_store"`
-	DatabaseContext DbContext       `yaml:"database_context"`
+	Port            int       `yaml:"port"`
+	LogLevel        string    `yaml:"log_level"`
+	ContextPath     string    `yaml:"context_path"`
+	SyncAtStartup   bool      `yaml:"sync_at_startup"`
+	DatabaseContext DbContext `yaml:"database_context"`
 }
 
 // DbContext contains information about the database to use.
 type DbContext struct {
-	DatabaseUrl string `yaml:"database_url"`
-	Username    string `yaml:"username"`
-	Password    string `yaml:"password"`
+	DatabaseUrl  string `yaml:"database_url"`
+	DatabaseName string `yaml:"database_name"`
+	Username     string `yaml:"username"`
+	Password     string `yaml:"password"`
+}
+
+func (dc *DbContext) GetConnectionUrl() string {
+	return fmt.Sprintf("postgres://%s:%s@%s/%s", dc.Username, dc.Password, dc.DatabaseUrl, dc.DatabaseName)
 }
 
 // NewYgoContext creates a new ygo context.
-func NewYgoContext(configPath string, client model.YgoClient) (*YgoContext, error) {
+func NewYgoContext(configPath string) (*YgoContext, error) {
 	context, err := ReadConfig(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read the configuration at [%s]: %w", configPath, err)
 	}
 
-	context.DataClient = client
 	return context, nil
 }
 

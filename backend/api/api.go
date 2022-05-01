@@ -1,4 +1,4 @@
-package card
+package api
 
 import (
 	"fmt"
@@ -8,13 +8,13 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"ygodraft/backend/config"
+	"ygodraft/backend/client/ygo"
 	"ygodraft/backend/model"
 )
 
-func SetupAPI(router *gin.RouterGroup, ctx *config.YgoContext) error {
+func SetupAPI(router *gin.RouterGroup, client *ygo.YgoClientWithCache) error {
 	cardRetriever := CardRetrieveHandler{
-		YGOClient: ctx.DataClient,
+		YGOClient: client,
 	}
 
 	router.GET("cards", cardRetriever.GetCards)
@@ -47,7 +47,7 @@ func (crh *CardRetrieveHandler) GetCard(ctx *gin.Context) {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 	}
 
-	logrus.Debugf("API-Handler -> Retrieve card [%d]", queryID)
+	logrus.Debugf("API-Handler -> Retrieve api [%d]", queryID)
 
 	card, err := crh.YGOClient.GetCard(queryID)
 	if err != nil {
@@ -61,7 +61,7 @@ func (crh *CardRetrieveHandler) GetCard(ctx *gin.Context) {
 }
 
 func (crh *CardRetrieveHandler) GetRandomCard(ctx *gin.Context) {
-	logrus.Debugf("API-Handler -> Retrieve random card")
+	logrus.Debugf("API-Handler -> Retrieve random api")
 
 	cards, err := crh.YGOClient.GetAllCards()
 	if err != nil {

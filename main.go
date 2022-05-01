@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"ygodraft/backend/card"
+	"ygodraft/backend/client/postgresql"
 	"ygodraft/backend/client/ygo"
 	"ygodraft/backend/config"
+	"ygodraft/backend/setup"
 )
 
 func main() {
@@ -17,30 +18,33 @@ func main() {
 }
 
 func startProgram() error {
-	client, err := ygo.NewYgoClientWithCache()
-	if err != nil {
-		return fmt.Errorf("failed to create new ygoCLientCache: %w", err)
-	}
-	defer client.Close()
-
-	ygoContext, err := config.NewYgoContext("config.yaml", client)
+	ygoCtx, err := config.NewYgoContext("config.yaml")
 	if err != nil {
 		return fmt.Errorf("failed to read config config.yaml: %w", err)
 	}
 
-	err = configureLogger(ygoContext)
+	err = configureLogger(ygoCtx)
 	if err != nil {
 		return fmt.Errorf("failed to configure logger: %w", err)
 	}
 
-	err = synchCards(client, ygoContext)
+	dbClient, err := setupDB(ygoCtx)
+	if err != nil {
+		return fmt.Errorf("failed to setup database: %w", err)
+	}
+	defer dbClient.Close()
 
-	router, err := setupRouter(ygoContext)
+	ygoClient, err := setupYgoClient(ygoCtx, dbClient)
+	if err != nil {
+		return fmt.Errorf("failed to setup ygo client: %w", err)
+	}
+
+	router, err := setupRouter(ygoCtx, ygoClient)
 	if err != nil {
 		return fmt.Errorf("failed to setup router: %w", err)
 	}
 
-	err = router.Run(fmt.Sprintf(":%d", ygoContext.Port))
+	err = router.Run(fmt.Sprintf(":%d", ygoCtx.Port))
 	if err != nil {
 		return fmt.Errorf("failed to run server: %w", err)
 	}
@@ -48,27 +52,49 @@ func startProgram() error {
 	return nil
 }
 
-func synchCards(ygoClient *ygo.YgoClientWithCache, ygoContext *config.YgoContext) error {
-	if ygoContext.SyncAtStartup {
+func setupDB(ygoCtx *config.YgoContext) (*postgresql.PosgresqlClient, error) {
+	logrus.Info("Startup -> Setup database")
+	client, err := postgresql.NewPosgresqlClient(ygoCtx.DatabaseContext)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new db client: %w", err)
+	}
+
+	databaseSetup := setup.NewDatabaseSetup(client)
+	err = databaseSetup.Setup()
+	if err != nil {
+		return nil, fmt.Errorf("failed to perform database setup: %w", err)
+	}
+
+	return client, nil
+}
+
+func setupYgoClient(ygoCtx *config.YgoContext, dbClient *postgresql.PosgresqlClient) (*ygo.YgoClientWithCache, error) {
+	client, err := ygo.NewYgoClientWithCache(dbClient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new ygoCLientCache: %w", err)
+	}
+
+	if ygoCtx.SyncAtStartup {
 		logrus.Info("Startup -> Detected data sync at startup")
 
-		err := ygoClient.Sync()
+		dataSyncher := setup.NewYgoDataSyncher(client)
+		err = dataSyncher.Sync()
 		if err != nil {
-			return fmt.Errorf("failed to sync cards: %w", err)
+			return nil, fmt.Errorf("failed to sync cards: %w", err)
 		}
 
 		logrus.Info("Startup -> Sync finished")
 	}
 
-	return nil
+	return client, nil
 }
 
-func setupRouter(ygoContext *config.YgoContext) (*gin.Engine, error) {
+func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache) (*gin.Engine, error) {
 	router := gin.Default()
 	router.BasePath()
 
 	router.LoadHTMLFiles("ui/build/index.html")
-	publicAPI := router.Group(ygoContext.ContextPath)
+	publicAPI := router.Group(ygoCtx.ContextPath)
 	publicAPI.GET("/", func(c *gin.Context) {
 		c.Header("Cache-Control", "no-cache")
 		//c.HTML(http.StatusOK, "index.html", gin.H{})
@@ -76,19 +102,19 @@ func setupRouter(ygoContext *config.YgoContext) (*gin.Engine, error) {
 	publicAPI.StaticFile("favicon.ico", "ui/build/favicon.ico")
 	publicAPI.Static("static", "ui/build/static")
 
-	apiV1Group := router.Group("api/v1")
-	err := card.SetupAPI(apiV1Group, ygoContext)
-	if err != nil {
-		return nil, fmt.Errorf("failed to setup api: %w", err)
-	}
+	//apiV1Group := router.Group("api/v1")
+	//err := api.SetupAPI(apiV1Group, client)
+	//if err != nil {
+	//	return nil, fmt.Errorf("failed to setup api: %w", err)
+	//}
 
 	return router, nil
 }
 
-func configureLogger(ygoContext *config.YgoContext) error {
-	logLevel, err := logrus.ParseLevel(ygoContext.LogLevel)
+func configureLogger(ygoCtx *config.YgoContext) error {
+	logLevel, err := logrus.ParseLevel(ygoCtx.LogLevel)
 	if err != nil {
-		return fmt.Errorf("failed to parse log level %s: %w", ygoContext.LogLevel, err)
+		return fmt.Errorf("failed to parse log level %s: %w", ygoCtx.LogLevel, err)
 	}
 
 	logrus.SetLevel(logLevel)

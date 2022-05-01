@@ -13,7 +13,7 @@ function CardViewer(props: CardViewerProps) {
     } else if (!data) {
         body = <p>Fehler beim Laden der Karte!</p>
     } else if (data && data.card_images) {
-        console.log("My card: " + JSON.stringify(data))
+        console.log("My api: " + JSON.stringify(data))
         body = getCardAsImage(data)
     } else {
         body = <p>no data</p>

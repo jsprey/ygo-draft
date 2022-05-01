@@ -25,7 +25,7 @@ func (ypdc YgoProDeckClient) GetAllCards() (*[]*model.Card, error) {
 	return &cards.Data, nil
 }
 
-// GetCard retrieves a card with the given id from the ygo pro deck api.
+// GetCard retrieves a api with the given id from the ygo pro deck api.
 func (ypdc YgoProDeckClient) GetCard(id int) (*model.Card, error) {
 	targetUrl := fmt.Sprintf("%s/cardinfo.php?id=%d", ypdc.BaseUrl, id)
 	logrus.Debugf("YgoProDeckClient -> GetCard [%d] -> Requesting [%s]", id, targetUrl)

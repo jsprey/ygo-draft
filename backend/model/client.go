@@ -4,12 +4,6 @@ package model
 type YgoClient interface {
 	// GetAllCards retrieves all cards.
 	GetAllCards() (*[]*Card, error)
-	// GetCard retrieves a card by the given id.
+	// GetCard retrieves a api by the given id.
 	GetCard(id int) (*Card, error)
-	// SaveAllCards stores all cards locally.
-	SaveAllCards(cards *[]*Card) error
-	// SaveCard stores a given card locally.
-	SaveCard(card *Card) error
-	// Close closes any constructed connections.
-	Close() error
 }
