@@ -1,6 +1,7 @@
 package customerrors_test
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -52,6 +53,7 @@ func TestHandleError(t *testing.T) {
 		{name: "internal 2 => StatusUnauthorized", internalError: ErrorInternal2, expectedStatusCode: http.StatusUnauthorized, expectError: true},
 		{name: "internal 3 => StatusNotFound", internalError: ErrorInternal3, expectedStatusCode: http.StatusNotFound, expectError: true},
 		{name: "internal 4 => StatusInternalServerError", internalError: ErrorInternal4, expectedStatusCode: http.StatusInternalServerError, expectError: true},
+		{name: "simple error => Generic", internalError: fmt.Errorf("myerror"), expectedStatusCode: http.StatusInternalServerError, expectError: true},
 		{name: "nil error does return write an error into the context and returns false", internalError: nil, expectError: false},
 		{name: "map containing a 200 does return write an error into the context and returns false", internalError: ErrorOK, expectError: false},
 	}
