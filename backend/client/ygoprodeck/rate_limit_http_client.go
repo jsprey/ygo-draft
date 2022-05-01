@@ -2,6 +2,10 @@ package ygoprodeck
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -50,4 +54,30 @@ func (c *RLHTTPClient) Do(req *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 	return resp, nil
+}
+
+// GetJsonFromTarget makes a get request to the target urls and unmarshal the body as given data type.
+func (c *RLHTTPClient) GetJsonFromTarget(targetUrl string, data any) error {
+	resp, err := c.Client.Get(targetUrl)
+	if err != nil {
+		return fmt.Errorf("failed to get [%s]: %w", targetUrl, err)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed read body: %w", err)
+	}
+
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal body: %w", err)
+	}
+
+	return nil
 }

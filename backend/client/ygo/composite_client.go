@@ -4,9 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"ygodraft/backend/cache"
+	"ygodraft/backend/client/postgresql"
 	"ygodraft/backend/model"
-	"ygodraft/backend/ygoprodeck"
 )
 
 // YgoClientWithCache is a special ygo client by retrieving the ygo data from a web and storing them persistently on
@@ -17,15 +16,15 @@ type YgoClientWithCache struct {
 }
 
 func NewYgoClientWithCache() (*YgoClientWithCache, error) {
-	ygoCache, err := cache.NewYgoCache("mydata.db")
-	if err != nil {
-		return nil, fmt.Errorf("failed to create new ygo cache: %w", err)
-	}
+	//ygoCache, err := cache2.NewYgoCache("mydata.db")
+	//if err != nil {
+	//	return nil, fmt.Errorf("failed to create new ygo cache: %w", err)
+	//}
 
-	webClient := ygoprodeck.NewYgoProDeckClient()
+	//webClient := ygoprodeck.NewYgoProDeckClient()
 	return &YgoClientWithCache{
-		Cache:     ygoCache,
-		WebClient: webClient,
+		//Cache:     ygoCache,
+		//WebClient: webClient,
 	}, nil
 }
 
@@ -42,7 +41,7 @@ func (ycwc *YgoClientWithCache) GetAllCards() (*[]*model.Card, error) {
 func (ycwc *YgoClientWithCache) GetCard(id int) (*model.Card, error) {
 	logrus.Debugf("YGO-Client -> Retrieve card with id [%d]", id)
 	card, err := ycwc.Cache.GetCard(id)
-	if errors.Is(err, cache.ErrorCardDoesNotExists) {
+	if errors.Is(err, postgresql.ErrorCardDoesNotExists) {
 		webCard, webErr := ycwc.WebClient.GetCard(id)
 		if webErr != nil {
 			return nil, fmt.Errorf("failed to get card [%d] from web api: %w", id, webErr)

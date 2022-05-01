@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"ygodraft/backend/card"
+	"ygodraft/backend/client/ygo"
 	"ygodraft/backend/config"
-	"ygodraft/backend/ygo"
 )
 
 func main() {
