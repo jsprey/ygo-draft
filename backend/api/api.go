@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"math/rand"
@@ -28,6 +27,11 @@ type CardRetrieveHandler struct {
 	YGOClient model.YgoClient
 }
 
+type getCardResponse struct {
+	CardIds []int `json:"card_ids"`
+	Number  int   `json:"numbeer"`
+}
+
 func (crh *CardRetrieveHandler) GetCards(ctx *gin.Context) {
 	cards, err := crh.YGOClient.GetAllCards()
 	if err != nil {
@@ -35,10 +39,15 @@ func (crh *CardRetrieveHandler) GetCards(ctx *gin.Context) {
 		return
 	}
 
-	message := fmt.Sprintf("Anzahl der Karten: %d", len(*cards))
-	logrus.Debug(message)
+	response := getCardResponse{
+		Number:  len(*cards),
+		CardIds: make([]int, len(*cards)),
+	}
+	for i, card := range *cards {
+		response.CardIds[i] = card.ID
+	}
 
-	ctx.JSONP(200, message)
+	ctx.JSONP(200, response)
 }
 
 func (crh *CardRetrieveHandler) GetCard(ctx *gin.Context) {

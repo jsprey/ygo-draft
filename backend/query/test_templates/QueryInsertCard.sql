@@ -1,0 +1,1 @@
+INSERT INTO public.cards id, name, type, desc, atk, def, level, race, attribute VALUES (0,E'test for :',E'test for '','Etest for \"',0,0,0,E'test for \\',E'test for %s')

@@ -8,13 +8,7 @@ import (
 	"time"
 	"ygodraft/backend/customerrors"
 	"ygodraft/backend/model"
-)
-
-const (
-	TableCards = "cards"
-
-	QueryGetAllCards = "SELECT * FROM public.cards"
-	QueryGetCardByID = "SELECT * FROM public.cards WHERE id == %d"
+	"ygodraft/backend/query"
 )
 
 var (
@@ -27,37 +21,29 @@ var (
 func (yc *YgoCache) GetAllCards() (*[]*model.Card, error) {
 	logrus.Debug("Cache -> Retrieve all cards")
 
-	//query := fmt.Sprintf(QueryGetAllCards, TableCards)
-	//res, err := yc.GenjiDB.Query(query)
-	//if err != nil {
-	//	return nil, fmt.Errorf("failed to query [%s]: %w", query, err)
-	//}
-	//defer res.Close()
-	//
-	//myCards := []*model.Card{}
-	//err = res.Iterate(func(d types.Document) error {
-	//	var card model.Card
-	//	err = document.StructScan(d, &card)
-	//	if err != nil {
-	//		return fmt.Errorf("failed to scan struct: %w", err)
-	//	}
-	//
-	//	myCards = append(myCards, &card)
-	//	return nil
-	//})
-	//
-	//return &myCards, nil
-	return nil, nil
+	sqlQuery, err := query.QuerySelectAllCards()
+	if err != nil {
+		return nil, err
+	}
+
+	var cards []*model.Card
+	err = yc.Client.Select(sqlQuery, &cards)
+	if err != nil {
+		return nil, fmt.Errorf("failed to scan struct: %w", err)
+	}
+
+	return &cards, nil
 }
 
 func (yc *YgoCache) GetCard(id int) (*model.Card, error) {
-	logrus.Debugf("Cache -> Retrieve cards by id %d", id)
-
-	stubCard := model.Card{ID: id}
-	query := fmt.Sprintf(stubCard.QuerySelect())
+	logrus.Debugf("Cache -> Retrieve card by id %d", id)
+	sqlQuery, err := query.QuerySelectCardByID(id)
+	if err != nil {
+		return nil, err
+	}
 
 	var cards []*model.Card
-	err := yc.Client.Select(query, &cards)
+	err = yc.Client.Select(sqlQuery, &cards)
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan struct: %w", err)
 	}
@@ -105,11 +91,14 @@ func (yc *YgoCache) SaveAllCards(cards *[]*model.Card) error {
 
 func (yc *YgoCache) SaveCard(card *model.Card) error {
 	logrus.Debugf("Cache -> Save api with id %d", card.ID)
-
-	query := fmt.Sprintf(card.QueryInsert())
-	_, err := yc.Client.Exec(query)
+	sqlQuery, err := query.QueryInsertCard(card)
 	if err != nil {
-		return fmt.Errorf("failed to exec [%s]: %w", query, err)
+		return err
+	}
+
+	_, err = yc.Client.Exec(sqlQuery)
+	if err != nil {
+		return fmt.Errorf("failed to exec [%s]: %w", sqlQuery, err)
 	}
 
 	return nil

@@ -1,6 +1,8 @@
 port: 8080
 context_path: /
-log_level: DEBUG
+log_level: WARN
+#stage: development
+stage: production
 sync_at_startup: true
 database_context:
   database_url: localhost:5432

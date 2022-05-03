@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"ygodraft/backend/api"
 	"ygodraft/backend/client/cache"
 	"ygodraft/backend/client/postgresql"
 	"ygodraft/backend/client/ygo"
@@ -28,6 +29,8 @@ func startProgram() error {
 	if err != nil {
 		return fmt.Errorf("failed to configure logger: %w", err)
 	}
+
+	logrus.Debugf("Startup -> Current Config [%+v]", ygoCtx)
 
 	dbClient, err := setupDB(ygoCtx)
 	if err != nil {
@@ -79,7 +82,7 @@ func setupYgoClient(ygoCtx *config.YgoContext, dbClient cache.DatabaseClient) (*
 	if ygoCtx.SyncAtStartup {
 		logrus.Info("Startup -> Detected data sync at startup")
 
-		dataSyncher := setup.NewYgoDataSyncher(client)
+		dataSyncher := setup.NewYgoDataSyncher(client, ygoCtx)
 		err = dataSyncher.Sync()
 		if err != nil {
 			return nil, fmt.Errorf("failed to sync cards: %w", err)
@@ -104,11 +107,11 @@ func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache) (*gi
 	publicAPI.StaticFile("favicon.ico", "ui/build/favicon.ico")
 	publicAPI.Static("static", "ui/build/static")
 
-	//apiV1Group := router.Group("api/v1")
-	//err := api.SetupAPI(apiV1Group, client)
-	//if err != nil {
-	//	return nil, fmt.Errorf("failed to setup api: %w", err)
-	//}
+	apiV1Group := router.Group("api/v1")
+	err := api.SetupAPI(apiV1Group, client)
+	if err != nil {
+		return nil, fmt.Errorf("failed to setup api: %w", err)
+	}
 
 	return router, nil
 }

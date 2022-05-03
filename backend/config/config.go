@@ -7,6 +7,11 @@ import (
 	"os"
 )
 
+const (
+	StageProductive  = "production"
+	StageDevelopment = "development"
+)
+
 // YgoContext contains various configuration values used while running ygo draft.
 type YgoContext struct {
 	Port            int       `yaml:"port"`
@@ -14,6 +19,7 @@ type YgoContext struct {
 	ContextPath     string    `yaml:"context_path"`
 	SyncAtStartup   bool      `yaml:"sync_at_startup"`
 	DatabaseContext DbContext `yaml:"database_context"`
+	Stage           string    `yaml:"stage"`
 }
 
 // DbContext contains information about the database to use.
@@ -33,6 +39,10 @@ func NewYgoContext(configPath string) (*YgoContext, error) {
 	context, err := ReadConfig(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read the configuration at [%s]: %w", configPath, err)
+	}
+
+	if context.Stage == StageProductive {
+		//gin.SetMode(gin.ReleaseMode)
 	}
 
 	return context, nil
