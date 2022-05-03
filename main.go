@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"ygodraft/backend/client/cache"
 	"ygodraft/backend/client/postgresql"
 	"ygodraft/backend/client/ygo"
 	"ygodraft/backend/config"
@@ -32,7 +33,7 @@ func startProgram() error {
 	if err != nil {
 		return fmt.Errorf("failed to setup database: %w", err)
 	}
-	defer dbClient.Close()
+	defer dbClient.PoolConnection.Close()
 
 	ygoClient, err := setupYgoClient(ygoCtx, dbClient)
 	if err != nil {
@@ -52,9 +53,10 @@ func startProgram() error {
 	return nil
 }
 
-func setupDB(ygoCtx *config.YgoContext) (*postgresql.PosgresqlClient, error) {
+func setupDB(ygoCtx *config.YgoContext) (*postgresql.PostgresClient, error) {
 	logrus.Info("Startup -> Setup database")
-	client, err := postgresql.NewPosgresqlClient(ygoCtx.DatabaseContext)
+	client, err := postgresql.NewPostgresClient(ygoCtx.DatabaseContext)
+	//client, err := postgresql.NewPosgresqlClient(ygoCtx.DatabaseContext)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new db client: %w", err)
 	}
@@ -68,7 +70,7 @@ func setupDB(ygoCtx *config.YgoContext) (*postgresql.PosgresqlClient, error) {
 	return client, nil
 }
 
-func setupYgoClient(ygoCtx *config.YgoContext, dbClient *postgresql.PosgresqlClient) (*ygo.YgoClientWithCache, error) {
+func setupYgoClient(ygoCtx *config.YgoContext, dbClient cache.DatabaseClient) (*ygo.YgoClientWithCache, error) {
 	client, err := ygo.NewYgoClientWithCache(dbClient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new ygoCLientCache: %w", err)

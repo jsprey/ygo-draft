@@ -3,7 +3,6 @@ package cache
 import (
 	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 	"strconv"
 	"time"
@@ -52,27 +51,22 @@ func (yc *YgoCache) GetAllCards() (*[]*model.Card, error) {
 }
 
 func (yc *YgoCache) GetCard(id int) (*model.Card, error) {
-	logrus.Debugf("Cache -> Retrieve card by id %d", id)
-	stubCard := model.Card{ID: id}
+	logrus.Debugf("Cache -> Retrieve cards by id %d", id)
 
+	stubCard := model.Card{ID: id}
 	query := fmt.Sprintf(stubCard.QuerySelect())
 
-	var test []*struct {
-		ID   int
-		Name string
-	}
-	//var card []*model.Card
-	err := yc.Client.Select(&test, query)
-
-	//TODO [jsprey] du wolltest hier weitermachen. Get Card implementieren
-	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, ErrorCardDoesNotExist.WithParam(strconv.Itoa(id))
-	}
+	var cards []*model.Card
+	err := yc.Client.Select(query, &cards)
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan struct: %w", err)
 	}
 
-	return nil, nil
+	if cards == nil || (cards != nil && len(cards) == 0) {
+		return nil, ErrorCardDoesNotExist.WithParam(strconv.Itoa(id))
+	}
+
+	return cards[0], nil
 }
 
 func (yc *YgoCache) SaveAllCards(cards *[]*model.Card) error {
@@ -97,7 +91,7 @@ func (yc *YgoCache) SaveAllCards(cards *[]*model.Card) error {
 		if errors.Is(err, ErrorCardDoesNotExist) {
 			err = yc.SaveCard(card)
 			if err != nil {
-				return fmt.Errorf("failed to save card [%s]: %w", card.ID, err)
+				return fmt.Errorf("failed to save card [%d]: %w", card.ID, err)
 			}
 		}
 
@@ -113,7 +107,7 @@ func (yc *YgoCache) SaveCard(card *model.Card) error {
 	logrus.Debugf("Cache -> Save api with id %d", card.ID)
 
 	query := fmt.Sprintf(card.QueryInsert())
-	err := yc.Client.Exec(query)
+	_, err := yc.Client.Exec(query)
 	if err != nil {
 		return fmt.Errorf("failed to exec [%s]: %w", query, err)
 	}

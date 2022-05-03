@@ -1,6 +1,6 @@
 port: 8080
 context_path: /
-log_level: TRACE
+log_level: DEBUG
 sync_at_startup: true
 database_context:
   database_url: localhost:5432

@@ -33,7 +33,7 @@ type YgoClientWithCache struct {
 	WebClient      CardRetriever `json:"web_client"`
 }
 
-func NewYgoClientWithCache(client cache.PostgresClient) (*YgoClientWithCache, error) {
+func NewYgoClientWithCache(client cache.DatabaseClient) (*YgoClientWithCache, error) {
 	ygoCache, err := cache.NewYgoCache(client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new ygo cache: %w", err)

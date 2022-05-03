@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/feiin/sqlstring"
 	"strings"
 )
 
@@ -34,12 +35,13 @@ type Card struct {
 }
 
 func (c *Card) QueryInsert() string {
-	name := strings.Replace(c.Name, "'", "''", -1)
-	desc := strings.Replace(c.Desc, "'", "''", -1)
+	name := strings.Replace(c.Name, "%", "\\%", -1)
+	name = sqlstring.Escape(name)
+	desc := sqlstring.Escape(c.Desc)
 	return fmt.Sprintf("INSERT INTO public.cards (\"id\",\"name\",\"type\",\"desc\",\"atk\",\"def\",\"level\",\"race\",\"attribute\") VALUES (%d,'%s','%s','%s',%d,%d,%d,'%s','%s')",
 		c.ID, name, c.Type, desc, c.Atk, c.Def, c.Level, c.Race, c.Attribute)
 }
 
 func (c *Card) QuerySelect() string {
-	return fmt.Sprintf("SELECT (\"id\",\"name\") FROM public.cards WHERE \"id\"=%d", c.ID)
+	return fmt.Sprintf("SELECT id,name FROM public.cards WHERE id=%d", c.ID)
 }
