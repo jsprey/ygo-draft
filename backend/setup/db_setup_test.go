@@ -10,7 +10,7 @@ import (
 func TestTestNewDatabase(t *testing.T) {
 	t.Run("create a new setup", func(t *testing.T) {
 		// given
-		dbMock := &mocks.PostgresClient{}
+		dbMock := &mocks.DatabaseClient{}
 
 		// when
 		databaseSetup := setup.NewDatabaseSetup(dbMock)
