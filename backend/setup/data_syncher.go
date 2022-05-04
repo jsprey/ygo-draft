@@ -20,7 +20,7 @@ func NewYgoDataSyncher(client *ygo.YgoClientWithCache, ygoCtx *config.YgoContext
 		YgoCtx: ygoCtx}
 }
 
-// Sync synchronizes all data from the web api to the local cache
+// Sync synchronizes all data from the web api to the local cache.
 func (yds *YgoDataSyncher) Sync() error {
 	logrus.Debug("Setup -> YgoDataSyncher -> Starting sync...")
 
@@ -46,6 +46,10 @@ func (yds *YgoDataSyncher) SyncAllCards() error {
 		limitedCards := []*model.Card{}
 
 		for i := 0; i < 20; i++ {
+			if i >= len(*cards) {
+				break
+			}
+
 			card := (*cards)[i]
 			limitedCards = append(limitedCards, card)
 		}
