@@ -1,0 +1,1 @@
+INSERT INTO public.cards ("id", "name", "type", "desc", "atk", "def", "level", "race", "attribute") VALUES (0,'My super '' duper '''' Name ''''''','My super % duper %% Name %%%','My super ¹²³¼½¬{[]} duper ¹²³¼½¬{[]} Name ¹²³¼½¬{[]}',0,0,0,'My super \ duper \\ Name \\\','My super " duper "" Name """')

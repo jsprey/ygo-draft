@@ -8,7 +8,6 @@ import (
 	"time"
 	"ygodraft/backend/customerrors"
 	"ygodraft/backend/model"
-	"ygodraft/backend/query"
 )
 
 var (
@@ -21,7 +20,7 @@ var (
 func (yc *YgoCache) GetAllCards() (*[]*model.Card, error) {
 	logrus.Debug("Cache -> Retrieve all cards")
 
-	sqlQuery, err := query.QuerySelectAllCards()
+	sqlQuery, err := yc.QueryTemplater.SelectAllCards()
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +36,7 @@ func (yc *YgoCache) GetAllCards() (*[]*model.Card, error) {
 
 func (yc *YgoCache) GetCard(id int) (*model.Card, error) {
 	logrus.Debugf("Cache -> Retrieve card by id %d", id)
-	sqlQuery, err := query.QuerySelectCardByID(id)
+	sqlQuery, err := yc.QueryTemplater.SelectCardByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -57,6 +56,8 @@ func (yc *YgoCache) GetCard(id int) (*model.Card, error) {
 
 func (yc *YgoCache) SaveAllCards(cards *[]*model.Card) error {
 	numberOfCards := len(*cards)
+	logrus.Infof("Cache -> Starting the synchronization of %d cards...", numberOfCards)
+
 	currentCard := 0
 	updateTicker := time.NewTicker(5 * time.Second)
 	quit := make(chan struct{})
@@ -91,7 +92,7 @@ func (yc *YgoCache) SaveAllCards(cards *[]*model.Card) error {
 
 func (yc *YgoCache) SaveCard(card *model.Card) error {
 	logrus.Debugf("Cache -> Save api with id %d", card.ID)
-	sqlQuery, err := query.QueryInsertCard(card)
+	sqlQuery, err := yc.QueryTemplater.InsertCard(card)
 	if err != nil {
 		return err
 	}

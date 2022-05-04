@@ -34,7 +34,7 @@ func (yds *YgoDataSyncher) Sync() error {
 
 // SyncAllCards synchronizes all api data from the web api to the local cache
 func (yds *YgoDataSyncher) SyncAllCards() error {
-	logrus.Debug("Setup -> YgoDataSyncher -> Starting sync of api data...")
+	logrus.Printf("Setup -> YgoDataSyncher -> Starting sync of api data...")
 
 	cards, err := yds.Client.WebClient.GetAllCards()
 	if err != nil {
