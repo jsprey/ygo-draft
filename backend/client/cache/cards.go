@@ -12,8 +12,8 @@ import (
 
 var (
 	ErrorCardDoesNotExist = customerrors.WithCode{
-		Code:        "mycode",
-		InternalMsg: "the requested api [%s] does not exists",
+		Code:        "", //todo add code
+		InternalMsg: "the requested card with id %s does not exists",
 	}
 )
 
