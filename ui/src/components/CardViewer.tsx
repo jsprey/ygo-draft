@@ -1,7 +1,7 @@
 import {Card, useCard} from "./hooks/useRandomCard";
 
 export type CardViewerProps = {
-    id: string
+    id: number
 }
 
 function CardViewer(props: CardViewerProps) {
@@ -12,21 +12,20 @@ function CardViewer(props: CardViewerProps) {
         body = <p>Loading...</p>
     } else if (!data) {
         body = <p>Fehler beim Laden der Karte!</p>
-    } else if (data && data.card_images) {
-        console.log("My api: " + JSON.stringify(data))
+    } else if (data) {
         body = getCardAsImage(data)
     } else {
         body = <p>no data</p>
     }
 
-    return <div className={"w-36"}>
+    return <div className={"w-24"}>
         {body}
     </div>
 }
 
 function getCardAsImage(data: Card): JSX.Element {
     return <img
-        src={data.card_images[0].image_url_small}
+        src={"http://localhost:8080/images/" + data.id + "/small.png"}
         alt="new"
     />
 }

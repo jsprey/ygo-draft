@@ -1,14 +1,15 @@
 import {Card, useRandomCard} from "./hooks/useRandomCard";
 import CardViewer from "./CardViewer";
+import {Deck} from "./hooks/useRandomCards";
 
 export type DeckViewerProps = {
-    deck: string[]
+    deck: Deck
 }
 
 function DeckViewer(props: DeckViewerProps) {
 
     let myRandomID = 50000
-    let body = props.deck.map((number) =>
+    let body = props.deck.cards.map((number) =>
         <span key={myRandomID++}><CardViewer id={number}/></span>
     );
 

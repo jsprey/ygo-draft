@@ -66,7 +66,7 @@ export function useRandomCard(identifier: string): UseQueryResult<Card> {
 }
 
 
-export function useCard(id: string): UseQueryResult<Card> {
+export function useCard(id: number): UseQueryResult<Card> {
     return useQuery(["api", id], () => {
         return new Promise<Card>((resolve, reject) => {
             return fetch(`http://localhost:8080/api/v1/cards/${id}`).then(function (response) {

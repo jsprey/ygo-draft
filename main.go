@@ -103,6 +103,9 @@ func setupYgoClient(ygoCtx *config.YgoContext, dbClient cache.DatabaseClient) (*
 func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache) (*gin.Engine, error) {
 	router := gin.Default()
 	router.BasePath()
+	router.Use(func(context *gin.Context) {
+		context.Header("Access-Control-Allow-Origin", "*")
+	})
 
 	router.LoadHTMLFiles("build/ui/index.html")
 	publicAPI := router.Group(ygoCtx.ContextPath)
