@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"net/http"
 	"ygodraft/backend/api"
 	"ygodraft/backend/client/cache"
 	"ygodraft/backend/client/postgresql"
 	"ygodraft/backend/client/ygo"
 	"ygodraft/backend/config"
 	"ygodraft/backend/setup"
+	"ygodraft/backend/synch"
 )
 
 func main() {
@@ -82,7 +84,11 @@ func setupYgoClient(ygoCtx *config.YgoContext, dbClient cache.DatabaseClient) (*
 	if ygoCtx.SyncAtStartup {
 		logrus.Info("Startup -> Detected data sync at startup")
 
-		dataSyncher := setup.NewYgoDataSyncher(client, ygoCtx)
+		dataSyncher, err := synch.NewYgoDataSyncher(client, ygoCtx)
+		if err != nil {
+			return nil, err
+		}
+
 		err = dataSyncher.Sync()
 		if err != nil {
 			return nil, fmt.Errorf("failed to sync cards: %w", err)
@@ -98,16 +104,17 @@ func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache) (*gi
 	router := gin.Default()
 	router.BasePath()
 
-	router.LoadHTMLFiles("ui/build/index.html")
+	router.LoadHTMLFiles("build/ui/index.html")
 	publicAPI := router.Group(ygoCtx.ContextPath)
 	publicAPI.GET("/", func(c *gin.Context) {
 		c.Header("Cache-Control", "no-cache")
-		//c.HTML(http.StatusOK, "index.html", gin.H{})
+		c.HTML(http.StatusOK, "index.html", gin.H{})
 	})
-	publicAPI.StaticFile("favicon.ico", "ui/build/favicon.ico")
-	publicAPI.Static("static", "ui/build/static")
+	publicAPI.StaticFile("favicon.ico", "build/ui/favicon.ico")
+	publicAPI.Static("static", "build/ui/static")
+	publicAPI.Static("/images", "./images")
 
-	apiV1Group := router.Group("api/v1")
+	apiV1Group := publicAPI.Group("api/v1")
 	err := api.SetupAPI(apiV1Group, client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to setup api: %w", err)

@@ -20,4 +20,4 @@ clean: ## Clean up all artifact data
 ##@ Building
 
 .PHONY: build
-build: build-backend build-frontend ## Builds the backend and frontend of YGODraft.
+build: backend-build frontend-build ## Builds the backend and frontend of YGODraft.

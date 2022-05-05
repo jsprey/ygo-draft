@@ -6,11 +6,11 @@ UI_DIR=$(WORKING_DIR)/ui
 ##@ Building - Frontend
 
 .PHONY: frontend-build
-frontend-build:
+frontend-build: $(BUILD_DIR)
 	@echo "Building frontend..."
 	@cd $(UI_DIR) && yarn install
 	@cd $(UI_DIR) && yarn build
-	@mv $(UI_DIR)/build $(UI_BUILD_DIR)
+	@mv $(UI_DIR)/build $(BUILD_DIR)/ui
 
 .PHONY: frontend-start
 frontend-start:

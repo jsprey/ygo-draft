@@ -21,3 +21,6 @@ vendor/
 build
 
 mydata.db
+
+# Local Storage of images
+images

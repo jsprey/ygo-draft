@@ -18,8 +18,8 @@ type YgoContext struct {
 	LogLevel        string    `yaml:"log_level"`
 	ContextPath     string    `yaml:"context_path"`
 	SyncAtStartup   bool      `yaml:"sync_at_startup"`
-	DatabaseContext DbContext `yaml:"database_context"`
 	Stage           string    `yaml:"stage"`
+	DatabaseContext DbContext `yaml:"database_context"`
 }
 
 // DbContext contains information about the database to use.
