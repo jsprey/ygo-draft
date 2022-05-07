@@ -1,21 +1,20 @@
 import React from 'react';
 import './App.css';
-import {QueryClient, QueryClientProvider,} from 'react-query'
-import DeckViewer from "./components/DeckViewer";
-import {useCard} from "./components/hooks/useRandomCard";
-import {useRandomCards} from "./components/hooks/useRandomCards";
-import RandomDeckGenerator from "./components/RandomDeckGenerator";
-
-// Create a client
-const queryClient = new QueryClient()
+import YgoNavbar from "./core/YgoNavbar";
+import {Route, Routes} from "react-router-dom";
+import Home from "./home/Home";
+import YgoNavbar2 from "./core/YgoNavbar2";
 
 function App() {
-    return (
-        <QueryClientProvider client={queryClient}>
-            <div className="App">
-                <RandomDeckGenerator/>
+    return (<>
+            <YgoNavbar/>
+            <div className={"SiteContainer"}>
+                <Routes>
+                    <Route path='/' element={<Home/>}/>
+                    <Route path="/deck" element={<h1>MyDeck</h1>}/>
+                </Routes>
             </div>
-        </QueryClientProvider>
+        </>
     );
 }
 
