@@ -3,17 +3,18 @@ import './App.css';
 import YgoNavbar from "./core/YgoNavbar";
 import {Route, Routes} from "react-router-dom";
 import Home from "./home/Home";
-import YgoNavbar2 from "./core/YgoNavbar2";
+import {Container} from "react-bootstrap";
+import DeckGeneratorPage from "./deck/DeckGeneratorPage";
 
 function App() {
     return (<>
             <YgoNavbar/>
-            <div className={"SiteContainer"}>
+            <Container>
                 <Routes>
                     <Route path='/' element={<Home/>}/>
-                    <Route path="/deck" element={<h1>MyDeck</h1>}/>
+                    <Route path="/deck" element={<DeckGeneratorPage />}/>
                 </Routes>
-            </div>
+            </Container>
         </>
     );
 }
