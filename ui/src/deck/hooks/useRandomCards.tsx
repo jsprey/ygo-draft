@@ -16,6 +16,7 @@ export function useRandomCards(name: string, size: number): UseQueryResult<Deck>
                         }
                     )
                 }
+
                 return response.json().then(function (jsonContent) {
                     console.log(jsonContent)
                     let content: Deck = {} as Deck
