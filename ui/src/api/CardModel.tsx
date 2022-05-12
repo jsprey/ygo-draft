@@ -116,43 +116,61 @@ function GetCardType(card: Card): CardType {
     }
 }
 
-export function SortDeck(deck: Deck,  compareFn?: ((a: Card, b: Card) => number) | undefined): Deck {
-    deck.cards = deck.cards.sort(compareFn)
-    return deck
+export function SortDeck(deck: Deck): Deck {
+    let newDeck:Deck = {cards: [] as Card[]} as Deck
+
+    const values2 = Object.values(CardType).filter((v) => !isNaN(Number(v)));
+    values2.forEach((value) => {
+        let filteredCards = FilterByType(deck.cards, [value as CardType])
+        console.log("Filter by type " + (value as CardType) + " gives cards: " + JSON.stringify(filteredCards))
+
+        filteredCards = filteredCards.sort(SortAscending)
+        filteredCards.forEach(value1 => newDeck.cards.push(value1))
+    });
+
+    return newDeck
 }
 
-export function SortByType(a: Card, b: Card) {
-    return GetCardType(a) - GetCardType(b)
+export function SortAscending(a: Card, b: Card) {
+    return a.id - b.id
 }
 
-export function FilterByMainCards(deck: Deck): Deck {
-    let newDeck:Deck = {} as Deck
-    newDeck.cards = deck.cards.filter(card => {
+export function FilterByType(cards: Card[], types: CardType[]): Card[] {
+    return cards.filter(card => {
+        for (const typesKey in types) {
+            if (GetCardType(card) == types[typesKey]) {
+                return true
+            }
+        }
+
+        return false
+    })
+}
+
+export function FilterByMainCards(cards: Card[]): Card[] {
+    return cards.filter(card => {
         return GetCardType(card) < 100
     })
-    return newDeck
 }
 
-export function FilterByExtraCards(deck: Deck): Deck {
-    let newDeck:Deck = {} as Deck
-    newDeck.cards = deck.cards.filter(card => {
+export function FilterByExtraCards(cards: Card[]):Card[] {
+    return cards.filter(card => {
         return GetCardType(card) >= 100
     })
-    return newDeck
 }
 
 export function ToYdkFileString(deck: Deck): string {
     let deckYdkFileString= "#main\n"
 
-    let mainDeck = FilterByMainCards(deck)
-    for (let i = 0; i <mainDeck.cards.length; i++) {
-        deckYdkFileString += mainDeck.cards[i].id + "\n"
+    let mainDeckCards = FilterByMainCards(deck.cards)
+    for (const cardKey in mainDeckCards) {
+        deckYdkFileString += mainDeckCards[cardKey].id + "\n"
     }
 
     deckYdkFileString += "\n#extra\n"
-    let extraDeck = FilterByExtraCards(deck)
-    for (let i = 0; i <extraDeck.cards.length; i++) {
-        deckYdkFileString += extraDeck.cards[i].id + "\n"
+    let extraDeckCards = FilterByExtraCards(deck.cards)
+    for (const cardKey in extraDeckCards) {
+        deckYdkFileString += extraDeckCards[cardKey].id + "\n"
     }
 
     return deckYdkFileString

@@ -1,5 +1,5 @@
 import CardViewer from "./CardViewer";
-import {Card, Deck, FilterByExtraCards, FilterByMainCards, SortByType, SortDeck} from "../api/CardModel";
+import {Card, Deck, FilterByExtraCards, FilterByMainCards, SortAscending, SortDeck} from "../api/CardModel";
 
 export type DeckViewerProps = {
     deck: Deck
@@ -8,15 +8,15 @@ export type DeckViewerProps = {
 function DeckViewer(props: DeckViewerProps) {
     let myInt = 50000
 
-    let deck = SortDeck(props.deck, SortByType)
+    let deck = SortDeck(props.deck)
 
-    let mainDeck = FilterByMainCards(deck)
-    let mainDeckBody = mainDeck.cards.map((card: Card) =>
+    let mainDeckCards = FilterByMainCards(deck.cards)
+    let mainDeckBody = mainDeckCards.map((card: Card) =>
         <span key={myInt++}><CardViewer card={card}/></span>
     );
 
-    let extraDeck = FilterByExtraCards(deck)
-    let extraDeckBody = extraDeck.cards.map((card: Card) =>
+    let extraDeckCards = FilterByExtraCards(deck.cards)
+    let extraDeckBody = extraDeckCards.map((card: Card) =>
         <span key={myInt++}><CardViewer card={card}/></span>
     );
 
