@@ -1,20 +1,30 @@
-import {Card, useRandomCard} from "./hooks/useRandomCard";
 import CardViewer from "./CardViewer";
-import {Deck} from "./hooks/useRandomCards";
+import {Card, Deck, FilterByExtraCards, FilterByMainCards, SortByType, SortDeck} from "../api/CardModel";
 
 export type DeckViewerProps = {
     deck: Deck
 }
 
 function DeckViewer(props: DeckViewerProps) {
+    let myInt = 50000
 
-    let myRandomID = 50000
-    let body = props.deck.cards.map((number) =>
-        <span key={myRandomID++}><CardViewer id={number}/></span>
+    let deck = SortDeck(props.deck, SortByType)
+
+    let mainDeck = FilterByMainCards(deck)
+    let mainDeckBody = mainDeck.cards.map((card: Card) =>
+        <span key={myInt++}><CardViewer card={card}/></span>
     );
 
-    return <><p className={"text-3xl"}>myDeck</p>
-        <div className={"grid grid-cols-7 gap-4"}>{body}</div>
+    let extraDeck = FilterByExtraCards(deck)
+    let extraDeckBody = extraDeck.cards.map((card: Card) =>
+        <span key={myInt++}><CardViewer card={card}/></span>
+    );
+
+    return <>
+        <h3>Main Deck</h3>
+        <div className={"p-2 grid grid-cols-10 gap-2 bg-dark mb-4"}>{mainDeckBody}</div>
+        <h3>Extra Deck</h3>
+        <div className={"p-2 grid grid-cols-10 gap-2 bg-dark mb-2"}>{extraDeckBody}</div>
     </>
 }
 

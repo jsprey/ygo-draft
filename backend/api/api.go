@@ -113,18 +113,14 @@ func (crh *CardRetrieveHandler) GetRandomCards(ctx *gin.Context) {
 
 	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
 
-	randomDeck := make([]int, deckSize)
+	randomDeck := make([]*model.Card, deckSize)
 	for i := 0; i < deckSize; i++ {
-		randomDeck[i] = cardsBox[rand.Intn(len(cardsBox))].ID
+		randomDeck[i] = cardsBox[rand.Intn(len(cardsBox))]
 	}
 
 	randomCardsResponse := struct {
-		Cards []int `json:"cards"`
+		Cards []*model.Card `json:"cards"`
 	}{Cards: randomDeck}
-
-	logrus.Infof("Sending deck [%+v]", randomCardsResponse)
-
-	ctx.Header("Access-Control-Allow-Origin", "*")
 
 	ctx.JSONP(200, randomCardsResponse)
 }

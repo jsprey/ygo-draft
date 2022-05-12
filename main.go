@@ -115,7 +115,7 @@ func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache) (*gi
 	})
 	publicAPI.StaticFile("favicon.ico", "build/ui/favicon.ico")
 	publicAPI.Static("static", "build/ui/static")
-	publicAPI.Static("/imageStore", "./imageStore")
+	publicAPI.Static("/images/cards", "./imageStore")
 
 	apiV1Group := publicAPI.Group("api/v1")
 	err := api.SetupAPI(apiV1Group, client)
