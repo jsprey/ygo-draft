@@ -10,7 +10,7 @@ import (
 	"ygodraft/backend/model"
 )
 
-const ImagesDirectoryName = "images"
+const ImagesDirectoryName = "imageStore"
 
 func (yds *YgoDataSyncher) SynchImageOfCard(card *model.Card) error {
 	if len(card.Images) == 0 {
