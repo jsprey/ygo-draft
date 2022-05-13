@@ -40,7 +40,7 @@ function DeckViewer(props: DeckViewerProps) {
             <span className={"mr-2 font-monospace fw-light"}>{mainDeckSpellCardsCount} Spell Cards |</span>
             <span className={"mr-2 font-monospace fw-light"}>{mainDeckTrapCardsCount} Trap Cards</span>
         </div>
-        <div className={"p-2 grid grid-cols-10 gap-2 bg-dark mt-2 mb-4"}>{mainDeckBody}</div>
+        <div className={"p-2 grid grid-cols-10 gap-1 bg-dark mt-2 mb-4"}>{mainDeckBody}</div>
 
         <span className={"fw-bold font-monospace text-xl"}>Extra Deck</span>
         <div>

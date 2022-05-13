@@ -122,7 +122,6 @@ export function SortDeck(deck: Deck): Deck {
     const values2 = Object.values(CardType).filter((v) => !isNaN(Number(v)));
     values2.forEach((value) => {
         let filteredCards = FilterByType(deck.cards, [value as CardType])
-        console.log("Filter by type " + (value as CardType) + " gives cards: " + JSON.stringify(filteredCards))
 
         filteredCards = filteredCards.sort(SortAscending)
         filteredCards.forEach(value1 => newDeck.cards.push(value1))
@@ -138,7 +137,7 @@ export function SortAscending(a: Card, b: Card) {
 export function FilterByType(cards: Card[], types: CardType[]): Card[] {
     return cards.filter(card => {
         for (const typesKey in types) {
-            if (GetCardType(card) == types[typesKey]) {
+            if (GetCardType(card) === types[typesKey]) {
                 return true
             }
         }
