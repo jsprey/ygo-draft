@@ -118,16 +118,22 @@ function GetCardType(card: Card): CardType {
 
 export function SortDeck(deck: Deck): Deck {
     let newDeck:Deck = {cards: [] as Card[]} as Deck
+    newDeck.cards = SortCards(deck.cards)
+    return newDeck
+}
+
+export function SortCards(cards: Card[]): Card[] {
+    let sortedCards:Card[] = [] as Card[]
 
     const values2 = Object.values(CardType).filter((v) => !isNaN(Number(v)));
     values2.forEach((value) => {
-        let filteredCards = FilterByType(deck.cards, [value as CardType])
+        let filteredCards = FilterByType(cards, [value as CardType])
 
         filteredCards = filteredCards.sort(SortAscending)
-        filteredCards.forEach(value1 => newDeck.cards.push(value1))
+        filteredCards.forEach(value1 => sortedCards.push(value1))
     });
 
-    return newDeck
+    return sortedCards
 }
 
 export function SortAscending(a: Card, b: Card) {

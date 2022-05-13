@@ -18,7 +18,8 @@ function YgoNavbar() {
                 </Navbar.Brand>
                 <Nav className="me-auto">
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
-                    <Nav.Link as={Link} to="/deck">Deck</Nav.Link>
+                    <Nav.Link as={Link} to="/randomdeck">Deck</Nav.Link>
+                    <Nav.Link as={Link} to="/draftdeck">Draft</Nav.Link>
                 </Nav>
                 <Nav>
                     <Nav.Link as={Link} to="/test1">Placeholder</Nav.Link>

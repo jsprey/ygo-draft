@@ -1,6 +1,6 @@
 import {PUBLIC_URL} from "../index";
 import {Card} from "../api/CardModel";
-import {Image} from "react-bootstrap";
+import {Image, Modal} from "react-bootstrap";
 import {useState} from "react";
 import CardDetailModal from "./CardDetailModal";
 
@@ -8,7 +8,7 @@ export type CardViewerProps = {
     card: Card
 }
 
-function CardViewer(props: CardViewerProps) {
+function SingleCardViewer(props: CardViewerProps) {
     const [isShowingDetailView, setIsShowingDetailView] = useState(false);
     const handleShowDetailModal = () => setIsShowingDetailView(true);
 
@@ -28,4 +28,4 @@ function getCardAsImage(data: Card): JSX.Element {
     />
 }
 
-export default CardViewer
+export default SingleCardViewer

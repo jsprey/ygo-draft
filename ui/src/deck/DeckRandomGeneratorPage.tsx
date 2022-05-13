@@ -7,7 +7,7 @@ import {YgoQueryClient} from "../index";
 
 const emptyDeck: Deck = {cards: []}
 
-function DeckGeneratorPage() {
+function DeckRandomGeneratorPage() {
     const {data, isLoading, error} = useRandomCards("deck_generator", 40, {enabled: true, staleTime: Infinity})
     const [myDeck, setDeck] = useState(emptyDeck)
 
@@ -42,7 +42,7 @@ function DeckGeneratorPage() {
             <Button className={"ml-4 object-center"}
                     variant="primary"
                     disabled={isLoading}
-                    onClick={() => !isLoading ? exportDeck(myDeck) : null}>
+                    onClick={() => !isLoading ? ExportDeck(myDeck) : null}>
                 Export
             </Button>
         </h1>
@@ -56,11 +56,11 @@ function resetDeck(setDeck: Dispatch<SetStateAction<Deck>>) {
     YgoQueryClient.removeQueries(["random", "deck_generator"])
 }
 
-function exportDeck(myDeck: Deck) {
-    download("mydeck.ydk", ToYdkFileString(myDeck))
+export function ExportDeck(myDeck: Deck) {
+    downloadDeck("mydeck.ydk", ToYdkFileString(myDeck))
 }
 
-function download(filename:string, text:string) {
+function downloadDeck(filename:string, text:string) {
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
     element.setAttribute('download', filename);
@@ -73,4 +73,4 @@ function download(filename:string, text:string) {
     document.body.removeChild(element);
 }
 
-export default DeckGeneratorPage
+export default DeckRandomGeneratorPage
