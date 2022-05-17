@@ -2834,6 +2834,11 @@ browserslist@^4.0.0, browserslist@^4.14.5, browserslist@^4.16.6, browserslist@^4
     node-releases "^2.0.3"
     picocolors "^1.0.0"
 
+bs-stepper@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/bs-stepper/-/bs-stepper-1.7.0.tgz#bfa4cc51c4e67957caae57f5bdcba1977186bac1"
+  integrity sha512-+DX7UKKgw2GI6ucsSCRd19VHYrxf/8znRCLs1lQVVLxz+h7EqgIOxoHcJ0/QTaaNoR9Cwg78ydo6hXIasyd3LA==
+
 bser@2.1.1:
   version "2.1.1"
   resolved "https://registry.npmjs.org/bser/-/bser-2.1.1.tgz"

@@ -16,7 +16,7 @@ function Jumbotron() {
                 <h1 className="display-4">Welcome to YGO Draft</h1>
                 <hr/>
                 <p>Create your first randomized deck!</p>
-                <Link to="/deck" className="btn btn-primary">Create Deck!</Link>
+                <Link to="/randomdeck" className="btn btn-primary">Create Deck!</Link>
             </div>
             </div>
         </div>

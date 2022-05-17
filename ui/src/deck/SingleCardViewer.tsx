@@ -1,11 +1,12 @@
 import {PUBLIC_URL} from "../index";
 import {Card} from "../api/CardModel";
-import {Image, Modal} from "react-bootstrap";
+import {Image} from "react-bootstrap";
 import {useState} from "react";
 import CardDetailModal from "./CardDetailModal";
 
 export type CardViewerProps = {
     card: Card
+    bottomElement ?: JSX.Element
 }
 
 function SingleCardViewer(props: CardViewerProps) {
@@ -13,9 +14,13 @@ function SingleCardViewer(props: CardViewerProps) {
     const handleShowDetailModal = () => setIsShowingDetailView(true);
 
     return <>
-        {/*<div className={"p-1 hover:bg-sky-600 active:bg-sky-400"} onClick={handleShowDetailModal}>*/}
-        <div className={"hover:outline-none hover:ring hover:ring-sky-600 active:outline-none active:ring active:ring-sky-400"} onClick={handleShowDetailModal}>
-            {getCardAsImage(props.card)}
+        <div className={"justify-center place-content-center flex flex-wrap"}>
+            <div
+                className={"hover:outline-none hover:ring hover:ring-sky-600 active:outline-none active:ring active:ring-sky-400"}
+                onClick={handleShowDetailModal}>
+                {getCardAsImage(props.card)}
+            </div>
+            {props.bottomElement ? props.bottomElement : <></>}
         </div>
         <CardDetailModal card={props.card} setShow={setIsShowingDetailView} isShowing={isShowingDetailView}/>
     </>

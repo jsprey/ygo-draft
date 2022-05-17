@@ -1,10 +1,7 @@
-import SingleCardViewer from "./SingleCardViewer";
 import {
-    Card, CardType,
     Deck,
     FilterByExtraCards,
     FilterByMainCards,
-    FilterByType,
     SortDeck
 } from "../api/CardModel";
 import MultiCardViewer from "./MultiCardViewer";
@@ -20,7 +17,7 @@ function DeckViewer(props: DeckViewerProps) {
 
     return <>
         <MultiCardViewer name={"Main Deck"} showDetails={true} cards={mainDeckCards}/>
-        <MultiCardViewer name={"Extra Deck"} showDetails={true} cards={mainDeckCards}/>
+        <MultiCardViewer name={"Extra Deck"} showDetails={true} cards={extraDeckCards}/>
     </>
 }
 

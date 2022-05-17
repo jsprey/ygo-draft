@@ -5,7 +5,7 @@ import {Route, Routes} from "react-router-dom";
 import Home from "./home/Home";
 import {Container} from "react-bootstrap";
 import DeckRandomGeneratorPage from "./deck/DeckRandomGeneratorPage";
-import DeckDraftGeneratorPage from "./deck/DeckDraftGeneratorPage";
+import DeckDraftWizard from "./draft/DeckDraftWizard";
 
 function App() {
     return (<>
@@ -14,7 +14,7 @@ function App() {
                 <Routes>
                     <Route path='/' element={<Home/>}/>
                     <Route path="/randomdeck" element={<DeckRandomGeneratorPage />}/>
-                    <Route path="/draftdeck" element={<DeckDraftGeneratorPage />}/>
+                    <Route path="/draftdeck" element={<DeckDraftWizard />}/>
                 </Routes>
             </Container>
         </>

@@ -1,17 +1,14 @@
 import SingleCardViewer from "./SingleCardViewer";
 import {
     Card, CardType,
-    Deck,
-    FilterByExtraCards,
-    FilterByMainCards,
     FilterByType, SortCards,
-    SortDeck
-} from "../api/CardModel";
+} from "../api/CardModel"
 
 export type MultiCardViewerProps = {
     name: string
     showDetails: boolean
     cards: Card[]
+    singleCardElement ?: JSX.Element
 }
 
 function MultiCardViewer(props: MultiCardViewerProps) {

@@ -21,7 +21,7 @@ function CardDetailModal(props: CardDetailModalProps) {
                 <div className="row-span-6">
                     {getCardAsBigImage(card)}
                 </div>
-                <div className="col-span-2 text-3xl mb-1 ml-2">{card.name}</div>
+                <div className="col-span-2 text-3xl mb-1 ml-2 capitalize">{card.name}</div>
                 <div className={"col-span-2 mb-3 ml-2"}>
                     {card.level !== 0 ? <Badge className={"mr-1"}>Level: {card.level}</Badge> : <></>}
                     <Badge className={"mr-1"}>{card.type}</Badge>
