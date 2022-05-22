@@ -27,7 +27,7 @@ function StepperStep(props: StepperStepProps) {
             {props.isDone ? CheckmarkSvg : props.stepNr}
         </div>
         <div className={"grid grid-rows-2"}>
-            <span className={"text-lg fw-bold"}>{props.stepName}</span>
+            <span className={props.isActive ? "text-lg fw-bold" : "text-lg"}>{props.stepName}</span>
             <span className={"text-base italic"}>{props.stepDescription}</span>
         </div>
     </div>

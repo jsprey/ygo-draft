@@ -6,6 +6,7 @@ import React from "react";
 export type MultiCardDraftAreaProps = {
     name: string
     draftRound: number
+    maxRound: number
     cards: Card[]
     draftAction: (card: Card) => void
 }
@@ -24,7 +25,7 @@ function MultiCardDraftArea(props: MultiCardDraftAreaProps) {
     return <>
         <span className={"fw-bold font-monospace text-xl"}>{props.name}</span>
         <div>
-            <span className={"mr-2 font-monospace fw-light"}>Round: {props.draftRound}</span>
+            <span className={"mr-2 font-monospace fw-light"}>Round: {props.draftRound} / {props.maxRound}</span>
         </div>
         <div className={"p-2 grid grid-cols-10 gap-1 bg-dark mt-2 mb-4"}>{cardsViewBody}</div>
     </>
