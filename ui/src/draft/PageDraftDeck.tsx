@@ -7,9 +7,9 @@ import MultiCardDraftArea from "./MultiCardDraftArea";
 import {YgoQueryClient} from "../index";
 import {DraftStages} from "./DeckDraftWizard";
 import {usePrompt} from "../core/hooks/usePromptBlocker";
+import {CardFilter} from "../api/CardFilter";
 
 const componentRandomQueryID = "draft_generator"
-const emptyDeck: Deck = {cards: []}
 
 export type PageDraftDeckProps = {
     isMainDraft: boolean
@@ -18,6 +18,7 @@ export type PageDraftDeckProps = {
     setCurrentStage: React.Dispatch<React.SetStateAction<DraftStages>>
     draftSize: number
     maxRounds: number
+    filter: CardFilter
 }
 
 function PageDraftDeck(props: PageDraftDeckProps) {
@@ -25,13 +26,13 @@ function PageDraftDeck(props: PageDraftDeckProps) {
     const [currentDraftRound, setCurrentDraftRound] = useState(1)
     const [finished, setFinished] = useState(false)
 
-    const {data, isLoading, error} = useRandomCards(componentRandomQueryID, props.draftSize, {
+    const {data, isLoading, error} = useRandomCards(componentRandomQueryID, props.draftSize, props.filter, {
         enabled: true,
         staleTime: Infinity
     })
 
     let draftCard = function (draftedCard: Card): void {
-        setDraftDeck(emptyDeck)
+        setDraftDeck({} as Deck)
         addCardToCurrentDeck(props.deck, props.setDeck, draftedCard)
 
         let newRound = currentDraftRound + 1
@@ -49,7 +50,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
     const handleCloseAbortDraftProcessModal = () => setShowAbortDialog(false)
     let handleAbortDraftProcess = function (): void {
         props.setDeck({cards: []} as Deck)
-        setDraftDeck({cards: []} as Deck)
+        setDraftDeck({} as Deck)
         setCurrentDraftRound(0)
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
         props.setCurrentStage(DraftStages.Settings)
@@ -57,15 +58,15 @@ function PageDraftDeck(props: PageDraftDeckProps) {
     }
 
     let handleNextClick = function (): void {
-        setDraftDeck({cards: []} as Deck)
+        setDraftDeck({} as Deck)
         setCurrentDraftRound(1)
         setFinished(false)
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
         props.setCurrentStage(props.isMainDraft ? DraftStages.DraftExtra : DraftStages.DeckOverview)
     }
 
-    let body;
-    if (draftDeck.cards.length === 0) {
+    let body
+    if (draftDeck.cards === null) {
         if (isLoading) {
             body = <Spinner animation="border" role="status">
                 <span className="visually-hidden">Loading Deck...</span>
@@ -77,6 +78,10 @@ function PageDraftDeck(props: PageDraftDeckProps) {
         } else if (data) {
             setDraftDeck(data)
         }
+    } else if (data?.cards.length === 0) {
+        body = <Alert variant={"danger"}>
+            There are no cards that for the given filters. Abort Draft and choose different filters.
+        </Alert>
     }
 
     const handleShow = () => setShowAbortDialog(true);
@@ -85,7 +90,8 @@ function PageDraftDeck(props: PageDraftDeckProps) {
 
     return <>
         {body}
-        {!finished ? <><MultiCardDraftArea name={"Draft Area"} maxRound={props.maxRounds} draftRound={currentDraftRound} cards={draftDeck.cards}
+        {!finished ? <><MultiCardDraftArea name={"Draft Area"} maxRound={props.maxRounds} draftRound={currentDraftRound}
+                                           cards={draftDeck.cards}
                                            draftAction={draftCard}/><br/></> : <></>}
         <p className={"text-3xl"}>Current Deck</p>
         <DeckViewer deck={props.deck}/>

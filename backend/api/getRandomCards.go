@@ -29,20 +29,29 @@ func (crh *CardRetrieveHandler) GetRandomCards(ctx *gin.Context) {
 		_ = ctx.AbortWithError(500, err)
 		return
 	}
-	cardsBox := *cards
 
-	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
+	if *cards != nil {
+		cardsBox := *cards
 
-	randomDeck := make([]*model.Card, numberOfCards)
-	for i := 0; i < numberOfCards; i++ {
-		randomDeck[i] = cardsBox[rand.Intn(len(cardsBox))]
+		rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
+
+		randomDeck := make([]*model.Card, numberOfCards)
+		for i := 0; i < numberOfCards; i++ {
+			randomDeck[i] = cardsBox[rand.Intn(len(cardsBox))]
+		}
+		randomCardsResponse := struct {
+			Cards []*model.Card `json:"cards"`
+		}{Cards: randomDeck}
+
+		ctx.JSONP(200, randomCardsResponse)
+	} else {
+		emptyCards := []*model.Card{}
+		emptyResponse := struct {
+			Cards []*model.Card `json:"cards"`
+		}{Cards: emptyCards}
+
+		ctx.JSONP(200, emptyResponse)
 	}
-
-	randomCardsResponse := struct {
-		Cards []*model.Card `json:"cards"`
-	}{Cards: randomDeck}
-
-	ctx.JSONP(200, randomCardsResponse)
 }
 
 func getRandomCardsCheckQueryAttributes(ctx *gin.Context) (int, model.CardFilter, error) {

@@ -5,6 +5,7 @@ import Stepper from "../core/stepper/Stepper";
 import StepperStep from "../core/stepper/StepperStep";
 import {Deck} from "../api/CardModel";
 import PageOverview from "./PageOverview";
+import {ExtraDeckFilter, MainDeckFilter} from "../api/CardFilter";
 
 export type DraftSettings = {
     mainDraftSize: number
@@ -28,11 +29,11 @@ function DeckDraftWizard() {
     let stageBody
     switch (currentStage) {
         case DraftStages.DraftMain:
-            stageBody = <PageDraftDeck isMainDraft={true} deck={deck} setDeck={setDeck} draftSize={draftSettings.mainDraftSize}
+            stageBody = <PageDraftDeck isMainDraft={true} filter={MainDeckFilter} deck={deck} setDeck={setDeck} draftSize={draftSettings.mainDraftSize}
                                        maxRounds={draftSettings.mainDraftRound} setCurrentStage={setCurrentStage}/>
             break
         case DraftStages.DraftExtra:
-            stageBody = <PageDraftDeck isMainDraft={false} deck={deck} setDeck={setDeck} draftSize={draftSettings.extraDraftSize}
+            stageBody = <PageDraftDeck isMainDraft={false} filter={ExtraDeckFilter} deck={deck} setDeck={setDeck} draftSize={draftSettings.extraDraftSize}
                                        maxRounds={draftSettings.extraDraftRound} setCurrentStage={setCurrentStage}/>
             break
         case DraftStages.DeckOverview:

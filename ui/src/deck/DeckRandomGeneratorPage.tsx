@@ -4,15 +4,16 @@ import {useRandomCards} from "../api/hooks/useCards";
 import DeckViewer from "./DeckViewer";
 import {Alert, Button, Spinner} from "react-bootstrap";
 import {YgoQueryClient} from "../index";
+import {CardFilter} from "../api/CardFilter";
 
 const emptyDeck: Deck = {cards: []}
 
 function DeckRandomGeneratorPage() {
-    const {data, isLoading, error} = useRandomCards("deck_generator", 40, {enabled: true, staleTime: Infinity})
+    const {data, isLoading, error} = useRandomCards("deck_generator", 40, {} as CardFilter, {enabled: true, staleTime: Infinity})
     const [myDeck, setDeck] = useState(emptyDeck)
 
     let body;
-    if (myDeck == emptyDeck) {
+    if (myDeck === emptyDeck) {
         if (isLoading) {
             body = <Spinner animation="border" role="status">
                 <span className="visually-hidden">Loading Deck...</span>
