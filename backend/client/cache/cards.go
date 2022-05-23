@@ -34,6 +34,25 @@ func (yc *YgoCache) GetAllCards() (*[]*model.Card, error) {
 	return &cards, nil
 }
 
+// GetAllCardsWithFilter retrieves all cards from the ygo pro deck api with a given filter. This operation is currently
+// not supported.
+func (yc YgoCache) GetAllCardsWithFilter(filter model.CardFilter) (*[]*model.Card, error) {
+	logrus.Debugf("Cache -> Retrieve all cards with filter [%+v]", filter)
+
+	sqlQuery, err := yc.QueryTemplater.SelectAllCardsWithFilter(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var cards []*model.Card
+	err = yc.Client.Select(sqlQuery, &cards)
+	if err != nil {
+		return nil, fmt.Errorf("failed to scan struct: %w", err)
+	}
+
+	return &cards, nil
+}
+
 func (yc *YgoCache) GetCard(id int) (*model.Card, error) {
 	logrus.Debugf("Cache -> Retrieve card by id %d", id)
 	sqlQuery, err := yc.QueryTemplater.SelectCardByID(id)

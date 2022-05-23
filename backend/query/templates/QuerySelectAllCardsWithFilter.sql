@@ -1,0 +1,2 @@
+SELECT "id", "name", "type", "desc", "atk", "def", "level", "race", "attribute" FROM public.cards
+{{if .Types}}WHERE type in({{range  $i, $e := .Types}}'{{$e}}'{{if notLast $i $.Types}},{{end}}{{end}}){{end}}

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"math/rand"
@@ -87,40 +86,4 @@ func (crh *CardRetrieveHandler) GetRandomCard(ctx *gin.Context) {
 	logrus.Debug(randomCard)
 
 	ctx.JSONP(200, randomCard)
-}
-
-func (crh *CardRetrieveHandler) GetRandomCards(ctx *gin.Context) {
-	logrus.Debugf("API-Handler -> Retrieve random deck")
-	deckSize := 40
-
-	sizeValue, ok := ctx.Request.URL.Query()["size"]
-	if ok {
-		customDecksize, err := strconv.Atoi(sizeValue[0])
-		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, fmt.Errorf("invalid decksize, only integers are supported"))
-			return
-		}
-
-		deckSize = customDecksize
-	}
-
-	cards, err := crh.YGOClient.GetAllCards()
-	if err != nil {
-		_ = ctx.AbortWithError(500, err)
-		return
-	}
-	cardsBox := *cards
-
-	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
-
-	randomDeck := make([]*model.Card, deckSize)
-	for i := 0; i < deckSize; i++ {
-		randomDeck[i] = cardsBox[rand.Intn(len(cardsBox))]
-	}
-
-	randomCardsResponse := struct {
-		Cards []*model.Card `json:"cards"`
-	}{Cards: randomDeck}
-
-	ctx.JSONP(200, randomCardsResponse)
 }

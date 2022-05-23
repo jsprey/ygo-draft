@@ -6,7 +6,7 @@ import (
 	"ygodraft/backend/model"
 )
 
-// GetCardInfoResponse contains the data send when requesting the cardinfo endpoint.
+// GetCardInfoResponse contains the data send when requesting the card info endpoint.
 type GetCardInfoResponse struct {
 	Data []*model.Card `json:"data"`
 }
@@ -23,6 +23,12 @@ func (ypdc YgoProDeckClient) GetAllCards() (*[]*model.Card, error) {
 	}
 
 	return &cards.Data, nil
+}
+
+// GetAllCardsWithFilter retrieves all cards from the ygo pro deck api with a given filter. This operation is currently
+// not supported.
+func (ypdc YgoProDeckClient) GetAllCardsWithFilter(_ model.CardFilter) (*[]*model.Card, error) {
+	return nil, fmt.Errorf("operation not supported")
 }
 
 // GetCard retrieves a api with the given id from the ygo pro deck api.

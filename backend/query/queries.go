@@ -3,6 +3,7 @@ package query
 import (
 	_ "embed"
 	"fmt"
+	"reflect"
 	"strings"
 	"text/template"
 	"ygodraft/backend/model"
@@ -11,21 +12,31 @@ import (
 //go:embed templates/QuerySelectCardByID.sql
 var TemplateContentSelectCardByID string
 
+//go:embed templates/QuerySelectAllCardsWithFilter.sql
+var TemplateContentSelectAllCardsWithFilter string
+
 //go:embed templates/QuerySelectAllCards.sql
 var TemplateContentSelectAllCards string
 
 //go:embed templates/QueryInsertCard.sql
 var TemplateContentInsertCard string
 
+var fns = template.FuncMap{
+	"notLast": func(x int, a interface{}) bool {
+		return x < reflect.ValueOf(a).Len()-1
+	},
+}
+
 func (sqt *sqlQueryTemplater) ParseCardTemplates() error {
 	myTemplates := map[string]string{
-		"SelectCardByID": TemplateContentSelectCardByID,
-		"SelectAllCards": TemplateContentSelectAllCards,
-		"InsertCard":     TemplateContentInsertCard,
+		"SelectCardByID":           TemplateContentSelectCardByID,
+		"SelectAllCards":           TemplateContentSelectAllCards,
+		"SelectAllCardsWithFilter": TemplateContentSelectAllCardsWithFilter,
+		"InsertCard":               TemplateContentInsertCard,
 	}
 
 	for templateName, templateString := range myTemplates {
-		parsedTemplate, err := template.New(templateName).Parse(templateString)
+		parsedTemplate, err := template.New(templateName).Funcs(fns).Parse(templateString)
 		if err != nil {
 			return fmt.Errorf("failed to parse template [%s]: %w", templateName, err)
 		}
@@ -42,6 +53,10 @@ func (sqt *sqlQueryTemplater) SelectCardByID(id int) (string, error) {
 	}{ID: id}
 
 	return sqt.Template("SelectCardByID", &idObject)
+}
+
+func (sqt *sqlQueryTemplater) SelectAllCardsWithFilter(filter model.CardFilter) (string, error) {
+	return sqt.Template("SelectAllCardsWithFilter", &filter)
 }
 
 func (sqt *sqlQueryTemplater) SelectAllCards() (string, error) {
