@@ -1,4 +1,4 @@
-import {CardType} from "./CardModel";
+import {CardType, GetCardTypeString} from "./CardType";
 
 export type CardFilter = {
     types: CardType[]
@@ -26,14 +26,18 @@ function getExtraCardTypes(): CardType[] {
 
 export function FilterToQuery(filter: CardFilter): Map<string, string> {
     const myMap = new Map<string, string>()
-    myMap.set("types", getTypesAsQueryParam(filter.types))
+    if (filter?.types?.length > 0) {
+        myMap.set("types", getTypesAsQueryParam(filter.types))
+    }
     return myMap
 }
 
 function getTypesAsQueryParam(cardTypes: CardType[]): string {
+    if (cardTypes === undefined) return ""
+
     let result = ""
     cardTypes.forEach((value, index) => {
-        result += value.toString()
+        result += GetCardTypeString(value)
         if (index < cardTypes.length - 1) {
             result += ","
         }

@@ -23,6 +23,7 @@ export type PageDraftDeckProps = {
 
 function PageDraftDeck(props: PageDraftDeckProps) {
     const [draftDeck, setDraftDeck] = useState({cards: []} as Deck)
+    const [isDrafted, setDrafted] = useState(false)
     const [currentDraftRound, setCurrentDraftRound] = useState(1)
     const [finished, setFinished] = useState(false)
 
@@ -33,6 +34,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
 
     let draftCard = function (draftedCard: Card): void {
         setDraftDeck({} as Deck)
+        setDrafted(false)
         addCardToCurrentDeck(props.deck, props.setDeck, draftedCard)
 
         let newRound = currentDraftRound + 1
@@ -49,16 +51,18 @@ function PageDraftDeck(props: PageDraftDeckProps) {
     const [showAbortDialog, setShowAbortDialog] = useState(false)
     const handleCloseAbortDraftProcessModal = () => setShowAbortDialog(false)
     let handleAbortDraftProcess = function (): void {
-        props.setDeck({cards: []} as Deck)
-        setDraftDeck({} as Deck)
-        setCurrentDraftRound(0)
+        props.setDeck({} as Deck)
+        setDraftDeck({cards:[]} as Deck)
+        setDrafted(false)
+        setCurrentDraftRound(1)
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
         props.setCurrentStage(DraftStages.Settings)
         setShowAbortDialog(false)
     }
 
     let handleNextClick = function (): void {
-        setDraftDeck({} as Deck)
+        setDraftDeck({cards:[]} as Deck)
+        setDrafted(false)
         setCurrentDraftRound(1)
         setFinished(false)
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
@@ -66,19 +70,18 @@ function PageDraftDeck(props: PageDraftDeckProps) {
     }
 
     let body
-    if (draftDeck.cards === null) {
-        if (isLoading) {
-            body = <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading Deck...</span>
-            </Spinner>
-        } else if (error) {
-            body = <Alert variant={"danger"}>
-                Could not load deck!
-            </Alert>
-        } else if (data) {
-            setDraftDeck(data)
-        }
-    } else if (data?.cards.length === 0) {
+    if (isLoading) {
+        body = <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading Deck...</span>
+        </Spinner>
+    } else if (error) {
+        body = <Alert variant={"danger"}>
+            Could not load deck!
+        </Alert>
+    } else if (!isDrafted && data) {
+        setDraftDeck(data)
+        setDrafted(true)
+    } else if (isDrafted && data?.cards.length === 0) {
         body = <Alert variant={"danger"}>
             There are no cards that for the given filters. Abort Draft and choose different filters.
         </Alert>
@@ -90,7 +93,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
 
     return <>
         {body}
-        {!finished ? <><MultiCardDraftArea name={"Draft Area"} maxRound={props.maxRounds} draftRound={currentDraftRound}
+        {!finished && isDrafted? <><MultiCardDraftArea name={"Draft Area"} maxRound={props.maxRounds} draftRound={currentDraftRound}
                                            cards={draftDeck.cards}
                                            draftAction={draftCard}/><br/></> : <></>}
         <p className={"text-3xl"}>Current Deck</p>

@@ -1,8 +1,9 @@
 import SingleCardViewer from "./SingleCardViewer";
 import {
-    Card, CardType,
+    Card,
     FilterByType, SortCards,
 } from "../api/CardModel"
+import {CardType} from "../api/CardType";
 
 export type MultiCardViewerProps = {
     name: string
