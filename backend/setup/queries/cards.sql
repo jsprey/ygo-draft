@@ -11,8 +11,6 @@ CREATE TABLE IF NOT EXISTS public.cards
     level integer,
     race text COLLATE pg_catalog."default",
     attribute text COLLATE pg_catalog."default",
-    image_small bytea,
-    image_big bytea,
-    sets integer[],
+    sets text COLLATE pg_catalog."default",
     CONSTRAINT cards_pkey PRIMARY KEY (id)
 )

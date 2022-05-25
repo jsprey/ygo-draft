@@ -9,7 +9,6 @@ type CardSet struct {
 	SetCode       string `json:"set_code"`
 	SetRarity     string `json:"set_rarity"`
 	SetRarityCode string `json:"set_rarity_code"`
-	SetPrice      string `json:"set_price"`
 }
 
 type CardImage struct {
@@ -28,6 +27,18 @@ type Card struct {
 	Level     int         `json:"level"`
 	Race      string      `json:"race"`
 	Attribute string      `json:"attribute"`
+	SetsList  string      `json:"sets_list"`
 	Sets      []CardSet   `json:"card_sets"`
 	Images    []CardImage `json:"card_images"`
+}
+
+func (c *Card) CreateSetList() {
+	setList := ""
+	for i, set := range c.Sets {
+		if i != 0 {
+			setList += ","
+		}
+		setList += set.SetName
+	}
+	c.SetsList = setList
 }

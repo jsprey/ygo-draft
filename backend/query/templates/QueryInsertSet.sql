@@ -1,0 +1,1 @@
+INSERT INTO public.card_sets ("set_code", "set_name", "set_rarity", "set_rarity_code") VALUES ({{.SetCode}},{{.SetName}},{{.SetRarity}},{{.SetRarityCode}}) ON CONFLICT ("set_name") DO NOTHING

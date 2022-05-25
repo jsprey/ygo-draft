@@ -21,6 +21,9 @@ var TemplateContentSelectAllCards string
 //go:embed templates/QueryInsertCard.sql
 var TemplateContentInsertCard string
 
+//go:embed templates/QueryInsertSet.sql
+var TemplateContentInsertSet string
+
 var fns = template.FuncMap{
 	"notLast": func(x int, a interface{}) bool {
 		return x < reflect.ValueOf(a).Len()-1
@@ -33,6 +36,7 @@ func (sqt *sqlQueryTemplater) ParseCardTemplates() error {
 		"SelectAllCards":           TemplateContentSelectAllCards,
 		"SelectAllCardsWithFilter": TemplateContentSelectAllCardsWithFilter,
 		"InsertCard":               TemplateContentInsertCard,
+		"InsertSet":                TemplateContentInsertSet,
 	}
 
 	for templateName, templateString := range myTemplates {
@@ -70,8 +74,19 @@ func (sqt *sqlQueryTemplater) InsertCard(card *model.Card) (string, error) {
 	cardCopy.Race = escape(cardCopy.Race)
 	cardCopy.Attribute = escape(cardCopy.Attribute)
 	cardCopy.Type = escape(cardCopy.Type)
+	cardCopy.SetsList = escape(cardCopy.SetsList)
 
 	return sqt.Template("InsertCard", &cardCopy)
+}
+
+func (sqt *sqlQueryTemplater) InsertSet(set model.CardSet) (string, error) {
+	setCopy := set
+	setCopy.SetCode = escape(setCopy.SetCode)
+	setCopy.SetName = escape(setCopy.SetName)
+	setCopy.SetRarity = escape(setCopy.SetRarity)
+	setCopy.SetRarityCode = escape(setCopy.SetRarityCode)
+
+	return sqt.Template("InsertSet", &setCopy)
 }
 
 func escape(input string) string {

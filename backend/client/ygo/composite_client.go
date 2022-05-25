@@ -17,6 +17,12 @@ type CardSaver interface {
 	SaveCard(card *model.Card) error
 }
 
+// CardSetSaver is responsible to save card sets.
+type CardSetSaver interface {
+	// SaveSets saves all given card sets into the database.
+	SaveSets(cards []model.CardSet) error
+}
+
 // CardRetriever is responsible retrieve cards from any kind of source.
 type CardRetriever interface {
 	// GetAllCards retrieves all cards from a source.
@@ -30,8 +36,9 @@ type CardRetriever interface {
 // YgoClientWithCache is a special ygo client by retrieving the ygo data from a web and storing them persistently on
 // the client.
 type YgoClientWithCache struct {
-	CacheSaver     CardSaver     `json:"cache_saver"`
+	CacheCardSaver CardSaver     `json:"cache_card_saver"`
 	CacheRetriever CardRetriever `json:"cache_retriever"`
+	CacheSetSaver  CardSetSaver  `json:"cache_set_saver"`
 	WebClient      CardRetriever `json:"web_client"`
 }
 
@@ -43,8 +50,9 @@ func NewYgoClientWithCache(client cache.DatabaseClient) (*YgoClientWithCache, er
 
 	webClient := ygoprodeck.NewYgoProDeckClient()
 	return &YgoClientWithCache{
-		CacheSaver:     ygoCache,
+		CacheCardSaver: ygoCache,
 		CacheRetriever: ygoCache,
+		CacheSetSaver:  ygoCache,
 		WebClient:      webClient,
 	}, nil
 }
@@ -63,7 +71,7 @@ func (ycwc *YgoClientWithCache) GetCard(id int) (*model.Card, error) {
 			return nil, fmt.Errorf("failed to get api [%d] from web api: %w", id, webErr)
 		}
 
-		webErr = ycwc.CacheSaver.SaveCard(webCard)
+		webErr = ycwc.CacheCardSaver.SaveCard(webCard)
 		if webErr != nil {
 			return nil, fmt.Errorf("failed to save api [%d] to cache: %w", webCard.ID, webErr)
 		}

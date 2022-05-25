@@ -60,7 +60,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 		cacheSaverMock.On("SaveCard", cards[1]).Return(nil)
 
 		ygoClient := &ygo.YgoClientWithCache{
-			CacheSaver:     cacheSaverMock,
+			CacheCardSaver: cacheSaverMock,
 			CacheRetriever: cacheRetrieverMocker,
 			WebClient:      webRetrieverMocker,
 		}
@@ -98,7 +98,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 		cacheSaverMock.On("SaveCard", cards[1]).Return(assert.AnError)
 
 		ygoClient := &ygo.YgoClientWithCache{
-			CacheSaver:     cacheSaverMock,
+			CacheCardSaver: cacheSaverMock,
 			CacheRetriever: cacheRetrieverMocker,
 			WebClient:      webRetrieverMocker,
 		}
@@ -128,7 +128,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 		webRetrieverMocker.On("GetAllCards").Return(nil, assert.AnError)
 
 		ygoClient := &ygo.YgoClientWithCache{
-			CacheSaver:     cacheSaverMock,
+			CacheCardSaver: cacheSaverMock,
 			CacheRetriever: cacheRetrieverMocker,
 			WebClient:      webRetrieverMocker,
 		}
@@ -168,7 +168,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 		cacheSaverMock.On("SaveCard", cards[1]).Return(nil)
 
 		ygoClient := &ygo.YgoClientWithCache{
-			CacheSaver:     cacheSaverMock,
+			CacheCardSaver: cacheSaverMock,
 			CacheRetriever: cacheRetrieverMocker,
 			WebClient:      webRetrieverMocker,
 		}

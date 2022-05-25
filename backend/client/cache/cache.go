@@ -31,6 +31,8 @@ type QueryGenerator interface {
 	SelectAllCardsWithFilter(filter model.CardFilter) (string, error)
 	// InsertCard generates a query to insert a specific card into the database.
 	InsertCard(card *model.Card) (string, error)
+	// InsertSet generates a query to insert a specific card set into the database.
+	InsertSet(set model.CardSet) (string, error)
 }
 
 // YgoCache handles the caching of generic data in a postgres database.

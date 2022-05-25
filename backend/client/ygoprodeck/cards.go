@@ -22,6 +22,10 @@ func (ypdc YgoProDeckClient) GetAllCards() (*[]*model.Card, error) {
 		return nil, err
 	}
 
+	for _, card := range cards.Data {
+		card.CreateSetList()
+	}
+
 	return &cards.Data, nil
 }
 
@@ -40,6 +44,10 @@ func (ypdc YgoProDeckClient) GetCard(id int) (*model.Card, error) {
 	err := ypdc.Client.GetJsonFromTarget(targetUrl, &cards)
 	if err != nil {
 		return nil, err
+	}
+
+	for _, card := range cards.Data {
+		card.CreateSetList()
 	}
 
 	return cards.Data[0], nil

@@ -86,13 +86,18 @@ func (yds *YgoDataSyncher) SyncAllCards() error {
 	for i, card := range *cards {
 		_, err := yds.Client.CacheRetriever.GetCard(card.ID)
 		if errors.Is(err, cache.ErrorCardDoesNotExist) {
-			err = yds.Client.CacheSaver.SaveCard(card)
+			err = yds.Client.CacheCardSaver.SaveCard(card)
 			if err != nil {
 				return fmt.Errorf("failed to save card [%d]: %w", card.ID, err)
 			}
 		}
 
-		err = yds.SynchImageOfCard(card)
+		//err = yds.SynchImageOfCard(card)
+		//if err != nil {
+		//	return fmt.Errorf("failed to synch card images: %w", err)
+		//}
+
+		err = yds.Client.CacheSetSaver.SaveSets(card.Sets)
 		if err != nil {
 			return fmt.Errorf("failed to synch card images: %w", err)
 		}
