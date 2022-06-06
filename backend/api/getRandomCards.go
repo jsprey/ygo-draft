@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 	"ygodraft/backend/model"
 )
 
@@ -32,8 +31,6 @@ func (crh *CardRetrieveHandler) GetRandomCards(ctx *gin.Context) {
 
 	if *cards != nil {
 		cardsBox := *cards
-
-		rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
 
 		randomDeck := make([]*model.Card, numberOfCards)
 		for i := 0; i < numberOfCards; i++ {

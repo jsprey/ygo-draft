@@ -27,18 +27,18 @@ type Card struct {
 	Level     int         `json:"level"`
 	Race      string      `json:"race"`
 	Attribute string      `json:"attribute"`
-	SetsList  string      `json:"sets_list"`
-	Sets      []CardSet   `json:"card_sets"`
+	Sets      string      `json:"sets"`
+	SetsMeta  []CardSet   `json:"card_sets"`
 	Images    []CardImage `json:"card_images"`
 }
 
 func (c *Card) CreateSetList() {
 	setList := ""
-	for i, set := range c.Sets {
+	for i, set := range c.SetsMeta {
 		if i != 0 {
 			setList += ","
 		}
 		setList += set.SetName
 	}
-	c.SetsList = setList
+	c.Sets = setList
 }

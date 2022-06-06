@@ -27,6 +27,8 @@ type CardSetSaver interface {
 type CardRetriever interface {
 	// GetAllCards retrieves all cards from a source.
 	GetAllCards() (*[]*model.Card, error)
+	// GetAllSets retrieves all sets from a source.
+	GetAllSets() (*[]*model.CardSet, error)
 	// GetAllCardsWithFilter retrieves all cards with a given filter.
 	GetAllCardsWithFilter(filter model.CardFilter) (*[]*model.Card, error)
 	// GetCard retrieves a api with a certain id from a source.
@@ -60,6 +62,11 @@ func NewYgoClientWithCache(client cache.DatabaseClient) (*YgoClientWithCache, er
 func (ycwc *YgoClientWithCache) GetAllCards() (*[]*model.Card, error) {
 	logrus.Debug("YGO-Client -> Retrieve all cards")
 	return ycwc.CacheRetriever.GetAllCards()
+}
+
+func (ycwc *YgoClientWithCache) GetAllSets() (*[]*model.CardSet, error) {
+	logrus.Debug("YGO-Client -> Retrieve all sets")
+	return ycwc.CacheRetriever.GetAllSets()
 }
 
 func (ycwc *YgoClientWithCache) GetCard(id int) (*model.Card, error) {

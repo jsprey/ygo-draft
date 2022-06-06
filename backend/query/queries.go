@@ -18,6 +18,9 @@ var TemplateContentSelectAllCardsWithFilter string
 //go:embed templates/QuerySelectAllCards.sql
 var TemplateContentSelectAllCards string
 
+//go:embed templates/QuerySelectAllSets.sql
+var TemplateContentSelectAllSets string
+
 //go:embed templates/QueryInsertCard.sql
 var TemplateContentInsertCard string
 
@@ -34,6 +37,7 @@ func (sqt *sqlQueryTemplater) ParseCardTemplates() error {
 	myTemplates := map[string]string{
 		"SelectCardByID":           TemplateContentSelectCardByID,
 		"SelectAllCards":           TemplateContentSelectAllCards,
+		"SelectAllSets":            TemplateContentSelectAllSets,
 		"SelectAllCardsWithFilter": TemplateContentSelectAllCardsWithFilter,
 		"InsertCard":               TemplateContentInsertCard,
 		"InsertSet":                TemplateContentInsertSet,
@@ -67,6 +71,10 @@ func (sqt *sqlQueryTemplater) SelectAllCards() (string, error) {
 	return sqt.Template("SelectAllCards", "")
 }
 
+func (sqt *sqlQueryTemplater) SelectAllSets() (string, error) {
+	return sqt.Template("SelectAllSets", "")
+}
+
 func (sqt *sqlQueryTemplater) InsertCard(card *model.Card) (string, error) {
 	cardCopy := *card
 	cardCopy.Name = escape(cardCopy.Name)
@@ -74,7 +82,7 @@ func (sqt *sqlQueryTemplater) InsertCard(card *model.Card) (string, error) {
 	cardCopy.Race = escape(cardCopy.Race)
 	cardCopy.Attribute = escape(cardCopy.Attribute)
 	cardCopy.Type = escape(cardCopy.Type)
-	cardCopy.SetsList = escape(cardCopy.SetsList)
+	cardCopy.Sets = escape(cardCopy.Sets)
 
 	return sqt.Template("InsertCard", &cardCopy)
 }

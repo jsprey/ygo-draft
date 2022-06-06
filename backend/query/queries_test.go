@@ -72,11 +72,35 @@ func TestNewSqlQueryTemplater_QuerySelectAllCards(t *testing.T) {
 	})
 }
 
+//go:embed test_templates/testQuerySelectAllSets.sql
+var testQuerySelectAllSets string
+
+func TestNewSqlQueryTemplater_QuerySelectAllSets(t *testing.T) {
+	t.Run("correctly create query", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.SelectAllSets()
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQuerySelectAllSets, myString)
+	})
+}
+
 //go:embed test_templates/testQuerySelectAllCardsWithFilter_NoFilter.sql
 var testQuerySelectAllCardsWithFilter_NoFilter string
 
-//go:embed test_templates/testQuerySelectAllCardsWithFilter_WithFilter.sql
-var testQuerySelectAllCardsWithFilter_WithFilter string
+//go:embed test_templates/testQuerySelectAllCardsWithFilter_WithTypeFilter.sql
+var testQuerySelectAllCardsWithFilter_WithTypeFilter string
+
+//go:embed test_templates/testQuerySelectAllCardsWithFilter_WithSetFilter.sql
+var testQuerySelectAllCardsWithFilter_WithSetFilter string
+
+//go:embed test_templates/testQuerySelectAllCardsWithFilter_WithAllFilter.sql
+var testQuerySelectAllCardsWithFilter_WithAllFilter string
 
 func TestNewSqlQueryTemplater_QuerySelectAllCardsWithFilter(t *testing.T) {
 	t.Run("correctly create query with empty filter", func(t *testing.T) {
@@ -92,12 +116,12 @@ func TestNewSqlQueryTemplater_QuerySelectAllCardsWithFilter(t *testing.T) {
 		assert.Equal(t, testQuerySelectAllCardsWithFilter_NoFilter, myString)
 	})
 
-	t.Run("correctly create query with filters", func(t *testing.T) {
+	t.Run("correctly create query with types", func(t *testing.T) {
 		// given
 		templater, err := query.NewSqlQueryTemplater()
 		require.NoError(t, err)
 		filter := model.CardFilter{
-			Types: []string{"HAHA", "Second Type", "third type"},
+			Types: []string{"Normal Monster", "Effect Monster"},
 			Sets:  nil,
 		}
 
@@ -106,16 +130,16 @@ func TestNewSqlQueryTemplater_QuerySelectAllCardsWithFilter(t *testing.T) {
 
 		// then
 		require.NoError(t, err)
-		assert.Equal(t, testQuerySelectAllCardsWithFilter_WithFilter, myString)
+		assert.Equal(t, testQuerySelectAllCardsWithFilter_WithTypeFilter, myString)
 	})
 
-	t.Run("correctly create query with filters and sets", func(t *testing.T) {
+	t.Run("correctly create query with sets", func(t *testing.T) {
 		// given
 		templater, err := query.NewSqlQueryTemplater()
 		require.NoError(t, err)
 		filter := model.CardFilter{
-			Types: []string{"HAHA", "Second Type", "third type"},
-			Sets:  []string{}, //todo add sets
+			Types: []string{},
+			Sets:  []string{"Force of the Breaker", "Strike of Neos"},
 		}
 
 		// when
@@ -123,6 +147,23 @@ func TestNewSqlQueryTemplater_QuerySelectAllCardsWithFilter(t *testing.T) {
 
 		// then
 		require.NoError(t, err)
-		assert.Equal(t, testQuerySelectAllCardsWithFilter_WithFilter, myString)
+		assert.Equal(t, testQuerySelectAllCardsWithFilter_WithSetFilter, myString)
+	})
+
+	t.Run("correctly create query with set and type filter", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+		filter := model.CardFilter{
+			Types: []string{"Normal Monster", "Effect Monster"},
+			Sets:  []string{"Force of the Breaker", "Strike of Neos"},
+		}
+
+		// when
+		myString, err := templater.SelectAllCardsWithFilter(filter)
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQuerySelectAllCardsWithFilter_WithAllFilter, myString)
 	})
 }

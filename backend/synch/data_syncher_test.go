@@ -51,6 +51,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 		}
 
 		cacheSaverMock := &mocks.CardSaver{}
+		cacheCardSetSaverMock := &mocks.CardSetSaver{}
 		cacheRetrieverMocker := &mocks.CardRetriever{}
 		webRetrieverMocker := &mocks.CardRetriever{}
 		webRetrieverMocker.On("GetAllCards").Return(&cards, nil)
@@ -58,10 +59,12 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 		cacheRetrieverMocker.On("GetCard", 222).Return(cards[1], cache.ErrorCardDoesNotExist.WithParam("222"))
 		cacheRetrieverMocker.On("GetCard", 333).Return(cards[2], nil)
 		cacheSaverMock.On("SaveCard", cards[1]).Return(nil)
+		cacheCardSetSaverMock.On("SaveSets", mock.Anything).Return(nil)
 
 		ygoClient := &ygo.YgoClientWithCache{
 			CacheCardSaver: cacheSaverMock,
 			CacheRetriever: cacheRetrieverMocker,
+			CacheSetSaver:  cacheCardSetSaverMock,
 			WebClient:      webRetrieverMocker,
 		}
 		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment}
@@ -90,16 +93,19 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 		}
 
 		cacheSaverMock := &mocks.CardSaver{}
+		cacheCardSetSaverMock := &mocks.CardSetSaver{}
 		cacheRetrieverMocker := &mocks.CardRetriever{}
 		webRetrieverMocker := &mocks.CardRetriever{}
 		webRetrieverMocker.On("GetAllCards").Return(&cards, nil)
 		cacheRetrieverMocker.On("GetCard", 111).Return(cards[0], nil)
 		cacheRetrieverMocker.On("GetCard", 222).Return(cards[1], cache.ErrorCardDoesNotExist.WithParam("222"))
 		cacheSaverMock.On("SaveCard", cards[1]).Return(assert.AnError)
+		cacheCardSetSaverMock.On("SaveSets", mock.Anything).Return(nil)
 
 		ygoClient := &ygo.YgoClientWithCache{
 			CacheCardSaver: cacheSaverMock,
 			CacheRetriever: cacheRetrieverMocker,
+			CacheSetSaver:  cacheCardSetSaverMock,
 			WebClient:      webRetrieverMocker,
 		}
 		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment}
@@ -123,6 +129,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 	t.Run("fail to get all cards", func(t *testing.T) {
 		// given
 		cacheSaverMock := &mocks.CardSaver{}
+		cacheCardSetSaverMock := &mocks.CardSetSaver{}
 		cacheRetrieverMocker := &mocks.CardRetriever{}
 		webRetrieverMocker := &mocks.CardRetriever{}
 		webRetrieverMocker.On("GetAllCards").Return(nil, assert.AnError)
@@ -130,6 +137,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 		ygoClient := &ygo.YgoClientWithCache{
 			CacheCardSaver: cacheSaverMock,
 			CacheRetriever: cacheRetrieverMocker,
+			CacheSetSaver:  cacheCardSetSaverMock,
 			WebClient:      webRetrieverMocker,
 		}
 		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment}
@@ -159,6 +167,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 		}
 
 		cacheSaverMock := &mocks.CardSaver{}
+		cacheCardSetSaverMock := &mocks.CardSetSaver{}
 		cacheRetrieverMocker := &mocks.CardRetriever{}
 		webRetrieverMocker := &mocks.CardRetriever{}
 		webRetrieverMocker.On("GetAllCards").Return(&cards, nil)
@@ -166,10 +175,12 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 		cacheRetrieverMocker.On("GetCard", 222).Return(cards[1], cache.ErrorCardDoesNotExist.WithParam("222"))
 		cacheRetrieverMocker.On("GetCard", 333).Return(cards[2], nil)
 		cacheSaverMock.On("SaveCard", cards[1]).Return(nil)
+		cacheCardSetSaverMock.On("SaveSets", mock.Anything).Return(nil)
 
 		ygoClient := &ygo.YgoClientWithCache{
 			CacheCardSaver: cacheSaverMock,
 			CacheRetriever: cacheRetrieverMocker,
+			CacheSetSaver:  cacheCardSetSaverMock,
 			WebClient:      webRetrieverMocker,
 		}
 		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment}

@@ -38,6 +38,52 @@ func (_m *CardRetriever) GetAllCards() (*[]*model.Card, error) {
 	return r0, r1
 }
 
+// GetAllCardsWithFilter provides a mock function with given fields: filter
+func (_m *CardRetriever) GetAllCardsWithFilter(filter model.CardFilter) (*[]*model.Card, error) {
+	ret := _m.Called(filter)
+
+	var r0 *[]*model.Card
+	if rf, ok := ret.Get(0).(func(model.CardFilter) *[]*model.Card); ok {
+		r0 = rf(filter)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]*model.Card)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(model.CardFilter) error); ok {
+		r1 = rf(filter)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetAllSets provides a mock function with given fields:
+func (_m *CardRetriever) GetAllSets() (*[]*model.CardSet, error) {
+	ret := _m.Called()
+
+	var r0 *[]*model.CardSet
+	if rf, ok := ret.Get(0).(func() *[]*model.CardSet); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]*model.CardSet)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetCard provides a mock function with given fields: id
 func (_m *CardRetriever) GetCard(id int) (*model.Card, error) {
 	ret := _m.Called(id)

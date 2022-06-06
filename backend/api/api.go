@@ -20,6 +20,7 @@ func SetupAPI(router *gin.RouterGroup, client *ygo.YgoClientWithCache) error {
 	router.GET("cards/:id", cardRetriever.GetCard)
 	router.GET("randomCard", cardRetriever.GetRandomCard)
 	router.GET("randomCards", cardRetriever.GetRandomCards)
+	router.GET("sets", cardRetriever.GetSets)
 
 	return nil
 }

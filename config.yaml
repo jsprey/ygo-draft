@@ -3,7 +3,7 @@ context_path: /
 log_level: INFO
 stage: development
 #stage: production
-sync_at_startup: true
+sync_at_startup: false
 database_context:
   database_url: localhost:5432
   database_name: ygodraft

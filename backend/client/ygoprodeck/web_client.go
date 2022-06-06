@@ -1,5 +1,10 @@
 package ygoprodeck
 
+import (
+	"fmt"
+	"ygodraft/backend/model"
+)
+
 const endpointCardInfo = "https://db.ygoprodeck.com/api/v7"
 
 type JsonWebClient interface {
@@ -21,4 +26,9 @@ func NewYgoProDeckClient() *YgoProDeckClient {
 		BaseUrl: endpointCardInfo,
 		Client:  rateLimitedClient,
 	}
+}
+
+// GetAllSets is not implemented.
+func (ypdc YgoProDeckClient) GetAllSets() (*[]*model.CardSet, error) {
+	return nil, fmt.Errorf("method not supported")
 }

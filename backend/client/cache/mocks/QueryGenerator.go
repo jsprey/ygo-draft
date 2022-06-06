@@ -36,8 +36,71 @@ func (_m *QueryGenerator) InsertCard(card *model.Card) (string, error) {
 	return r0, r1
 }
 
+// InsertSet provides a mock function with given fields: set
+func (_m *QueryGenerator) InsertSet(set model.CardSet) (string, error) {
+	ret := _m.Called(set)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(model.CardSet) string); ok {
+		r0 = rf(set)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(model.CardSet) error); ok {
+		r1 = rf(set)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // SelectAllCards provides a mock function with given fields:
 func (_m *QueryGenerator) SelectAllCards() (string, error) {
+	ret := _m.Called()
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func() string); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// SelectAllCardsWithFilter provides a mock function with given fields: filter
+func (_m *QueryGenerator) SelectAllCardsWithFilter(filter model.CardFilter) (string, error) {
+	ret := _m.Called(filter)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(model.CardFilter) string); ok {
+		r0 = rf(filter)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(model.CardFilter) error); ok {
+		r1 = rf(filter)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// SelectAllSets provides a mock function with given fields:
+func (_m *QueryGenerator) SelectAllSets() (string, error) {
 	ret := _m.Called()
 
 	var r0 string

@@ -1,2 +1,2 @@
-SELECT "id", "name", "type", "desc", "atk", "def", "level", "race", "attribute" FROM public.cards
-{{if .Types}}WHERE type in({{range  $i, $e := .Types}}'{{$e}}'{{if notLast $i $.Types}},{{end}}{{end}}){{end}}
+SELECT "id", "name", "type", "desc", "atk", "def", "level", "race", "attribute", "sets" FROM public.cards
+{{if .HasFilter}}WHERE {{if .HasTypeFilter}}"type" in({{range  $i, $e := .Types}}'{{$e}}'{{if notLast $i $.Types}},{{end}}{{end}}){{if .HasSetFilter}} and {{end}}{{end}}{{if .HasSetFilter}}({{range  $i, $e := .Sets}}"sets" like('%{{$e}}%'){{if notLast $i $.Sets}} or {{end}}{{end}}){{end}}{{end}}

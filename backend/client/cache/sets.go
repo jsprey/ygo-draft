@@ -20,6 +20,23 @@ func (yc *YgoCache) SaveSets(sets []model.CardSet) error {
 	return nil
 }
 
+func (yc *YgoCache) GetAllSets() (*[]*model.CardSet, error) {
+	logrus.Debug("Cache -> Retrieve all sets")
+
+	sqlQuery, err := yc.QueryTemplater.SelectAllSets()
+	if err != nil {
+		return nil, err
+	}
+
+	var sets []*model.CardSet
+	err = yc.Client.Select(sqlQuery, &sets)
+	if err != nil {
+		return nil, fmt.Errorf("failed to scan struct: %w", err)
+	}
+
+	return &sets, nil
+}
+
 func (yc *YgoCache) saveSet(set model.CardSet) error {
 	logrus.Debugf("Cache -> Save set with id %s", set.SetCode)
 	sqlQuery, err := yc.QueryTemplater.InsertSet(set)

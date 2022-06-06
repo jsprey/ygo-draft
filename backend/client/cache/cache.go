@@ -27,6 +27,8 @@ type QueryGenerator interface {
 	SelectCardByID(id int) (string, error)
 	// SelectAllCards generate a select query for all stored cards.
 	SelectAllCards() (string, error)
+	// SelectAllSets generate a select query for all stored sets.
+	SelectAllSets() (string, error)
 	// SelectAllCardsWithFilter generate a select query for all stored cards with a given filter.
 	SelectAllCardsWithFilter(filter model.CardFilter) (string, error)
 	// InsertCard generates a query to insert a specific card into the database.
