@@ -33,7 +33,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
     })
 
     let draftCard = function (draftedCard: Card): void {
-        setDraftDeck({} as Deck)
+        setDraftDeck({cards:[]} as Deck)
         setDrafted(false)
         addCardToCurrentDeck(props.deck, props.setDeck, draftedCard)
 
@@ -51,7 +51,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
     const [showAbortDialog, setShowAbortDialog] = useState(false)
     const handleCloseAbortDraftProcessModal = () => setShowAbortDialog(false)
     let handleAbortDraftProcess = function (): void {
-        props.setDeck({} as Deck)
+        props.setDeck({cards:[]} as Deck)
         setDraftDeck({cards:[]} as Deck)
         setDrafted(false)
         setCurrentDraftRound(1)

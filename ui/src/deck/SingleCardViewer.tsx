@@ -4,12 +4,12 @@ import {Image} from "react-bootstrap";
 import {useState} from "react";
 import CardDetailModal from "./CardDetailModal";
 
-export type CardViewerProps = {
+export type SingleCardViewerProps = {
     card: Card
     bottomElement ?: JSX.Element
 }
 
-function SingleCardViewer(props: CardViewerProps) {
+function SingleCardViewer(props: SingleCardViewerProps) {
     const [isShowingDetailView, setIsShowingDetailView] = useState(false);
     const handleShowDetailModal = () => setIsShowingDetailView(true);
 

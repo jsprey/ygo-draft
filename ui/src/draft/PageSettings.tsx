@@ -3,6 +3,7 @@ import {DraftSettings, DraftStages} from "./DeckDraftWizard";
 import {Button, Form, Row} from "react-bootstrap";
 import SettingsEntry from "./SettingsEntry";
 import CardSetSelector from "./CardSetSelector";
+import {CardSet} from "../api/Sets";
 
 export type PageSettingsProps = {
     setCurrentStage: React.Dispatch<React.SetStateAction<DraftStages>>
@@ -10,6 +11,7 @@ export type PageSettingsProps = {
 }
 
 function PageSettings(props: PageSettingsProps) {
+    const [generalDraftCardSets, setGeneralDraftCardSets] = useState<CardSet[]>([])
     const [mainDraftRound, setMainDraftRound] = useState(5)
     const [mainDraftRoundError, setMainDraftRoundError] = useState("")
     const [mainDraftSize, setMainDraftSize] = useState(3)
@@ -31,7 +33,8 @@ function PageSettings(props: PageSettingsProps) {
                 mainDraftSize: mainDraftSize,
                 mainDraftRound: mainDraftRound,
                 extraDraftRound: extraDraftRound,
-                extraDraftSize: extraDraftSize
+                extraDraftSize: extraDraftSize,
+                selectedCardSets: generalDraftCardSets
             }
             props.setDraftSettings(draftSettings)
             props.setCurrentStage(DraftStages.DraftMain)
@@ -47,7 +50,7 @@ function PageSettings(props: PageSettingsProps) {
         <Form className={"mt-3"} onSubmit={handleSubmit} noValidate validated={validated}>
             <div className={"title  mt-0 fw-bold"}>General Settings</div>
 
-            <CardSetSelector rowClass={"mt-0"}
+            <CardSetSelector selectedSets={generalDraftCardSets} setSelectedSets={setGeneralDraftCardSets} rowClass={"mt-0"}
                              tooltip={"Only cards from the defined sets are used when drafting a deck."}></CardSetSelector>
             <div className={"title mt-4 fw-bold"}>Settings for the Main Draft</div>
             <Row>

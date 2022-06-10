@@ -10,6 +10,7 @@ export type Card = {
     def: number;
     level: number;
     race: string;
+    sets: string;
     attribute: string;
     card_sets: CardSet[];
 }
@@ -47,7 +48,7 @@ export function SortAscending(a: Card, b: Card) {
 }
 
 export function FilterByType(cards: Card[], types: CardType[]): Card[] {
-    if (cards === undefined) return cards
+    if (cards === undefined) return [] as Card[]
 
     return cards.filter(card => {
         for (const typesKey in types) {
@@ -61,7 +62,7 @@ export function FilterByType(cards: Card[], types: CardType[]): Card[] {
 }
 
 export function FilterByMainCards(cards: Card[]): Card[] {
-    if (cards === undefined) return cards
+    if (cards === undefined) return [] as Card[]
 
     return cards.filter(card => {
         return GetCardType(card) < 100
@@ -69,7 +70,7 @@ export function FilterByMainCards(cards: Card[]): Card[] {
 }
 
 export function FilterByExtraCards(cards: Card[]): Card[] {
-    if (cards === undefined) return cards
+    if (cards === undefined) return [] as Card[]
 
     return cards.filter(card => {
         return GetCardType(card) >= 100

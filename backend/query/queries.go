@@ -64,6 +64,14 @@ func (sqt *sqlQueryTemplater) SelectCardByID(id int) (string, error) {
 }
 
 func (sqt *sqlQueryTemplater) SelectAllCardsWithFilter(filter model.CardFilter) (string, error) {
+	for i, filterType := range filter.Types {
+		filter.Types[i] = escape(filterType)
+	}
+	for i, filterSet := range filter.Sets {
+		preparedFilterSet := fmt.Sprintf("%%%s%%", filterSet)
+		filter.Sets[i] = escape(preparedFilterSet)
+	}
+
 	return sqt.Template("SelectAllCardsWithFilter", &filter)
 }
 

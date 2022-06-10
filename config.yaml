@@ -1,6 +1,6 @@
 port: 8080
 context_path: /
-log_level: INFO
+log_level: DEBUG
 stage: development
 #stage: production
 sync_at_startup: false

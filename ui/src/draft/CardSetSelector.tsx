@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {Alert, Col, Form, Placeholder, Row} from "react-bootstrap";
 import HelpTooltip from "../core/HelpTooltip";
 import {CardSet, sortSets} from "../api/Sets";
@@ -9,6 +9,8 @@ import SvgIconButton, {SvgIconButtonProps} from "../core/SvgIconButton";
 export type CardSetSelectorProps = {
     tooltip: string
     rowClass?: any
+    selectedSets: CardSet[]
+    setSelectedSets:  React.Dispatch<React.SetStateAction<CardSet[]>>
 }
 
 const IconEye = <SvgIconButton size={25}>
@@ -27,7 +29,6 @@ const IconArrowLeft = <SvgIconButton size={25} classNames={"fill-red-600 hover:f
 </SvgIconButton>
 
 function CardSetSelector(props: CardSetSelectorProps) {
-    const [selectedSets, setSelectedSets] = useState<CardSet[]>([])
     const {data, isLoading, error} = useSets()
 
     let allSetItems: JSX.Element = <></>
@@ -44,7 +45,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
         let availableSets: CardSet[] = sortSets(data.sets)
         availableSets = availableSets.filter(availableSet => {
             let selectCardSet = true
-            selectedSets.forEach(selectedSet => {
+            props.selectedSets.forEach(selectedSet => {
                 if (availableSet.set_name === selectedSet.set_name) {
                     selectCardSet = false
                     return
@@ -57,9 +58,9 @@ function CardSetSelector(props: CardSetSelectorProps) {
         actionList.set(IconEye, inspectCardSet)
         actionList.set(IconArrowRight, cardSet => {
             let newSelectedCardSets: CardSet[] = []
-            newSelectedCardSets.push(...selectedSets)
+            newSelectedCardSets.push(...props.selectedSets)
             newSelectedCardSets.push(cardSet)
-            setSelectedSets(sortSets(newSelectedCardSets))
+            props.setSelectedSets(sortSets(newSelectedCardSets))
         })
 
         allSetItems = <>
@@ -71,11 +72,11 @@ function CardSetSelector(props: CardSetSelectorProps) {
     selectedCardsActionList.set(IconEye, inspectCardSet)
     selectedCardsActionList.set(IconArrowLeft, cardSet => {
         let newSelectedCardSets: CardSet[] = []
-        newSelectedCardSets.push(...selectedSets)
+        newSelectedCardSets.push(...props.selectedSets)
         newSelectedCardSets = newSelectedCardSets.filter(value => {
             return value.set_name !== cardSet.set_name
         })
-        setSelectedSets(sortSets(newSelectedCardSets))
+        props.setSelectedSets(sortSets(newSelectedCardSets))
     })
 
     return <Row className={props.rowClass}><Form.Group as={Col}>
@@ -88,7 +89,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
         <div>
             <div className={"grid grid-cols-2 gap-3"}>
                 {allSetItems}
-                <CardSelectedSetList title={"Selected Sets"} cardSets={selectedSets}
+                <CardSelectedSetList title={"Selected Sets"} cardSets={props.selectedSets}
                                      actionList={selectedCardsActionList}/>
             </div>
         </div>

@@ -6,12 +6,14 @@ import StepperStep from "../core/stepper/StepperStep";
 import {Deck} from "../api/CardModel";
 import PageOverview from "./PageOverview";
 import {ExtraDeckFilter, MainDeckFilter} from "../api/CardFilter";
+import {CardSet} from "../api/Sets";
 
 export type DraftSettings = {
     mainDraftSize: number
     mainDraftRound: number
     extraDraftSize: number
     extraDraftRound: number
+    selectedCardSets: CardSet[]
 }
 
 export enum DraftStages {
@@ -26,14 +28,20 @@ function DeckDraftWizard() {
     const [currentStage, setCurrentStage] = useState<DraftStages>(DraftStages.Settings)
     const [deck, setDeck] = useState<Deck>({cards: []} as Deck)
 
+    let mainDeckFilter = MainDeckFilter
+    mainDeckFilter.sets = draftSettings.selectedCardSets
+
+    let extraDeckFilter = ExtraDeckFilter
+    extraDeckFilter.sets = draftSettings.selectedCardSets
+
     let stageBody
     switch (currentStage) {
         case DraftStages.DraftMain:
-            stageBody = <PageDraftDeck isMainDraft={true} filter={MainDeckFilter} deck={deck} setDeck={setDeck} draftSize={draftSettings.mainDraftSize}
+            stageBody = <PageDraftDeck isMainDraft={true} filter={mainDeckFilter} deck={deck} setDeck={setDeck} draftSize={draftSettings.mainDraftSize}
                                        maxRounds={draftSettings.mainDraftRound} setCurrentStage={setCurrentStage}/>
             break
         case DraftStages.DraftExtra:
-            stageBody = <PageDraftDeck isMainDraft={false} filter={ExtraDeckFilter} deck={deck} setDeck={setDeck} draftSize={draftSettings.extraDraftSize}
+            stageBody = <PageDraftDeck isMainDraft={false} filter={extraDeckFilter} deck={deck} setDeck={setDeck} draftSize={draftSettings.extraDraftSize}
                                        maxRounds={draftSettings.extraDraftRound} setCurrentStage={setCurrentStage}/>
             break
         case DraftStages.DeckOverview:

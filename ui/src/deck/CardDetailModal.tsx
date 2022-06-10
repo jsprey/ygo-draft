@@ -17,20 +17,25 @@ function CardDetailModal(props: CardDetailModalProps) {
                   size={"xl"}
                   contentClassName={"border border-white"}>
         <Modal.Body className={"bg-dark rounded-md text-white "}>
-            <div className="grid grid-rows-10 grid-cols-3 gap-0 auto-cols-auto">
-                <div className="row-span-6">
+            <div className="flex flex-row">
+                <div className="w-100">
                     {getCardAsBigImage(card)}
                 </div>
-                <div className="col-span-2 text-3xl mb-1 ml-2 capitalize">{card.name}</div>
-                <div className={"col-span-2 mb-3 ml-2"}>
-                    {card.level !== 0 ? <Badge className={"mr-1"}>Level: {card.level}</Badge> : <></>}
-                    <Badge className={"mr-1"}>{card.type}</Badge>
-                    <Badge className={"mr-1"}>{card.race}</Badge>
-                    {card.attribute ? <Badge className={"mr-1"}>{card.attribute}</Badge> : <></>}
-                    {card.atk !== 0 ? <Badge className={"mr-1"} bg={"danger"}>{card.atk}</Badge> : <></>}
-                    {card.def !== 0 ? <Badge className={"mr-1"} bg={"success"}>{card.def}</Badge> : <></>}
+                <div className={"flex-grow-1"}>
+                    <div className="text-3xl mb-1 ml-2 capitalize">{card.name}</div>
+                    <div className={"mb-3 ml-2"}>
+                        {card.level !== 0 ? <Badge className={"mr-1"}>Level: {card.level}</Badge> : <></>}
+                        <Badge className={"mr-1"}>{card.type}</Badge>
+                        <Badge className={"mr-1"}>{card.race}</Badge>
+                        {card.attribute ? <Badge className={"mr-1"}>{card.attribute}</Badge> : <></>}
+                        {card.atk !== 0 ? <Badge className={"mr-1"} bg={"danger"}>{card.atk}</Badge> : <></>}
+                        {card.def !== 0 ? <Badge className={"mr-1"} bg={"success"}>{card.def}</Badge> : <></>}
+                    </div>
+                    <p className={"p-2 mb-0 mt-2 ml-2 bg-gray-800"}>Description:</p>
+                    <div className={"p-2 mb-1 ml-2 bg-gray-700"}>{card.desc}</div>
+                    <p className={"p-2 mb-0 mt-2 ml-2 bg-gray-800"}>Included in the following Sets:</p>
+                    <div className={"p-2 mb-1 ml-2 bg-gray-700"}>{card.sets}</div>
                 </div>
-                <div className={"p-2 col-span-2 mb-1 ml-2 bg-gray-700"}>{card.desc}</div>
             </div>
         </Modal.Body>
     </Modal>
