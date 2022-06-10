@@ -1,12 +1,5 @@
 import {CardType, GetCardType} from "./CardType";
-
-export type CardSet = {
-    set_name: string;
-    set_code: string;
-    set_rarity: string;
-    set_rarity_code: string;
-    set_price: string;
-}
+import {CardSet} from "./Sets";
 
 export type Card = {
     id: number;

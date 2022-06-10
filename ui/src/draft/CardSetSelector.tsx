@@ -1,0 +1,105 @@
+import React, {useState} from "react";
+import {Alert, Col, Form, Placeholder, Row} from "react-bootstrap";
+import HelpTooltip from "../core/HelpTooltip";
+import {CardSet, sortSets} from "../api/Sets";
+import {useSets} from "../api/hooks/useSets";
+import CardSelectedSetList, {CardSetReceiver} from "./CardSelectedSetList";
+import SvgIconButton, {SvgIconButtonProps} from "../core/SvgIconButton";
+
+export type CardSetSelectorProps = {
+    tooltip: string
+    rowClass?: any
+}
+
+const IconEye = <SvgIconButton size={25}>
+    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+    <path
+        d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+</SvgIconButton>
+const IconArrowRight = <SvgIconButton size={25}
+                                      classNames={"fill-green-600 hover:fill-green-500 active:fill-green-400"}>
+    <path
+        d="M0 14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12zm4.5-6.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5a.5.5 0 0 1 0-1z"/>
+</SvgIconButton>
+const IconArrowLeft = <SvgIconButton size={25} classNames={"fill-red-600 hover:fill-red-500 active:fill-red-400"}>
+    <path
+        d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1z"/>
+</SvgIconButton>
+
+function CardSetSelector(props: CardSetSelectorProps) {
+    const [selectedSets, setSelectedSets] = useState<CardSet[]>([])
+    const {data, isLoading, error} = useSets()
+
+    let allSetItems: JSX.Element = <></>
+    if (isLoading) {
+        allSetItems = <Placeholder animation="glow">
+            <Placeholder xs={12} bg="primary"/>
+            <Placeholder xs={12} bg="primary"/>
+            <Placeholder xs={12} bg="primary"/>
+            <Placeholder xs={12} bg="primary"/>
+        </Placeholder>
+    } else if (error) {
+        allSetItems = <Alert variant={"danger"}>Failed to load all sets!</Alert>
+    } else if (data) {
+        let availableSets: CardSet[] = sortSets(data.sets)
+        availableSets = availableSets.filter(availableSet => {
+            let selectCardSet = true
+            selectedSets.forEach(selectedSet => {
+                if (availableSet.set_name === selectedSet.set_name) {
+                    selectCardSet = false
+                    return
+                }
+            })
+            return selectCardSet
+        })
+
+        const actionList = new Map<React.ReactElement<SvgIconButtonProps>, CardSetReceiver>()
+        actionList.set(IconEye, inspectCardSet)
+        actionList.set(IconArrowRight, cardSet => {
+            let newSelectedCardSets: CardSet[] = []
+            newSelectedCardSets.push(...selectedSets)
+            newSelectedCardSets.push(cardSet)
+            setSelectedSets(sortSets(newSelectedCardSets))
+        })
+
+        allSetItems = <>
+            <CardSelectedSetList title={"Available Sets"} cardSets={availableSets} actionList={actionList}/>
+        </>
+    }
+
+    let selectedCardsActionList = new Map<React.ReactElement<SvgIconButtonProps>, CardSetReceiver>()
+    selectedCardsActionList.set(IconEye, inspectCardSet)
+    selectedCardsActionList.set(IconArrowLeft, cardSet => {
+        let newSelectedCardSets: CardSet[] = []
+        newSelectedCardSets.push(...selectedSets)
+        newSelectedCardSets = newSelectedCardSets.filter(value => {
+            return value.set_name !== cardSet.set_name
+        })
+        setSelectedSets(sortSets(newSelectedCardSets))
+    })
+
+    return <Row className={props.rowClass}><Form.Group as={Col}>
+        <Form.Label className={"flex"}>
+            <div className={"self-center mr-1"}>Select Packs for your drafting phases</div>
+            <HelpTooltip size={20}
+                         message={props.tooltip}/>
+        </Form.Label>
+
+        <div>
+            <div className={"grid grid-cols-2 gap-3"}>
+                {allSetItems}
+                <CardSelectedSetList title={"Selected Sets"} cardSets={selectedSets}
+                                     actionList={selectedCardsActionList}/>
+            </div>
+        </div>
+
+    </Form.Group>
+    </Row>
+}
+
+function inspectCardSet(c: CardSet) {
+
+}
+
+
+export default CardSetSelector

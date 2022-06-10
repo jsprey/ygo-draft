@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {DraftSettings, DraftStages} from "./DeckDraftWizard";
 import {Button, Form, Row} from "react-bootstrap";
 import SettingsEntry from "./SettingsEntry";
+import CardSetSelector from "./CardSetSelector";
 
 export type PageSettingsProps = {
     setCurrentStage: React.Dispatch<React.SetStateAction<DraftStages>>
@@ -44,7 +45,11 @@ function PageSettings(props: PageSettingsProps) {
         </div>
 
         <Form className={"mt-3"} onSubmit={handleSubmit} noValidate validated={validated}>
-            <div className={"title"}>Main Draft</div>
+            <div className={"title  mt-0 fw-bold"}>General Settings</div>
+
+            <CardSetSelector rowClass={"mt-0"}
+                             tooltip={"Only cards from the defined sets are used when drafting a deck."}></CardSetSelector>
+            <div className={"title mt-4 fw-bold"}>Settings for the Main Draft</div>
             <Row>
                 <SettingsEntry value={mainDraftRound} setValue={setMainDraftRound} md={6} error={mainDraftRoundError}
                                setError={setMainDraftRoundError} min={5} max={80}
@@ -56,7 +61,8 @@ function PageSettings(props: PageSettingsProps) {
                                title={"Card Each Round (Main Draft)"}
                                tooltip={"Defines the number of cards that are proposed for every round of the draft while drafting the main deck.. Valid Values: [2-10]."}/>
             </Row>
-            <Row className={"mt-3"}>
+            <div className={"title mt-4 fw-bold"}>Settings for the Extra Draft</div>
+            <Row>
                 <SettingsEntry value={extraDraftRound} setValue={setExtraDraftRound} md={6} error={extraDraftRoundError}
                                setError={setExtraDraftRoundError} min={0} max={20}
                                title={"Number of Rounds (Extra Draft)"}

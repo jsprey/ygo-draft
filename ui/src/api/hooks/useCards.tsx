@@ -27,7 +27,7 @@ export function useRandomCards(clientID: string, size: number, cardFilter: CardF
     return useMagicMethod<Deck>(["random", clientID], `randomCards`, queryParams, queryOptions)
 }
 
-function useMagicMethod<GenericJsonType>(queryKey: QueryKey, apiV1Path: string, queryMap: Map<string, string>, queryOptions: any = {}): UseQueryResult<GenericJsonType> {
+export function useMagicMethod<GenericJsonType>(queryKey: QueryKey, apiV1Path: string, queryMap: Map<string, string>, queryOptions: any = {}): UseQueryResult<GenericJsonType> {
     const queryParams = MapToQuery(queryMap)
 
     return useQuery(queryKey, () => {
