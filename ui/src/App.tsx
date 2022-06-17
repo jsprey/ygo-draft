@@ -6,17 +6,31 @@ import Home from "./home/Home";
 import {Container} from "react-bootstrap";
 import DeckRandomGeneratorPage from "./deck/DeckRandomGeneratorPage";
 import DeckDraftWizard from "./draft/DeckDraftWizard";
+import LoginPage from "./login/LoginPage";
 
 function App() {
     return (<>
-            <YgoNavbar/>
-            <Container>
-                <Routes>
-                    <Route path='/' element={<Home/>}/>
-                    <Route path="/randomdeck" element={<DeckRandomGeneratorPage />}/>
-                    <Route path="/draftdeck" element={<DeckDraftWizard />}/>
-                </Routes>
-            </Container>
+            <Routes>
+                <Route path='/' element={<>
+                    <Container>
+                        <YgoNavbar/>
+                        <Home/>
+                    </Container>
+                </>}/>
+                <Route path='/login' element={<LoginPage/>}/>
+                <Route path="/randomdeck" element={<>
+                    <Container>
+                        <YgoNavbar/>
+                        <DeckRandomGeneratorPage/>
+                    </Container>
+                </>}/>
+                <Route path="/draftdeck" element={<>
+                    <Container>
+                        <YgoNavbar/>
+                        <DeckDraftWizard/>
+                    </Container>
+                </>}/>
+            </Routes>
         </>
     );
 }

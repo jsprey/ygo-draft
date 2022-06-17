@@ -1,0 +1,27 @@
+.mySpecialBackground {
+    /*background-image: url('./src/images/header.jpg');*/
+
+    /* Add the blur effect */
+    filter: blur(3px);
+    -webkit-filter: blur(3px);
+
+    /* Center and scale the image nicely */
+    background-repeat:repeat-y;
+}
+
+.myDiv {
+    position:relative;
+    -webkit-animation:glide 2s ease-in-out alternate infinite;
+}
+
+@-webkit-keyframes glide  {
+    from {
+        left:0px;
+        top:0px;
+    }
+
+    to {
+        left:0px;
+        top:20px;
+    }
+}

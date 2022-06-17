@@ -23,7 +23,7 @@ function YgoNavbar() {
                 </Nav>
                 <Nav>
                     <Nav.Link as={Link} to="/test1">Placeholder</Nav.Link>
-                    <Nav.Link eventKey={2} as={Link} to="/test2">Placeholder</Nav.Link>
+                    <Nav.Link as={Link} to="/login">Login</Nav.Link>
                 </Nav>
             </Container>
         </Navbar>
