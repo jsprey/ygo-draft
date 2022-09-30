@@ -10,7 +10,7 @@ export type CardSetSelectorProps = {
     tooltip: string
     rowClass?: any
     selectedSets: CardSet[]
-    setSelectedSets:  React.Dispatch<React.SetStateAction<CardSet[]>>
+    setSelectedSets: React.Dispatch<React.SetStateAction<CardSet[]>>
 }
 
 const IconEye = <SvgIconButton size={25}>
@@ -64,7 +64,11 @@ function CardSetSelector(props: CardSetSelectorProps) {
         })
 
         allSetItems = <>
-            <CardSelectedSetList title={"Available Sets"} cardSets={availableSets} actionList={actionList}/>
+            <CardSelectedSetList isTargetList={false} title={"Available Sets"} cardSets={availableSets} actionList={actionList} allAction={function () {
+                let newSelectedCardSets: CardSet[]
+                newSelectedCardSets = data.sets
+                props.setSelectedSets(sortSets(newSelectedCardSets))
+            }}/>
         </>
     }
 
@@ -89,8 +93,11 @@ function CardSetSelector(props: CardSetSelectorProps) {
         <div>
             <div className={"grid grid-cols-2 gap-3"}>
                 {allSetItems}
-                <CardSelectedSetList title={"Selected Sets"} cardSets={props.selectedSets}
-                                     actionList={selectedCardsActionList}/>
+                <CardSelectedSetList isTargetList={true} title={"Selected Sets"} cardSets={props.selectedSets}
+                                     actionList={selectedCardsActionList} allAction={function () {
+                    let newSelectedCardSets: CardSet[] = []
+                    props.setSelectedSets(sortSets(newSelectedCardSets))
+                }}/>
             </div>
         </div>
 
