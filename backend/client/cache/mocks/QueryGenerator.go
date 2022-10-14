@@ -141,6 +141,27 @@ func (_m *QueryGenerator) SelectCardByID(id int) (string, error) {
 	return r0, r1
 }
 
+// SelectSetByCode provides a mock function with given fields: cardSet
+func (_m *QueryGenerator) SelectSetByCode(cardSet string) (string, error) {
+	ret := _m.Called(cardSet)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(cardSet)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(cardSet)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewQueryGenerator creates a new instance of QueryGenerator. It also registers the testing.TB interface on the mock and a cleanup function to assert the mocks expectations.
 func NewQueryGenerator(t testing.TB) *QueryGenerator {
 	mock := &QueryGenerator{}

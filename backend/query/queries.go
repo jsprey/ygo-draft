@@ -12,6 +12,9 @@ import (
 //go:embed templates/QuerySelectCardByID.sql
 var TemplateContentSelectCardByID string
 
+//go:embed templates/QuerySelectSetByCode.sql
+var TemplateContentSelectSetByCode string
+
 //go:embed templates/QuerySelectAllCardsWithFilter.sql
 var TemplateContentSelectAllCardsWithFilter string
 
@@ -37,6 +40,7 @@ func (sqt *sqlQueryTemplater) ParseCardTemplates() error {
 	myTemplates := map[string]string{
 		"SelectCardByID":           TemplateContentSelectCardByID,
 		"SelectAllCards":           TemplateContentSelectAllCards,
+		"SelectSetByCode":          TemplateContentSelectSetByCode,
 		"SelectAllSets":            TemplateContentSelectAllSets,
 		"SelectAllCardsWithFilter": TemplateContentSelectAllCardsWithFilter,
 		"InsertCard":               TemplateContentInsertCard,
@@ -61,6 +65,14 @@ func (sqt *sqlQueryTemplater) SelectCardByID(id int) (string, error) {
 	}{ID: id}
 
 	return sqt.Template("SelectCardByID", &idObject)
+}
+
+func (sqt *sqlQueryTemplater) SelectSetByCode(code string) (string, error) {
+	templateObject := struct {
+		SetCode string `json:"code"`
+	}{SetCode: code}
+
+	return sqt.Template("SelectSetByCode", &templateObject)
 }
 
 func (sqt *sqlQueryTemplater) SelectAllCardsWithFilter(filter model.CardFilter) (string, error) {

@@ -25,7 +25,7 @@ func (crh *CardRetrieveHandler) GetRandomCards(ctx *gin.Context) {
 
 	cards, err := crh.YGOClient.GetAllCardsWithFilter(cardFilter)
 	if err != nil {
-		_ = ctx.AbortWithError(500, err)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -40,14 +40,14 @@ func (crh *CardRetrieveHandler) GetRandomCards(ctx *gin.Context) {
 			Cards []*model.Card `json:"cards"`
 		}{Cards: randomDeck}
 
-		ctx.JSONP(200, randomCardsResponse)
+		ctx.JSONP(http.StatusOK, randomCardsResponse)
 	} else {
 		emptyCards := []*model.Card{}
 		emptyResponse := struct {
 			Cards []*model.Card `json:"cards"`
 		}{Cards: emptyCards}
 
-		ctx.JSONP(200, emptyResponse)
+		ctx.JSONP(http.StatusOK, emptyResponse)
 	}
 }
 

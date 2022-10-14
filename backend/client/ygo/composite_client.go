@@ -35,6 +35,11 @@ type CardRetriever interface {
 	GetCard(id int) (*model.Card, error)
 }
 
+type SetRetriever interface {
+	// GetSet retrieves the given set
+	GetSet(setCode string) (*model.CardSet, error)
+}
+
 // YgoClientWithCache is a special ygo client by retrieving the ygo data from a web and storing them persistently on
 // the client.
 type YgoClientWithCache struct {
@@ -42,6 +47,7 @@ type YgoClientWithCache struct {
 	CacheRetriever CardRetriever `json:"cache_retriever"`
 	CacheSetSaver  CardSetSaver  `json:"cache_set_saver"`
 	WebClient      CardRetriever `json:"web_client"`
+	SetRetriever   SetRetriever  `json:"set_retriever"`
 }
 
 func NewYgoClientWithCache(client cache.DatabaseClient) (*YgoClientWithCache, error) {
@@ -55,6 +61,7 @@ func NewYgoClientWithCache(client cache.DatabaseClient) (*YgoClientWithCache, er
 		CacheCardSaver: ygoCache,
 		CacheRetriever: ygoCache,
 		CacheSetSaver:  ygoCache,
+		SetRetriever:   ygoCache,
 		WebClient:      webClient,
 	}, nil
 }
@@ -67,6 +74,16 @@ func (ycwc *YgoClientWithCache) GetAllCards() (*[]*model.Card, error) {
 func (ycwc *YgoClientWithCache) GetAllSets() (*[]*model.CardSet, error) {
 	logrus.Debug("YGO-Client -> Retrieve all sets")
 	return ycwc.CacheRetriever.GetAllSets()
+}
+
+func (ycwc *YgoClientWithCache) GetSet(setCode string) (*model.CardSet, error) {
+	logrus.Debugf("YGO-Client -> Retrieve set with code [%s]", setCode)
+	set, err := ycwc.SetRetriever.GetSet(setCode)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get set [%s] from cache: %w", setCode, err)
+	}
+
+	return set, nil
 }
 
 func (ycwc *YgoClientWithCache) GetCard(id int) (*model.Card, error) {

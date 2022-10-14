@@ -161,6 +161,85 @@ func TestYgoCache_GetCard(t *testing.T) {
 	})
 }
 
+func TestYgoCache_GetSet(t *testing.T) {
+	t.Run("successfully get set by code", func(t *testing.T) {
+		// given
+		myCache, queryGenerator, dbMock := getCacheWithMocks()
+		queryGenerator.On("SelectSetByCode", "AABBCC").Return("myquery", nil)
+
+		var argSets []*model.CardSet
+		dbMock.On("Select", "myquery", &argSets).Run(func(args mock.Arguments) {
+			arg1 := args.Get(1)
+			setInArgs, ok := arg1.(*[]*model.CardSet)
+			if !ok {
+				t.FailNow()
+			}
+
+			*setInArgs = append(*setInArgs, &model.CardSet{
+				SetName:       "AA-BB-CC",
+				SetCode:       "AABBCC",
+				SetRarity:     "selten",
+				SetRarityCode: "d",
+			})
+		}).Return(nil)
+
+		// when
+		set, err := myCache.GetSet("AABBCC")
+
+		// then
+		require.NoError(t, err)
+		require.NotNil(t, set)
+		assert.Equal(t, "AABBCC", set.SetCode)
+		mock.AssertExpectationsForObjects(t, queryGenerator, dbMock)
+	})
+
+	t.Run("set does not exist", func(t *testing.T) {
+		// given
+		myCache, queryGenerator, dbMock := getCacheWithMocks()
+		queryGenerator.On("SelectSetByCode", "AABBCC").Return("myquery", nil)
+
+		var argSets []*model.CardSet
+		dbMock.On("Select", "myquery", &argSets).Return(nil)
+
+		// when
+		_, err := myCache.GetSet("AABBCC")
+
+		// then
+		require.Error(t, err)
+		require.ErrorIs(t, err, cache.ErrorSetDoesNotExist)
+		mock.AssertExpectationsForObjects(t, queryGenerator, dbMock)
+	})
+
+	t.Run("fails for query generation", func(t *testing.T) {
+		// given
+		myCache, queryGenerator, _ := getCacheWithMocks()
+		queryGenerator.On("SelectSetByCode", "AABBCC").Return("", assert.AnError)
+
+		// when
+		_, err := myCache.GetSet("AABBCC")
+
+		// then
+		require.Error(t, err)
+		require.ErrorIs(t, err, assert.AnError)
+		mock.AssertExpectationsForObjects(t, queryGenerator)
+	})
+
+	t.Run("fails for query", func(t *testing.T) {
+		// given
+		myCache, queryGenerator, dbMock := getCacheWithMocks()
+		queryGenerator.On("SelectSetByCode", "AABBCC").Return("myquery", nil)
+		dbMock.On("Select", "myquery", mock.Anything).Return(assert.AnError)
+
+		// when
+		_, err := myCache.GetSet("AABBCC")
+
+		// then
+		require.Error(t, err)
+		require.ErrorIs(t, err, assert.AnError)
+		mock.AssertExpectationsForObjects(t, queryGenerator, dbMock)
+	})
+}
+
 func TestYgoCache_SaveAllCards(t *testing.T) {
 	t.Run("successfully insert", func(t *testing.T) {
 		// given

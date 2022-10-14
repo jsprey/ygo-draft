@@ -167,3 +167,21 @@ func TestNewSqlQueryTemplater_QuerySelectAllCardsWithFilter(t *testing.T) {
 		assert.Equal(t, testQuerySelectAllCardsWithFilter_WithAllFilter, myString)
 	})
 }
+
+//go:embed test_templates/testQuerySelectSetByCode.sql
+var testQuerySelectSetByCode string
+
+func TestNewSqlQueryTemplater_QuerySelectSetByCode(t *testing.T) {
+	t.Run("correctly create query", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.SelectSetByCode("AABBCC")
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQuerySelectSetByCode, myString)
+	})
+}

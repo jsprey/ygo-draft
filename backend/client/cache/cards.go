@@ -12,7 +12,7 @@ import (
 
 var (
 	ErrorCardDoesNotExist = customerrors.WithCode{
-		Code:        "", //todo add code
+		Code:        "EC_Card_NotFound",
 		InternalMsg: "the requested card with id %s does not exists",
 	}
 )

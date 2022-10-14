@@ -21,6 +21,7 @@ func SetupAPI(router *gin.RouterGroup, client *ygo.YgoClientWithCache) error {
 	router.GET("randomCard", cardRetriever.GetRandomCard)
 	router.GET("randomCards", cardRetriever.GetRandomCards)
 	router.GET("sets", cardRetriever.GetSets)
+	router.GET("sets/:code", cardRetriever.GetSet)
 
 	return nil
 }
@@ -37,7 +38,7 @@ type getCardResponse struct {
 func (crh *CardRetrieveHandler) GetCards(ctx *gin.Context) {
 	cards, err := crh.YGOClient.GetAllCards()
 	if err != nil {
-		_ = ctx.AbortWithError(500, err)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -49,7 +50,7 @@ func (crh *CardRetrieveHandler) GetCards(ctx *gin.Context) {
 		response.CardIds[i] = card.ID
 	}
 
-	ctx.JSONP(200, response)
+	ctx.JSONP(http.StatusOK, response)
 }
 
 func (crh *CardRetrieveHandler) GetCard(ctx *gin.Context) {
@@ -62,13 +63,13 @@ func (crh *CardRetrieveHandler) GetCard(ctx *gin.Context) {
 
 	card, err := crh.YGOClient.GetCard(queryID)
 	if err != nil {
-		_ = ctx.AbortWithError(500, err)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	logrus.Debug(card)
 
-	ctx.JSONP(200, card)
+	ctx.JSONP(http.StatusOK, card)
 }
 
 func (crh *CardRetrieveHandler) GetRandomCard(ctx *gin.Context) {
@@ -76,7 +77,7 @@ func (crh *CardRetrieveHandler) GetRandomCard(ctx *gin.Context) {
 
 	cards, err := crh.YGOClient.GetAllCards()
 	if err != nil {
-		_ = ctx.AbortWithError(500, err)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	cardsBox := *cards
@@ -86,5 +87,5 @@ func (crh *CardRetrieveHandler) GetRandomCard(ctx *gin.Context) {
 
 	logrus.Debug(randomCard)
 
-	ctx.JSONP(200, randomCard)
+	ctx.JSONP(http.StatusOK, randomCard)
 }

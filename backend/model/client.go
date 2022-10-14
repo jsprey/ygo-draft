@@ -10,6 +10,8 @@ type YgoClient interface {
 	GetAllCardsWithFilter(filter CardFilter) (*[]*Card, error)
 	// GetCard retrieves a api by the given id.
 	GetCard(id int) (*Card, error)
+	// GetSet retrieves a set by the given set code.
+	GetSet(setCode string) (*CardSet, error)
 }
 
 // CardFilter is used to filter cards when requesting them via

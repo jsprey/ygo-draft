@@ -1,0 +1,1 @@
+SELECT * FROM public.card_sets WHERE "set_code"='{{.SetCode}}'
