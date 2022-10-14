@@ -84,9 +84,9 @@ func (crh *CardRetrieveHandler) GetSetCards(ctx *gin.Context) {
 
 	if *cards != nil {
 		getSetCardsResponse := struct {
-			Set   string        `json:"set"`
-			Cards []*model.Card `json:"cards"`
-		}{Set: setCode, Cards: *cards}
+			Set   *model.CardSet `json:"set"`
+			Cards []*model.Card  `json:"cards"`
+		}{Set: set, Cards: *cards}
 
 		ctx.JSONP(http.StatusOK, getSetCardsResponse)
 	} else {

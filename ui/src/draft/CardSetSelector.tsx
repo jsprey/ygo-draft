@@ -1,10 +1,11 @@
-import React from "react";
+import React, {useState} from "react";
 import {Alert, Col, Form, Placeholder, Row} from "react-bootstrap";
 import HelpTooltip from "../core/HelpTooltip";
 import {CardSet, sortSets} from "../api/Sets";
 import {useSets} from "../api/hooks/useSets";
 import CardSelectedSetList, {CardSetReceiver} from "./CardSelectedSetList";
 import SvgIconButton, {SvgIconButtonProps} from "../core/SvgIconButton";
+import SetDetailModal from "./SetDetailModal";
 
 export type CardSetSelectorProps = {
     tooltip: string
@@ -31,6 +32,13 @@ const IconArrowLeft = <SvgIconButton size={25} classNames={"fill-red-600 hover:f
 function CardSetSelector(props: CardSetSelectorProps) {
     const {data, isLoading, error} = useSets()
 
+    const [isShowingSetCardsView, setIsShowingSetCardsView] = useState(false);
+    const [currentDetailSet, setCurrentDetailSet] = useState("");
+    const showSetCardsModal = (currentSet:string) => {
+        setCurrentDetailSet(currentSet)
+        setIsShowingSetCardsView(true);
+    }
+
     let allSetItems: JSX.Element = <></>
     if (isLoading) {
         allSetItems = <Placeholder animation="glow">
@@ -55,7 +63,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
         })
 
         const actionList = new Map<React.ReactElement<SvgIconButtonProps>, CardSetReceiver>()
-        actionList.set(IconEye, inspectCardSet)
+        actionList.set(IconEye, cardSet => showSetCardsModal(cardSet.set_code))
         actionList.set(IconArrowRight, cardSet => {
             let newSelectedCardSets: CardSet[] = []
             newSelectedCardSets.push(...props.selectedSets)
@@ -64,7 +72,8 @@ function CardSetSelector(props: CardSetSelectorProps) {
         })
 
         allSetItems = <>
-            <CardSelectedSetList isTargetList={false} title={"Available Sets"} cardSets={availableSets} actionList={actionList} allAction={function () {
+            <CardSelectedSetList isTargetList={false} title={"Available Sets"} cardSets={availableSets}
+                                 actionList={actionList} allAction={function () {
                 let newSelectedCardSets: CardSet[]
                 newSelectedCardSets = data.sets
                 props.setSelectedSets(sortSets(newSelectedCardSets))
@@ -73,7 +82,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
     }
 
     let selectedCardsActionList = new Map<React.ReactElement<SvgIconButtonProps>, CardSetReceiver>()
-    selectedCardsActionList.set(IconEye, inspectCardSet)
+    selectedCardsActionList.set(IconEye, cardSet => showSetCardsModal(cardSet.set_code))
     selectedCardsActionList.set(IconArrowLeft, cardSet => {
         let newSelectedCardSets: CardSet[] = []
         newSelectedCardSets.push(...props.selectedSets)
@@ -83,31 +92,29 @@ function CardSetSelector(props: CardSetSelectorProps) {
         props.setSelectedSets(sortSets(newSelectedCardSets))
     })
 
-    return <Row className={props.rowClass}><Form.Group as={Col}>
-        <Form.Label className={"flex"}>
-            <div className={"self-center mr-1"}>Select Packs for your drafting phases</div>
-            <HelpTooltip size={20}
-                         message={props.tooltip}/>
-        </Form.Label>
+    return <>
+        <Row className={props.rowClass}><Form.Group as={Col}>
+            <Form.Label className={"flex"}>
+                <div className={"self-center mr-1"}>Select Packs for your drafting phases</div>
+                <HelpTooltip size={20}
+                             message={props.tooltip}/>
+            </Form.Label>
 
-        <div>
-            <div className={"grid grid-cols-2 gap-3"}>
-                {allSetItems}
-                <CardSelectedSetList isTargetList={true} title={"Selected Sets"} cardSets={props.selectedSets}
-                                     actionList={selectedCardsActionList} allAction={function () {
-                    let newSelectedCardSets: CardSet[] = []
-                    props.setSelectedSets(sortSets(newSelectedCardSets))
-                }}/>
+            <div>
+                <div className={"grid grid-cols-2 gap-3"}>
+                    {allSetItems}
+                    <CardSelectedSetList isTargetList={true} title={"Selected Sets"} cardSets={props.selectedSets}
+                                         actionList={selectedCardsActionList} allAction={function () {
+                        let newSelectedCardSets: CardSet[] = []
+                        props.setSelectedSets(sortSets(newSelectedCardSets))
+                    }}/>
+                </div>
             </div>
-        </div>
 
-    </Form.Group>
-    </Row>
+        </Form.Group>
+        </Row>
+        <SetDetailModal setCode={currentDetailSet} setShow={setIsShowingSetCardsView} isShowing={isShowingSetCardsView}/>
+    </>
 }
-
-function inspectCardSet(c: CardSet) {
-
-}
-
 
 export default CardSetSelector
