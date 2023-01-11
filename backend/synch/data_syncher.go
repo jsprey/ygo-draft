@@ -92,10 +92,10 @@ func (yds *YgoDataSyncher) SyncAllCards() error {
 			}
 		}
 
-		//err = yds.SynchImageOfCard(card)
-		//if err != nil {
-		//	return fmt.Errorf("failed to synch card images: %w", err)
-		//}
+		err = yds.SynchImageOfCard(card)
+		if err != nil {
+			return fmt.Errorf("failed to synch card images: %w", err)
+		}
 
 		err = yds.Client.CacheSetSaver.SaveSets(card.SetsMeta)
 		if err != nil {
