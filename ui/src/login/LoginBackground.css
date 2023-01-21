@@ -1,0 +1,3 @@
+.test {
+    grid-template-columns: repeat(15, minmax(0, 1fr));
+}

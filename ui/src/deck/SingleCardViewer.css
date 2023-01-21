@@ -1,0 +1,11 @@
+.cardImageCrop {
+    -webkit-clip-path: inset(30px 10px 30px 10px);
+    clip-path: inset(18% 11% 30% 12%);
+
+    /*height: 50px;*/
+    /*width: 50px;*/
+}
+
+.cardImageCrop2 {
+    grid-template-columns: repeat(20, minmax(0, 1fr));
+}
