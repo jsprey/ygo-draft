@@ -10,21 +10,25 @@ ARTIFACT_TEST_JUNIT_REPORT=$(BUILD_DIR)/unit-report.xml
 
 ##@ Building - Backend
 
-.PHONY: backend-check
-backend-check: backend-vet backend-unit-test backend-build ## Vet, test and build the backend.
+.PHONY: b-check
+b-check: b-vet b-unit-test b-build ## Vet, test and build the backend.
 	@GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(GO_BUILD_FLAGS)
 
-.PHONY: backend-build
-backend-build: $(BUILD_DIR) ## Builds the golang backend of YGODraft and creates a statically linked binary.
+.PHONY: b-run
+b-run: b-build ## Run the go backend.
+	@GOOS=$(GOOS) GOARCH=$(GOARCH) go run .
+
+.PHONY: b-build
+b-build: $(BUILD_DIR) ## Builds the golang backend of YGODraft and creates a statically linked binary.
 	@echo "Running go build..."
 	@GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(GO_BUILD_FLAGS)
 
-.PHONY: backend-unit-test
-backend-unit-test: $(BUILD_DIR) ## Runs all unit test for the backend.
+.PHONY: b-unit-test
+b-unit-test: $(BUILD_DIR) ## Runs all unit test for the backend.
 	@echo "Running go test..."
 	go test ./... -v
 
-.PHONY: backend-vet
-backend-vet: $(BUILD_DIR) ## Runs go vet on the backend code.
+.PHONY: b-vet
+b-vet: $(BUILD_DIR) ## Runs go vet on the backend code.
 	@echo "Running go vet..."
 	@go vet .

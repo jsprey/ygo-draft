@@ -1,8 +1,5 @@
 # YGODraft
-Test
 
-TODO
+## TODO
 
-* Neue Tests anlegen
-* Query Generator schreiben
-* Bilder synchen
+* Empty - WOW
