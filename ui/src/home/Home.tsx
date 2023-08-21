@@ -2,9 +2,9 @@ import Jumbotron from "../core/Jumbotron";
 import React from "react";
 
 function Home() {
-    return <>
+    return <div className={"pt-2 pb-2"}>
         <Jumbotron/>
-        <div className={"p-3 mt-0 bg-blue-200 rounded-2 shadow-md"}>
+        <div className={"p-3 mt- bg-blue-200 rounded-2 shadow-md"}>
             <div className={"text-lg fw-bold"}>What is the draft mode exactly?</div>
             <li>The draft mode is a fun mode between at least two YGO players. Both players draft a deck round by round
                 by selecting one of multiple cards each round. When both player reach the required 40 cards for their
@@ -24,7 +24,7 @@ function Home() {
             </li>
             <li>This file needs to be placed into the deck folder of your YGO game of choice.</li>
         </div>
-    </>
+    </div>
 }
 
 export default Home

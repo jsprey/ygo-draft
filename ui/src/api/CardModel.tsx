@@ -28,8 +28,6 @@ export function SortDeck(deck: Deck): Deck {
 }
 
 export function SortCards(cards: Card[]): Card[] {
-    if (cards === undefined) return cards
-
     let sortedCards: Card[] = [] as Card[]
 
     const values2 = Object.values(CardType).filter((v) => !isNaN(Number(v)));

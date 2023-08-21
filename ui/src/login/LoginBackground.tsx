@@ -1,6 +1,5 @@
 import {
     Card,
-    SortCards,
 } from "../api/CardModel"
 import SingleCardViewer from "../deck/SingleCardViewer";
 import "./LoginBackground.css"
@@ -17,7 +16,7 @@ function LoginBackground(props: LoginBackgroundProps) {
     );
 
     return <>
-        <div className={"loginBackgroundContainer mySpecialBackground p-2 grid gap-3 bg-black"}>
+        <div className={"loginBackgroundContainer mySpecialBackground p-2 grid gap-3 bg-black -z-10"}>
             {cardsViewBody}
         </div>
     </>

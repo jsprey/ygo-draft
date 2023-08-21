@@ -33,10 +33,9 @@ export type CardSetListProps = {
 function CardSelectedSetList(props: CardSetListProps) {
     const [filter, setFilter] = useState<string>("")
 
-    let listItems: JSX.Element[] = []
-    props.cardSets.map(currentSet => {
+    let listItems = props.cardSets.map(currentSet => {
         if (filter !== "" && !currentSet.set_name.includes(filter)) {
-            return
+            return <></>
         }
 
         let svgIcons: JSX.Element[] = []
@@ -55,12 +54,12 @@ function CardSelectedSetList(props: CardSetListProps) {
             svgIcons.push(svgElement)
         })
 
-        listItems.push(<div className={"flex justify-content-between"} key={currentSet.set_code}>
+        return <div className={"select-none flex justify-content-between"} key={currentSet.set_code}>
             {currentSet.set_name}
             <div className={"flex gap-1 ml-5"}>
                 {svgIcons}
             </div>
-        </div>)
+        </div>
     })
 
     let allActionIcon = <div className={"border-1 rounded-2 p-1 ml-1"} onClick={() => props.allAction()}>

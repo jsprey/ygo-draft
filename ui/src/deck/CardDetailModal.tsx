@@ -18,7 +18,7 @@ function CardDetailModal(props: CardDetailModalProps) {
                   contentClassName={"border border-white"}>
         <Modal.Body className={"bg-dark rounded-md text-white "}>
             <div className="flex flex-row">
-                <div className="w-100">
+                <div>
                     {getCardAsBigImage(card)}
                 </div>
                 <div className={"flex-grow-1"}>
