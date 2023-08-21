@@ -1,3 +1,14 @@
-.test {
+.loginBackgroundContainer {
+    position: fixed;
+    top: -5px;
+    left: -5px;
+    width: calc(100% + 10px);
+    height: calc(100% + 10px);
+    background-color: #f0f0f0; /* Set your desired background color */
+    z-index: -1; /* Place it behind other content */
     grid-template-columns: repeat(15, minmax(0, 1fr));
+
+    /* Add the blur effect */
+    filter: blur(3px);
+    -webkit-filter: blur(3px);
 }

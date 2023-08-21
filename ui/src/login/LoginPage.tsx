@@ -1,12 +1,11 @@
 import React from "react";
-import './LoginPage.css';
 import {Alert, Container, Spinner} from "react-bootstrap";
 import {useRandomCards} from "../api/hooks/useCards";
 import {CardFilter} from "../api/CardFilter";
 import LoginBackground from "./LoginBackground";
 
 function LoginPage() {
-    const {data, isLoading, error} = useRandomCards("login", 75, {} as CardFilter)
+    const {data, isLoading, error} = useRandomCards("login", 90, {} as CardFilter)
 
     let content
     if (isLoading) {
@@ -16,7 +15,6 @@ function LoginPage() {
     } else if (error) {
         content = <Alert variant={"danger"}>Failed to load background images!</Alert>
     } else if (data) {
-        shuffleArray(data.cards)
         content = <LoginBackground cards={data.cards}/>
     }
 
@@ -31,20 +29,24 @@ function LoginPage() {
     </div>
 }
 
-// todo implement random shuffle for background cards
-function shuffleArray(array: any): void {
-    // for (let i = array.length - 1; i > 0; i--) {
-    //     const j = Math.floor(Math.random() * (i + 1));
-    //     [array[i], array[j]] = [array[j], array[i]];
-    // }
-    //
-    // return array
-}
-
 function getFixedLoginForm(): JSX.Element {
     return <>
         <div className="grid h-screen place-items-center">
             <div className="w-full max-w-sm px-4 py-6 space-y-6 bg-white rounded-md dark:bg-darker">
+                <div className={"select-none"}>
+                    <div className={"flex items-center"}>
+                        <img
+                            alt=""
+                            src="/logo.png"
+                            width="96"
+                            height="96"
+                            className="d-inline-block align-top"
+                        />{' '}
+                        <div className={"pl-3 text-6xl align-self-center"}>
+                            YgoDraft
+                        </div>
+                    </div>
+                </div>
                 <h1 className="text-xl font-semibold text-center">Login</h1>
                 <form action="#" className="space-y-6">
                     <input
