@@ -1,0 +1,1 @@
+SELECT "id", "display_name", "email", "password_hash", "is_admin" FROM public.users WHERE "email" = 'test@test.de' LIMIT 1

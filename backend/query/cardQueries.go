@@ -3,38 +3,30 @@ package query
 import (
 	_ "embed"
 	"fmt"
-	"reflect"
-	"strings"
 	"text/template"
 	"ygodraft/backend/model"
 )
 
-//go:embed templates/QuerySelectCardByID.sql
+//go:embed templates/cards/QuerySelectCardByID.sql
 var TemplateContentSelectCardByID string
 
-//go:embed templates/QuerySelectSetByCode.sql
+//go:embed templates/cards/QuerySelectSetByCode.sql
 var TemplateContentSelectSetByCode string
 
-//go:embed templates/QuerySelectAllCardsWithFilter.sql
+//go:embed templates/cards/QuerySelectAllCardsWithFilter.sql
 var TemplateContentSelectAllCardsWithFilter string
 
-//go:embed templates/QuerySelectAllCards.sql
+//go:embed templates/cards/QuerySelectAllCards.sql
 var TemplateContentSelectAllCards string
 
-//go:embed templates/QuerySelectAllSets.sql
+//go:embed templates/cards/QuerySelectAllSets.sql
 var TemplateContentSelectAllSets string
 
-//go:embed templates/QueryInsertCard.sql
+//go:embed templates/cards/QueryInsertCard.sql
 var TemplateContentInsertCard string
 
-//go:embed templates/QueryInsertSet.sql
+//go:embed templates/cards/QueryInsertSet.sql
 var TemplateContentInsertSet string
-
-var fns = template.FuncMap{
-	"notLast": func(x int, a interface{}) bool {
-		return x < reflect.ValueOf(a).Len()-1
-	},
-}
 
 func (sqt *sqlQueryTemplater) ParseCardTemplates() error {
 	myTemplates := map[string]string{
@@ -48,7 +40,7 @@ func (sqt *sqlQueryTemplater) ParseCardTemplates() error {
 	}
 
 	for templateName, templateString := range myTemplates {
-		parsedTemplate, err := template.New(templateName).Funcs(fns).Parse(templateString)
+		parsedTemplate, err := template.New(templateName).Funcs(customFunctions).Parse(templateString)
 		if err != nil {
 			return fmt.Errorf("failed to parse template [%s]: %w", templateName, err)
 		}
@@ -115,8 +107,4 @@ func (sqt *sqlQueryTemplater) InsertSet(set model.CardSet) (string, error) {
 	setCopy.SetRarityCode = escape(setCopy.SetRarityCode)
 
 	return sqt.Template("InsertSet", &setCopy)
-}
-
-func escape(input string) string {
-	return fmt.Sprintf("'%s'", strings.Replace(input, "'", "''", -1))
 }

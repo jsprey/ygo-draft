@@ -3,6 +3,8 @@ package query
 import (
 	"bytes"
 	"fmt"
+	"reflect"
+	"strings"
 	"text/template"
 	"ygodraft/backend/customerrors"
 )
@@ -23,7 +25,12 @@ func NewSqlQueryTemplater() (*sqlQueryTemplater, error) {
 
 	err := templater.ParseCardTemplates()
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse card templates: %w", err)
+		return nil, fmt.Errorf("failed to parse query templates for the cards: %w", err)
+	}
+
+	err = templater.ParseUserTemplates()
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse query templates for the users: %w", err)
 	}
 
 	return &templater, nil
@@ -43,4 +50,14 @@ func (sqt *sqlQueryTemplater) Template(templateName string, templateObject any) 
 	}
 
 	return buf.String(), nil
+}
+
+var customFunctions = template.FuncMap{
+	"notLast": func(x int, a interface{}) bool {
+		return x < reflect.ValueOf(a).Len()-1
+	},
+}
+
+func escape(input string) string {
+	return fmt.Sprintf("'%s'", strings.Replace(input, "'", "''", -1))
 }

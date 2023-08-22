@@ -9,7 +9,7 @@ import (
 	"ygodraft/backend/query"
 )
 
-//go:embed test_templates/testQueryInsertCard.sql
+//go:embed test_templates/cards/testQueryInsertCard.sql
 var testQueryInsertCard string
 
 func TestNewSqlQueryTemplater_QueryInsertCard(t *testing.T) {
@@ -36,7 +36,7 @@ func TestNewSqlQueryTemplater_QueryInsertCard(t *testing.T) {
 	})
 }
 
-//go:embed test_templates/testQuerySelectCardByID.sql
+//go:embed test_templates/cards/testQuerySelectCardByID.sql
 var testQuerySelectCardByID string
 
 func TestNewSqlQueryTemplater_QuerySelectCardByID(t *testing.T) {
@@ -54,7 +54,7 @@ func TestNewSqlQueryTemplater_QuerySelectCardByID(t *testing.T) {
 	})
 }
 
-//go:embed test_templates/testQuerySelectAllCards.sql
+//go:embed test_templates/cards/testQuerySelectAllCards.sql
 var testQuerySelectAllCards string
 
 func TestNewSqlQueryTemplater_QuerySelectAllCards(t *testing.T) {
@@ -72,7 +72,7 @@ func TestNewSqlQueryTemplater_QuerySelectAllCards(t *testing.T) {
 	})
 }
 
-//go:embed test_templates/testQuerySelectAllSets.sql
+//go:embed test_templates/cards/testQuerySelectAllSets.sql
 var testQuerySelectAllSets string
 
 func TestNewSqlQueryTemplater_QuerySelectAllSets(t *testing.T) {
@@ -90,16 +90,16 @@ func TestNewSqlQueryTemplater_QuerySelectAllSets(t *testing.T) {
 	})
 }
 
-//go:embed test_templates/testQuerySelectAllCardsWithFilter_NoFilter.sql
+//go:embed test_templates/cards/testQuerySelectAllCardsWithFilter_NoFilter.sql
 var testQuerySelectAllCardsWithFilter_NoFilter string
 
-//go:embed test_templates/testQuerySelectAllCardsWithFilter_WithTypeFilter.sql
+//go:embed test_templates/cards/testQuerySelectAllCardsWithFilter_WithTypeFilter.sql
 var testQuerySelectAllCardsWithFilter_WithTypeFilter string
 
-//go:embed test_templates/testQuerySelectAllCardsWithFilter_WithSetFilter.sql
+//go:embed test_templates/cards/testQuerySelectAllCardsWithFilter_WithSetFilter.sql
 var testQuerySelectAllCardsWithFilter_WithSetFilter string
 
-//go:embed test_templates/testQuerySelectAllCardsWithFilter_WithAllFilter.sql
+//go:embed test_templates/cards/testQuerySelectAllCardsWithFilter_WithAllFilter.sql
 var testQuerySelectAllCardsWithFilter_WithAllFilter string
 
 func TestNewSqlQueryTemplater_QuerySelectAllCardsWithFilter(t *testing.T) {
@@ -168,7 +168,7 @@ func TestNewSqlQueryTemplater_QuerySelectAllCardsWithFilter(t *testing.T) {
 	})
 }
 
-//go:embed test_templates/testQuerySelectSetByCode.sql
+//go:embed test_templates/cards/testQuerySelectSetByCode.sql
 var testQuerySelectSetByCode string
 
 func TestNewSqlQueryTemplater_QuerySelectSetByCode(t *testing.T) {
