@@ -12,7 +12,9 @@ import {CardFilter} from "./api/CardFilter";
 import LoginBackground from "./login/LoginBackground";
 
 function App() {
-    const {data, isLoading, error} = useRandomCards("login", 90, {} as CardFilter)
+    const {data, isLoading, error} = useRandomCards("login", 90, {} as CardFilter, {
+        refetchOnWindowFocus: false
+    })
 
     let content
     if (isLoading) {

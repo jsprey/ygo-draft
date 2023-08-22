@@ -16,7 +16,7 @@ function LoginBackground(props: LoginBackgroundProps) {
     );
 
     return <>
-        <div className={"loginBackgroundContainer mySpecialBackground p-2 grid gap-3 bg-black -z-10"}>
+        <div className={"blur-sm loginBackgroundContainer mySpecialBackground p-2 grid gap-3 bg-black -z-50"}>
             {cardsViewBody}
         </div>
     </>

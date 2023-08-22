@@ -7,8 +7,8 @@ function LoginPage() {
 }
 
 function getFixedLoginForm(): JSX.Element {
-    return <>
-        <div className="grid h-screen place-items-center">
+    return <div className={"fixed inset-0 flex items-center justify-center -z-10"}>
+        <div className="position-absolute grid place-items-center">
             <div className="w-full max-w-sm px-4 py-6 space-y-6 bg-white rounded-md dark:bg-darker">
                 <div className={"select-none"}>
                     <div className={"flex justify-center items-center"}>
@@ -101,7 +101,7 @@ function getFixedLoginForm(): JSX.Element {
                 </div>
             </div>
         </div>
-    </>
+    </div>
 }
 
 export default LoginPage

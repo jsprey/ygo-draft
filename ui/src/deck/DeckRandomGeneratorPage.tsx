@@ -9,7 +9,10 @@ import {CardFilter} from "../api/CardFilter";
 const emptyDeck: Deck = {cards: []}
 
 function DeckRandomGeneratorPage() {
-    const {data, isLoading, error} = useRandomCards("deck_generator", 40, {} as CardFilter, {enabled: true, staleTime: Infinity})
+    const {data, isLoading, error} = useRandomCards("deck_generator", 40, {} as CardFilter, {
+        enabled: true,
+        staleTime: Infinity
+    })
     const [myDeck, setDeck] = useState(emptyDeck)
 
     let body;
@@ -31,7 +34,7 @@ function DeckRandomGeneratorPage() {
         </>
     }
 
-    return <>
+    return <div className={"pt-2 pb-3"}>
         <h1 className={"mt-3 mb-3"}>
             Deck Generation
             <Button className={"ml-4 object-center"}
@@ -48,7 +51,7 @@ function DeckRandomGeneratorPage() {
             </Button>
         </h1>
         {body}
-    </>
+    </div>
 }
 
 function resetDeck(setDeck: Dispatch<SetStateAction<Deck>>) {
@@ -61,7 +64,7 @@ export function ExportDeck(myDeck: Deck) {
     downloadDeck("mydeck.ydk", ToYdkFileString(myDeck))
 }
 
-function downloadDeck(filename:string, text:string) {
+function downloadDeck(filename: string, text: string) {
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
     element.setAttribute('download', filename);

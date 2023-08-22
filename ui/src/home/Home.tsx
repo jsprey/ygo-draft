@@ -2,7 +2,7 @@ import Jumbotron from "../core/Jumbotron";
 import React from "react";
 
 function Home() {
-    return <div className={"pt-2 pb-2"}>
+    return <div className={"pt-2 pb-3"}>
         <Jumbotron/>
         <div className={"p-3 mt- bg-blue-200 rounded-2 shadow-md"}>
             <div className={"text-lg fw-bold"}>What is the draft mode exactly?</div>

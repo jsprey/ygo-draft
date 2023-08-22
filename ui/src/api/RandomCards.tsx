@@ -12,7 +12,6 @@ export function getRandomCards(size: number): Promise<Deck> {
             }
 
             return response.json().then(function (jsonContent) {
-                console.log(jsonContent)
                 let content: Deck = {cards:[]} as Deck
                 if (!jsonContent) {
                     return content

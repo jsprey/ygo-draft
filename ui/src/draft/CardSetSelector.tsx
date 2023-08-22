@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Alert, Col, Form, Placeholder, Row} from "react-bootstrap";
 import HelpTooltip from "../core/HelpTooltip";
-import {CardSet, sortSets} from "../api/Sets";
+import {CardSet, SetList, sortSets} from "../api/Sets";
 import {useSets} from "../api/hooks/useSets";
 import CardSelectedSetList, {CardSetReceiver} from "./CardSelectedSetList";
 import SvgIconButton, {SvgIconButtonProps} from "../core/SvgIconButton";
@@ -49,7 +49,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
         </Placeholder>
     } else if (error) {
         allSetItems = <Alert variant={"danger"}>Failed to load all sets!</Alert>
-    } else if (data) {
+    } else if (data && data.sets) {
         let availableSets: CardSet[] = sortSets(data.sets)
         availableSets = availableSets.filter(availableSet => {
             let selectCardSet = true
@@ -75,7 +75,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
             <CardSelectedSetList isTargetList={false} title={"Available Sets"} cardSets={availableSets}
                                  actionList={actionList} allAction={function () {
                 let newSelectedCardSets: CardSet[]
-                newSelectedCardSets = data.sets
+                newSelectedCardSets = (data as SetList).sets
                 props.setSelectedSets(sortSets(newSelectedCardSets))
             }}/>
         </>
@@ -113,7 +113,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
 
         </Form.Group>
         </Row>
-        <SetDetailModal setCode={currentDetailSet} setShow={setIsShowingSetCardsView} isShowing={isShowingSetCardsView}/>
+        {isShowingSetCardsView ? <SetDetailModal setCode={currentDetailSet} setShow={setIsShowingSetCardsView} isShowing={isShowingSetCardsView}/> : <></>}
     </>
 }
 

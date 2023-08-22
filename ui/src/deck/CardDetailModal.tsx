@@ -34,7 +34,9 @@ function CardDetailModal(props: CardDetailModalProps) {
                     <p className={"p-2 mb-0 mt-2 ml-2 bg-gray-800"}>Description:</p>
                     <div className={"p-2 mb-1 ml-2 bg-gray-700"}>{card.desc}</div>
                     <p className={"p-2 mb-0 mt-2 ml-2 bg-gray-800"}>Included in the following Sets:</p>
-                    <div className={"p-2 mb-1 ml-2 bg-gray-700"}>{card.sets}</div>
+                    <div className={"p-2 mb-1 ml-2 bg-gray-700"}>
+                        {card.sets.length === 0 ? <div key={"empty"}>This card is not available in any set.</div> : <SetList card={card} />}
+                    </div>
                 </div>
             </div>
         </Modal.Body>
@@ -46,6 +48,17 @@ function getCardAsBigImage(data: Card): JSX.Element {
                   src={`${PUBLIC_URL}/images/cards/` + data.id + "/big.png"}
                   alt="new"
     />
+}
+
+type NewlineTextProps = {
+    card: Card
+}
+
+function SetList(props: NewlineTextProps) {
+    const text = props.card.sets;
+    return <div className={"flex flex-col"}>
+        {text.split(',').map(str => <div key={str}>● {str}</div>)}
+    </div>
 }
 
 export default CardDetailModal

@@ -54,7 +54,7 @@ function DeckDraftWizard() {
     }
 
     return <>
-        <div className="grid grid-cols-1">
+        <div className="grid grid-cols-1 pt-2 pb-3">
             {getCurrentStageHeader(currentStage)}
             <hr/>
             {stageBody}
