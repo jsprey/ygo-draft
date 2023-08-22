@@ -50,7 +50,7 @@ type YgoClientWithCache struct {
 	SetRetriever   SetRetriever  `json:"set_retriever"`
 }
 
-func NewYgoClientWithCache(client cache.DatabaseClient) (*YgoClientWithCache, error) {
+func NewYgoClientWithCache(client model.DatabaseClient) (*YgoClientWithCache, error) {
 	ygoCache, err := cache.NewYgoCache(client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new ygo cache: %w", err)

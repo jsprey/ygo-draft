@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
+	"ygodraft/backend/model"
 	"ygodraft/backend/query"
 )
 
@@ -37,15 +38,39 @@ func TestNewSqlQueryTemplater_QueryInsertUser(t *testing.T) {
 		require.NoError(t, err)
 
 		// given
-		myEmail := "test@test.de"
-		myPasswordHash := "MEGAHASH"
-		myDisplayName := "MyDisplayName"
+		user := model.User{
+			Email:        "test@test.de",
+			PasswordHash: "MEGAHASH",
+			DisplayName:  "MyDisplayName",
+			IsAdmin:      true,
+		}
 
 		// when
-		myString, err := templater.InsertUser(myEmail, myPasswordHash, myDisplayName, true)
+		myString, err := templater.InsertUser(user)
 
 		// then
 		require.NoError(t, err)
 		assert.Equal(t, testQueryUsersInsertUser, myString)
+	})
+}
+
+//go:embed test_templates/users/testQueryDeleteUser.sql
+var testQueryUsersDeleteUser string
+
+func TestNewSqlQueryTemplater_QueryDeleteUser(t *testing.T) {
+	t.Run("correctly create query", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// given
+		myEmail := "test@test.de"
+
+		// when
+		myString, err := templater.DeleteUser(myEmail)
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQueryUsersDeleteUser, myString)
 	})
 }

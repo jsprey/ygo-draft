@@ -5,12 +5,13 @@ import (
 )
 
 type YgoClaims struct {
-	Email      string `json:"email"`
-	Permission int    `json:"permission"`
+	Email       string `json:"email"`
+	DisplayName string `json:"display_name"`
+	IsAdmin     bool   `json:"is_admin"`
 	jwt.RegisteredClaims
 }
 
 type YGOJwtAuthClient interface {
-	GenerateToken(username string, permission int) (string, error)
+	GenerateToken(user User) (string, error)
 	ValidateToken(tokenString string) (*YgoClaims, error)
 }

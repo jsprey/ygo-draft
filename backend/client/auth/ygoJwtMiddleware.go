@@ -11,13 +11,7 @@ import (
 
 const claimNamePermission = "permission"
 
-// PermissionAdmin is the permission for admin users
-const PermissionAdmin int = 100
-
-// PermissionUser is the permission for normal users
-const PermissionUser int = 10
-
-func PermissionMiddleware(client model.YGOJwtAuthClient, targetPermission int) gin.HandlerFunc {
+func PermissionMiddleware(client model.YGOJwtAuthClient, isAdminPermission bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenHeader := c.GetHeader("Authorization")
 		if tokenHeader == "" {
@@ -39,7 +33,7 @@ func PermissionMiddleware(client model.YGOJwtAuthClient, targetPermission int) g
 		}
 
 		// Check if the user has the required permission
-		if tokenClaims.Permission < targetPermission {
+		if isAdminPermission && !tokenClaims.IsAdmin {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions"})
 			c.Abort()
 			return

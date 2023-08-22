@@ -1,0 +1,1 @@
+DELETE FROM public.users WHERE email = 'test@test.de';

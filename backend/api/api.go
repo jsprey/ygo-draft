@@ -8,23 +8,23 @@ import (
 	"ygodraft/backend/model"
 )
 
-func SetupAPI(router *gin.RouterGroup, authClient model.YGOJwtAuthClient, client *ygo.YgoClientWithCache) error {
+func SetupAPI(router *gin.RouterGroup, authClient model.YGOJwtAuthClient, client *ygo.YgoClientWithCache, usermgtClient model.UsermgtClient) error {
 	// unprotected access for login and stuff
-	SetupUnprotectedAPI(router, authClient, client)
+	SetupUnprotectedAPI(router, authClient, client, usermgtClient)
 
 	// access for authenticated default user
-	userGroup := router.Use(auth.PermissionMiddleware(authClient, auth.PermissionUser))
+	userGroup := router.Use(auth.PermissionMiddleware(authClient, false))
 	SetupAuthenticatedUserApi(userGroup, client)
 
 	// access for authenticated admin user
-	adminGroup := router.Use(auth.PermissionMiddleware(authClient, auth.PermissionUser))
+	adminGroup := router.Use(auth.PermissionMiddleware(authClient, true))
 	SetupAuthenticatedAdminApi(adminGroup, client)
 
 	return nil
 }
 
-func SetupUnprotectedAPI(router gin.IRoutes, authClient model.YGOJwtAuthClient, client *ygo.YgoClientWithCache) {
-	authHandler := newAuthenticationHandler(authClient)
+func SetupUnprotectedAPI(router gin.IRoutes, authClient model.YGOJwtAuthClient, client *ygo.YgoClientWithCache, usermgtClient model.UsermgtClient) {
+	authHandler := newAuthenticationHandler(authClient, usermgtClient)
 	router.POST("login", authHandler.Login)
 
 	cardRetriever := CardRetrieveHandler{

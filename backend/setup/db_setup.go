@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"ygodraft/backend/client/cache"
+	"ygodraft/backend/model"
 )
 
 //go:embed queries/cards.sql
@@ -18,10 +18,10 @@ var createTableUsers string
 
 // DatabaseSetup is responsible to setup the database including the creation of the database and the data tables.
 type DatabaseSetup struct {
-	Client cache.DatabaseClient
+	Client model.DatabaseClient
 }
 
-func NewDatabaseSetup(client cache.DatabaseClient) *DatabaseSetup {
+func NewDatabaseSetup(client model.DatabaseClient) *DatabaseSetup {
 	return &DatabaseSetup{Client: client}
 }
 

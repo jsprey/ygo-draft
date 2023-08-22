@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
+	"ygodraft/backend/model"
 )
 
 func TestYgoJwtAuthClient_NewYgoJwtAuthClient(t *testing.T) {
@@ -21,19 +22,19 @@ func TestYgoJwtAuthClient_GenerateToken(t *testing.T) {
 
 	t.Run("runs correctly and returns a valid token", func(t *testing.T) {
 		// given
-		email := "test@example.com"
-		permission := 1
+		user := model.User{
+			Email:       "test@example.com",
+			DisplayName: "Test User",
+			IsAdmin:     true,
+		}
 
 		// when
-		token, err := client.GenerateToken(email, permission)
+		token, err := client.GenerateToken(user)
 
 		// then
-		if err != nil {
-			t.Errorf("GenerateToken failed: %v", err)
-		}
-		if len(token) == 0 {
-			t.Errorf("GenerateToken produced an empty token")
-		}
+		require.NoError(t, err)
+		assert.NotNil(t, token)
+		assert.True(t, len(token) > 0)
 	})
 }
 
@@ -56,10 +57,13 @@ func TestYgoJwtAuthClient_ValidateToken(t *testing.T) {
 
 	t.Run("runs perfectly", func(t *testing.T) {
 		// given
-		email := "test@example.com"
-		permission := 1
+		user := model.User{
+			Email:       "test@example.com",
+			DisplayName: "Test User",
+			IsAdmin:     true,
+		}
 
-		token, err := client.GenerateToken(email, permission)
+		token, err := client.GenerateToken(user)
 		if err != nil {
 			t.Errorf("Failed to generate token for testing: %v", err)
 			return
@@ -69,11 +73,9 @@ func TestYgoJwtAuthClient_ValidateToken(t *testing.T) {
 		claims, err := client.ValidateToken(token)
 
 		// then
-		if err != nil {
-			t.Errorf("ValidateToken failed: %v", err)
-		}
-		if claims.Email != email || claims.Permission != permission {
-			t.Errorf("Validated token claims do not match")
-		}
+		require.NoError(t, err)
+		assert.Equal(t, user.Email, claims.Email)
+		assert.Equal(t, user.IsAdmin, claims.IsAdmin)
+		assert.Equal(t, user.DisplayName, claims.DisplayName)
 	})
 }

@@ -3,32 +3,17 @@ package query
 import (
 	_ "embed"
 	"fmt"
-	"text/template"
+	"ygodraft/backend/model"
 )
+
+func (sqt *sqlQueryTemplater) AddUserTemplates(templateMap *map[string]string) {
+	(*templateMap)["SelectUserByEmail"] = templateContentUsersSelectUserByEmail
+	(*templateMap)["InsertUser"] = templateContentUsersInsertUser
+	(*templateMap)["DeleteUser"] = templateContentUsersDeleteUser
+}
 
 //go:embed templates/users/QuerySelectUserByEmail.sql
 var templateContentUsersSelectUserByEmail string
-
-//go:embed templates/users/QueryInsertUser.sql
-var templateContentUsersInsertUser string
-
-func (sqt *sqlQueryTemplater) ParseUserTemplates() error {
-	myTemplates := map[string]string{
-		"SelectUserByEmail": templateContentUsersSelectUserByEmail,
-		"InsertUser":        templateContentUsersInsertUser,
-	}
-
-	for templateName, templateString := range myTemplates {
-		parsedTemplate, err := template.New(templateName).Funcs(customFunctions).Parse(templateString)
-		if err != nil {
-			return fmt.Errorf("failed to parse template [%s]: %w", templateName, err)
-		}
-
-		sqt.Templates[templateName] = parsedTemplate
-	}
-
-	return nil
-}
 
 func (sqt *sqlQueryTemplater) SelectUserByEmail(email string) (string, error) {
 	idObject := struct {
@@ -38,18 +23,34 @@ func (sqt *sqlQueryTemplater) SelectUserByEmail(email string) (string, error) {
 	return sqt.Template("SelectUserByEmail", &idObject)
 }
 
-func (sqt *sqlQueryTemplater) InsertUser(email string, passwordHash string, displayName string, isAdmin bool) (string, error) {
+//go:embed templates/users/QueryInsertUser.sql
+var templateContentUsersInsertUser string
+
+func (sqt *sqlQueryTemplater) InsertUser(newUser model.User) (string, error) {
 	idObject := struct {
 		Email        string `json:"email"`
 		PasswordHash string `json:"password_hash"`
 		DisplayName  string `json:"display_name"`
 		IsAdmin      string `json:"is_admin"`
 	}{
-		Email:        escape(email),
-		PasswordHash: escape(passwordHash),
-		DisplayName:  escape(displayName),
-		IsAdmin:      escape(fmt.Sprintf("%t", isAdmin)),
+		Email:        escape(newUser.Email),
+		PasswordHash: escape(newUser.PasswordHash),
+		DisplayName:  escape(newUser.DisplayName),
+		IsAdmin:      escape(fmt.Sprintf("%t", newUser.IsAdmin)),
 	}
 
 	return sqt.Template("InsertUser", &idObject)
+}
+
+//go:embed templates/users/QueryDeleteUser.sql
+var templateContentUsersDeleteUser string
+
+func (sqt *sqlQueryTemplater) DeleteUser(email string) (string, error) {
+	idObject := struct {
+		Email string `json:"email"`
+	}{
+		Email: escape(email),
+	}
+
+	return sqt.Template("DeleteUser", &idObject)
 }

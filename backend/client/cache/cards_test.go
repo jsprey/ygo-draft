@@ -6,17 +6,17 @@ import (
 	"github.com/stretchr/testify/require"
 	"testing"
 	"ygodraft/backend/client/cache"
-	"ygodraft/backend/client/cache/mocks"
 	"ygodraft/backend/model"
+	mocks2 "ygodraft/backend/model/mocks"
 )
 
-func getCacheWithMocks() (*cache.YgoCache, *mocks.QueryGenerator, *mocks.DatabaseClient) {
+func getCacheWithMocks() (*cache.YgoCache, *mocks2.QueryGenerator, *mocks2.DatabaseClient) {
 	myCache := &cache.YgoCache{}
 
-	queryGenMock := &mocks.QueryGenerator{}
+	queryGenMock := &mocks2.QueryGenerator{}
 	myCache.QueryTemplater = queryGenMock
 
-	dbMock := &mocks.DatabaseClient{}
+	dbMock := &mocks2.DatabaseClient{}
 	myCache.Client = dbMock
 
 	return myCache, queryGenMock, dbMock

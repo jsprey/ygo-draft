@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"testing"
 	"ygodraft/backend/client/cache"
-	"ygodraft/backend/client/cache/mocks"
+	"ygodraft/backend/model/mocks"
 	"ygodraft/backend/query"
 )
 

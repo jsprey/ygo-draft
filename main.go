@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"ygodraft/backend/api"
 	"ygodraft/backend/client/auth"
-	"ygodraft/backend/client/cache"
 	"ygodraft/backend/client/postgresql"
+	"ygodraft/backend/client/usermgt"
 	"ygodraft/backend/client/ygo"
 	"ygodraft/backend/config"
+	"ygodraft/backend/model"
 	"ygodraft/backend/setup"
 	"ygodraft/backend/synch"
 )
@@ -41,12 +42,17 @@ func startProgram() error {
 	}
 	defer dbClient.PoolConnection.Close()
 
+	usermgtClient, err := usermgt.NewUsermgtClient(dbClient)
+	if err != nil {
+		return err
+	}
+
 	ygoClient, err := setupYgoClient(ygoCtx, dbClient)
 	if err != nil {
 		return fmt.Errorf("failed to setup ygo client: %w", err)
 	}
 
-	router, err := setupRouter(ygoCtx, ygoClient)
+	router, err := setupRouter(ygoCtx, ygoClient, usermgtClient)
 	if err != nil {
 		return fmt.Errorf("failed to setup router: %w", err)
 	}
@@ -75,7 +81,7 @@ func setupDB(ygoCtx *config.YgoContext) (*postgresql.PostgresClient, error) {
 	return client, nil
 }
 
-func setupYgoClient(ygoCtx *config.YgoContext, dbClient cache.DatabaseClient) (*ygo.YgoClientWithCache, error) {
+func setupYgoClient(ygoCtx *config.YgoContext, dbClient model.DatabaseClient) (*ygo.YgoClientWithCache, error) {
 	client, err := ygo.NewYgoClientWithCache(dbClient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new ygoCLientCache: %w", err)
@@ -100,7 +106,7 @@ func setupYgoClient(ygoCtx *config.YgoContext, dbClient cache.DatabaseClient) (*
 	return client, nil
 }
 
-func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache) (*gin.Engine, error) {
+func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache, usermgtClient model.UsermgtClient) (*gin.Engine, error) {
 	authClient := auth.NewYgoJwtAuthClient(ygoCtx.AuthenticationContext.JWTSecretKey)
 
 	router := gin.Default()
@@ -129,7 +135,7 @@ func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache) (*gi
 	publicAPI.Static("/images/cards", "./imageStore")
 
 	apiV1Group := publicAPI.Group("api/v1")
-	err := api.SetupAPI(apiV1Group, authClient, client)
+	err := api.SetupAPI(apiV1Group, authClient, client, usermgtClient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to setup api: %w", err)
 	}

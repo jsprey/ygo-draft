@@ -3,7 +3,6 @@ package query
 import (
 	_ "embed"
 	"fmt"
-	"text/template"
 	"ygodraft/backend/model"
 )
 
@@ -28,27 +27,14 @@ var TemplateContentInsertCard string
 //go:embed templates/cards/QueryInsertSet.sql
 var TemplateContentInsertSet string
 
-func (sqt *sqlQueryTemplater) ParseCardTemplates() error {
-	myTemplates := map[string]string{
-		"SelectCardByID":           TemplateContentSelectCardByID,
-		"SelectAllCards":           TemplateContentSelectAllCards,
-		"SelectSetByCode":          TemplateContentSelectSetByCode,
-		"SelectAllSets":            TemplateContentSelectAllSets,
-		"SelectAllCardsWithFilter": TemplateContentSelectAllCardsWithFilter,
-		"InsertCard":               TemplateContentInsertCard,
-		"InsertSet":                TemplateContentInsertSet,
-	}
-
-	for templateName, templateString := range myTemplates {
-		parsedTemplate, err := template.New(templateName).Funcs(customFunctions).Parse(templateString)
-		if err != nil {
-			return fmt.Errorf("failed to parse template [%s]: %w", templateName, err)
-		}
-
-		sqt.Templates[templateName] = parsedTemplate
-	}
-
-	return nil
+func (sqt *sqlQueryTemplater) AddCardTemplates(templateMap *map[string]string) {
+	(*templateMap)["SelectCardByID"] = TemplateContentSelectCardByID
+	(*templateMap)["SelectSetByCode"] = TemplateContentSelectSetByCode
+	(*templateMap)["SelectAllCardsWithFilter"] = TemplateContentSelectAllCardsWithFilter
+	(*templateMap)["SelectAllCards"] = TemplateContentSelectAllCards
+	(*templateMap)["SelectAllSets"] = TemplateContentSelectAllSets
+	(*templateMap)["InsertCard"] = TemplateContentInsertCard
+	(*templateMap)["InsertSet"] = TemplateContentInsertSet
 }
 
 func (sqt *sqlQueryTemplater) SelectCardByID(id int) (string, error) {

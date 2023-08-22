@@ -18,16 +18,17 @@ func NewYgoJwtAuthClient(secretKey string) model.YGOJwtAuthClient {
 	}
 }
 
-func (jc *ygoJwtAuthClient) GenerateToken(email string, permission int) (string, error) {
+func (jc *ygoJwtAuthClient) GenerateToken(user model.User) (string, error) {
 	claims := model.YgoClaims{
-		Email:      email,
-		Permission: permission,
+		Email:       user.Email,
+		IsAdmin:     user.IsAdmin,
+		DisplayName: user.DisplayName,
 		RegisteredClaims: jwt.RegisteredClaims{
 			// Also fixed dates can be used for the NumericDate
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
-			Issuer:    email,
+			Issuer:    user.Email,
 		},
 	}
 

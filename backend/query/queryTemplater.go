@@ -23,14 +23,17 @@ type sqlQueryTemplater struct {
 func NewSqlQueryTemplater() (*sqlQueryTemplater, error) {
 	templater := sqlQueryTemplater{Templates: map[string]*template.Template{}}
 
-	err := templater.ParseCardTemplates()
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse query templates for the cards: %w", err)
-	}
+	templateStringMap := &map[string]string{}
+	templater.AddCardTemplates(templateStringMap)
+	templater.AddUserTemplates(templateStringMap)
 
-	err = templater.ParseUserTemplates()
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse query templates for the users: %w", err)
+	for templateName, templateString := range *templateStringMap {
+		parsedTemplate, err := template.New(templateName).Funcs(customFunctions).Parse(templateString)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse template [%s]: %w", templateName, err)
+		}
+
+		templater.Templates[templateName] = parsedTemplate
 	}
 
 	return &templater, nil
