@@ -107,6 +107,15 @@ func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache) (*gi
 	router.BasePath()
 	router.Use(func(context *gin.Context) {
 		context.Header("Access-Control-Allow-Origin", "*")
+		context.Header("Access-Control-Allow-Methods", "POST, OPTIONS")
+		context.Header("Access-Control-Allow-Headers", "Origin, Content-Type")
+
+		if context.Request.Method == "OPTIONS" {
+			context.AbortWithStatus(204) // Respond with a No Content status for preflight requests
+			return
+		}
+
+		context.Next()
 	})
 
 	router.LoadHTMLFiles("build/ui/index.html")

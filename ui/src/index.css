@@ -3,7 +3,7 @@
 
 @font-face {
   font-family: 'CarterOne';
-  src: url(./fonts/CarterOne-Regular.ttf) format('ttf');
+  src: url("https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Manrope:wght@200;300;400;500;600;700;800&display=swap") format('ttf');
 }
 
 @tailwind utilities;

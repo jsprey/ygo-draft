@@ -25,7 +25,7 @@ func SetupAPI(router *gin.RouterGroup, authClient model.YGOJwtAuthClient, client
 
 func SetupUnprotectedAPI(router gin.IRoutes, authClient model.YGOJwtAuthClient, client *ygo.YgoClientWithCache) {
 	authHandler := newAuthenticationHandler(authClient)
-	router.GET("login", authHandler.Login)
+	router.POST("login", authHandler.Login)
 
 	cardRetriever := CardRetrieveHandler{
 		YGOClient: client,
@@ -40,13 +40,13 @@ func SetupUnprotectedAPI(router gin.IRoutes, authClient model.YGOJwtAuthClient, 
 	router.GET("sets/:code/cards", cardRetriever.GetSetCards)
 }
 
-func SetupAuthenticatedUserApi(router gin.IRoutes, client *ygo.YgoClientWithCache) {
+func SetupAuthenticatedUserApi(router gin.IRoutes, _ *ygo.YgoClientWithCache) {
 	router.GET("usertest", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "user test")
 	})
 }
 
-func SetupAuthenticatedAdminApi(router gin.IRoutes, client *ygo.YgoClientWithCache) {
+func SetupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache) {
 	router.GET("admintest", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "admin test")
 	})
