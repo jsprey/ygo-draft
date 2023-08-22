@@ -14,12 +14,13 @@ const (
 
 // YgoContext contains various configuration values used while running ygo draft.
 type YgoContext struct {
-	Port            int       `yaml:"port"`
-	LogLevel        string    `yaml:"log_level"`
-	ContextPath     string    `yaml:"context_path"`
-	SyncAtStartup   bool      `yaml:"sync_at_startup"`
-	Stage           string    `yaml:"stage"`
-	DatabaseContext DbContext `yaml:"database_context"`
+	Port                  int         `yaml:"port"`
+	LogLevel              string      `yaml:"log_level"`
+	ContextPath           string      `yaml:"context_path"`
+	SyncAtStartup         bool        `yaml:"sync_at_startup"`
+	Stage                 string      `yaml:"stage"`
+	DatabaseContext       DbContext   `yaml:"database_context"`
+	AuthenticationContext AuthContext `yaml:"authentication_context"`
 }
 
 // DbContext contains information about the database to use.
@@ -28,6 +29,11 @@ type DbContext struct {
 	DatabaseName string `yaml:"database_name"`
 	Username     string `yaml:"username"`
 	Password     string `yaml:"password"`
+}
+
+// AuthContext contains information about the authentication process.
+type AuthContext struct {
+	JWTSecretKey string `yaml:"jwt_secret_key"`
 }
 
 func (dc *DbContext) GetConnectionUrl() string {

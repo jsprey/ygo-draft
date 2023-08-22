@@ -9,3 +9,5 @@ database_context:
   database_name: ygodraft
   username: admin
   password: admin
+authentication_context:
+  jwt_secret_key: "supersecretkey"

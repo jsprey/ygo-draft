@@ -3,9 +3,9 @@ module ygodraft
 go 1.18
 
 require (
-	github.com/feiin/sqlstring v0.2.1
 	github.com/georgysavva/scany v0.3.0
 	github.com/gin-gonic/gin v1.7.2
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/jackc/pgconn v1.12.0
 	github.com/jackc/pgx/v4 v4.16.0
 	github.com/sirupsen/logrus v1.8.1

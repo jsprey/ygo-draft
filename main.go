@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"ygodraft/backend/api"
+	"ygodraft/backend/client/auth"
 	"ygodraft/backend/client/cache"
 	"ygodraft/backend/client/postgresql"
 	"ygodraft/backend/client/ygo"
@@ -61,7 +62,6 @@ func startProgram() error {
 func setupDB(ygoCtx *config.YgoContext) (*postgresql.PostgresClient, error) {
 	logrus.Info("Startup -> Setup database")
 	client, err := postgresql.NewPostgresClient(ygoCtx.DatabaseContext)
-	//client, err := postgresql.NewPosgresqlClient(ygoCtx.DatabaseContext)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new db client: %w", err)
 	}
@@ -101,6 +101,8 @@ func setupYgoClient(ygoCtx *config.YgoContext, dbClient cache.DatabaseClient) (*
 }
 
 func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache) (*gin.Engine, error) {
+	authClient := auth.NewYgoJwtAuthClient(ygoCtx.AuthenticationContext.JWTSecretKey)
+
 	router := gin.Default()
 	router.BasePath()
 	router.Use(func(context *gin.Context) {
@@ -118,7 +120,7 @@ func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache) (*gi
 	publicAPI.Static("/images/cards", "./imageStore")
 
 	apiV1Group := publicAPI.Group("api/v1")
-	err := api.SetupAPI(apiV1Group, client)
+	err := api.SetupAPI(apiV1Group, authClient, client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to setup api: %w", err)
 	}
