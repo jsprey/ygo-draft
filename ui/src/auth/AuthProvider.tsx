@@ -1,4 +1,5 @@
 import {Context, createContext, useContext, useEffect, useMemo, useState} from "react";
+import axios from "axios";
 
 export type AuthContextType = {
     token: string | null,
@@ -13,7 +14,7 @@ export type AuthProviderProps = {
 
 const AuthProvider = (props: AuthProviderProps) => {
     // State to hold the authentication token
-    const [token, setToken_] = useState(localStorage.getItem("token"));
+    const [token, setToken_] = useState(sessionStorage.getItem("token"));
 
     // Function to set the authentication token
     const setToken = (newToken:string): void => {
@@ -21,13 +22,13 @@ const AuthProvider = (props: AuthProviderProps) => {
     };
 
     useEffect(() => {
-        // if (token) {
-        //     axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-        //     localStorage.setItem('token',token);
-        // } else {
-        //     delete axios.defaults.headers.common["Authorization"];
-        //     localStorage.removeItem('token')
-        // }
+        if (token) {
+            axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+            sessionStorage.setItem('token',token);
+        } else {
+            delete axios.defaults.headers.common["Authorization"];
+            sessionStorage.removeItem('token')
+        }
     }, [token]);
 
     // Memoized value of the authentication context

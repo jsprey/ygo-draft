@@ -72,7 +72,7 @@ func setupDB(ygoCtx *config.YgoContext) (*postgresql.PostgresClient, error) {
 		return nil, fmt.Errorf("failed to create new db client: %w", err)
 	}
 
-	databaseSetup := setup.NewDatabaseSetup(client)
+	databaseSetup := setup.NewDatabaseSetup(client, ygoCtx.AuthenticationContext)
 	err = databaseSetup.Setup()
 	if err != nil {
 		return nil, fmt.Errorf("failed to perform database setup: %w", err)
@@ -113,8 +113,8 @@ func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache, user
 	router.BasePath()
 	router.Use(func(context *gin.Context) {
 		context.Header("Access-Control-Allow-Origin", "*")
-		context.Header("Access-Control-Allow-Methods", "POST, OPTIONS")
-		context.Header("Access-Control-Allow-Headers", "Origin, Content-Type")
+		context.Header("Access-Control-Allow-Methods", "POST, OPTIONS, GET, DELETE")
+		context.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
 
 		if context.Request.Method == "OPTIONS" {
 			context.AbortWithStatus(204) // Respond with a No Content status for preflight requests

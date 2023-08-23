@@ -1,31 +1,35 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"strings"
 	"ygodraft/backend/client/auth"
 	"ygodraft/backend/client/ygo"
 	"ygodraft/backend/model"
 )
 
+const InternalServerErrorMessage = "Internal server error. Check server logs for more information."
+
 func SetupAPI(router *gin.RouterGroup, authClient model.YGOJwtAuthClient, client *ygo.YgoClientWithCache, usermgtClient model.UsermgtClient) error {
+	authHandler := newAuthenticationHandler(authClient, usermgtClient)
+
 	// unprotected access for login and stuff
-	SetupUnprotectedAPI(router, authClient, client, usermgtClient)
+	SetupUnprotectedAPI(router, client, authHandler)
 
 	// access for authenticated default user
 	userGroup := router.Use(auth.PermissionMiddleware(authClient, false))
-	SetupAuthenticatedUserApi(userGroup, client)
+	SetupAuthenticatedUserApi(userGroup, client, authHandler)
 
 	// access for authenticated admin user
 	adminGroup := router.Use(auth.PermissionMiddleware(authClient, true))
-	SetupAuthenticatedAdminApi(adminGroup, client)
+	SetupAuthenticatedAdminApi(adminGroup, client, authHandler)
 
 	return nil
 }
 
-func SetupUnprotectedAPI(router gin.IRoutes, authClient model.YGOJwtAuthClient, client *ygo.YgoClientWithCache, usermgtClient model.UsermgtClient) {
-	authHandler := newAuthenticationHandler(authClient, usermgtClient)
-	router.POST("login", authHandler.Login)
+func SetupUnprotectedAPI(router gin.IRoutes, client *ygo.YgoClientWithCache, handler *authenticationHandler) {
+	router.POST("login", handler.Login)
 
 	cardRetriever := CardRetrieveHandler{
 		YGOClient: client,
@@ -40,14 +44,25 @@ func SetupUnprotectedAPI(router gin.IRoutes, authClient model.YGOJwtAuthClient, 
 	router.GET("sets/:code/cards", cardRetriever.GetSetCards)
 }
 
-func SetupAuthenticatedUserApi(router gin.IRoutes, _ *ygo.YgoClientWithCache) {
-	router.GET("usertest", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "user test")
-	})
+func SetupAuthenticatedUserApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, authHandler *authenticationHandler) {
+	router.GET("user", authHandler.CurrentUser)
 }
 
-func SetupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache) {
-	router.GET("admintest", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "admin test")
-	})
+func SetupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, authHandler *authenticationHandler) {
+	router.POST("users", authHandler.RegisterUser)
+	router.DELETE("users", authHandler.DeleteUser)
+}
+
+func ExtractBearerToken(c *gin.Context) (string, error) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		return "", fmt.Errorf("no authorization header provided")
+	}
+
+	if strings.HasPrefix(authHeader, "Bearer ") {
+		token := authHeader[len("Bearer "):]
+		return token, nil
+	}
+
+	return "", fmt.Errorf("no bearer token provided")
 }

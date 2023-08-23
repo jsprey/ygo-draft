@@ -23,6 +23,10 @@ type User struct {
 type UsermgtClient interface {
 	// GetUser returns the user with the given email. Throws an error if the user does not exist.
 	GetUser(email string) (*User, error)
+	// CreateUser creates a new user with the given data.
+	CreateUser(newUser User) error
+	// DeleteUser deletes the user with the given email.
+	DeleteUser(userEmail string) error
 }
 
 type UsermgtQueryGenerator interface {
@@ -42,8 +46,8 @@ func IsErrorUserDoesNotExist(err error) bool {
 
 	customError, ok := err.(customerrors.WithCode)
 	if !ok {
-		return customError.Code == ErrorUserDoesNotExist.Code
+		return false
 	}
 
-	return false
+	return customError.Code == ErrorUserDoesNotExist.Code
 }

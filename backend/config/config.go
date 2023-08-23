@@ -10,6 +10,7 @@ import (
 const (
 	StageProductive  = "production"
 	StageDevelopment = "development"
+	AdminUserEmail   = "admin@admin"
 )
 
 // YgoContext contains various configuration values used while running ygo draft.
@@ -33,7 +34,8 @@ type DbContext struct {
 
 // AuthContext contains information about the authentication process.
 type AuthContext struct {
-	JWTSecretKey string `yaml:"jwt_secret_key"`
+	JWTSecretKey  string `yaml:"jwt_secret_key"`
+	AdminPassword string `yaml:"admin_password"`
 }
 
 func (dc *DbContext) GetConnectionUrl() string {

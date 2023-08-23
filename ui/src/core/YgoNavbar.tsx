@@ -1,9 +1,28 @@
 import {Container, Nav, Navbar} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {useAuth} from "../auth/AuthProvider";
+import {useNavigate} from "react-router";
+import UserNavbarBadge from "../auth/UserNavbarBadge";
+import React from "react";
 
 function YgoNavbar() {
-    const {token} = useAuth();
+    const navigation = useNavigate();
+    const {token, setToken} = useAuth();
+
+    const logout = () => {
+        setToken(null)
+        navigation("/login")
+    }
+
+    let userInformation = <></>
+    if (token) {
+        userInformation = <div className={"flex"}>
+            <UserNavbarBadge/>
+            <Navbar.Collapse className="ml-3 justify-content-end">
+                <Nav.Link onClick={logout}>Logout</Nav.Link>
+            </Navbar.Collapse>
+        </div>
+    }
 
     // noinspection TypeScriptValidateTypes
     return <>
@@ -26,7 +45,7 @@ function YgoNavbar() {
                 </Nav>
                 <Nav>
                     {!token ? <Nav.Link as={Link} to="/login">Login</Nav.Link> : <></>}
-                    {token ? <Nav.Link as={Link} to="/logout">Logout</Nav.Link> : <></>}
+                    {token ?  userInformation : <></>}
                 </Nav>
             </Container>
         </Navbar>

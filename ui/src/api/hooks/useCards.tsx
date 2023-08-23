@@ -3,6 +3,7 @@ import {Card, Deck} from "../CardModel";
 import {PUBLIC_URL} from "../../index";
 import {QueryKey} from "react-query/types/core/types";
 import {CardFilter, FilterToQuery} from "../CardFilter";
+import axios from "axios";
 
 export function useCard(id: number, queryOptions: any = {}): UseQueryResult<Card> {
     return useMagicMethod<Card>(["card", id], `cards/${id}`, new Map<string, string>(), queryOptions)
@@ -25,6 +26,31 @@ export function useRandomCards(clientID: string, size: number, cardFilter: CardF
     queryParams.set("size", String(size))
 
     return useMagicMethod<Deck>(["random", clientID], `randomCards`, queryParams, queryOptions)
+}
+
+export function useMagicMethodAxios<GenericJsonType>(
+    queryKey: QueryKey,
+    apiV1Path: string,
+    queryMap: Map<string, string>,
+    queryOptions: any = {}
+): UseQueryResult<GenericJsonType> {
+    const queryParams = MapToQuery(queryMap);
+
+    return useQuery(queryKey, async () => {
+        try {
+            const response = await axios.get(`${PUBLIC_URL}/api/v1/${apiV1Path}${queryParams}`);
+
+            if (!response.data) {
+                return {} as GenericJsonType;
+            }
+
+            console.log(response)
+
+            return response.data as GenericJsonType;
+        } catch (error) {
+            throw new Error('Call failed');
+        }
+    }, queryOptions);
 }
 
 export function useMagicMethod<GenericJsonType>(queryKey: QueryKey, apiV1Path: string, queryMap: Map<string, string>, queryOptions: any = {}): UseQueryResult<GenericJsonType> {

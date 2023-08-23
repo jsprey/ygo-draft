@@ -1,14 +1,19 @@
 import React from "react";
 import {LoginVariables, useLoginMutation} from "../api/hooks/useLogin";
-import Cookies from "js-cookie";
+import {useNavigate} from "react-router";
+import {useAuth} from "../auth/AuthProvider";
 
 function LoginPage() {
+    const navigate = useNavigate();
+    const {setToken} = useAuth();
+
     const onLoginError = (error: Error) => {
         setLoginError(error.message)
     }
     const onLoginSuccess = (token: string) => {
-        setLoginError("adawdw")
-        Cookies.set('token', token, {path: '/'});
+        setLoginError("")
+        setToken(token)
+        navigate("/")
     }
     const loginMutation = useLoginMutation({onSuccess: onLoginSuccess, onError: onLoginError})
 
