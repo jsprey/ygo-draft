@@ -33,11 +33,13 @@ export type CardSetListProps = {
 function CardSelectedSetList(props: CardSetListProps) {
     const [filter, setFilter] = useState<string>("")
 
-    let listItems = props.cardSets.map(currentSet => {
-        if (filter !== "" && !currentSet.set_name.includes(filter)) {
-            return <></>
-        }
+    const filteredSets = props.cardSets.filter((currentSet) => {
+        if (filter == "") return true;
 
+        return filter !== "" && !currentSet.set_name.toLowerCase().includes(filter.toLowerCase())
+    })
+
+    let listItems = filteredSets.map(currentSet => {
         let svgIcons: JSX.Element[] = []
         let index = 0
         props.actionList?.forEach((cardSetReceiver, key) => {
@@ -54,7 +56,7 @@ function CardSelectedSetList(props: CardSetListProps) {
             svgIcons.push(svgElement)
         })
 
-        return <div className={"select-none flex justify-content-between"} key={currentSet.set_name}>
+        return <div key={currentSet.set_name} className={"select-none flex justify-content-between"}>
             {currentSet.set_name}
             <div className={"flex gap-1 ml-5"}>
                 {svgIcons}

@@ -50,7 +50,6 @@ function CardSetSelector(props: CardSetSelectorProps) {
     } else if (error) {
         allSetItems = <Alert variant={"danger"}>Failed to load all sets!</Alert>
     } else if (data && data.sets) {
-        console.log(`I got ${data.sets.length} sets from the database.`)
         let filteredSets = data.sets.filter(availableSet => {
             let selectCardSet = true
             props.selectedSets.forEach(selectedSet => {
@@ -61,9 +60,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
             })
             return selectCardSet
         })
-        console.log(`I got ${filteredSets.length} sets after removing the selected sets.`)
         filteredSets = sortSets(filteredSets)
-        console.log(`I have ${filteredSets.length} sets after sorting them.`)
 
         const actionList = new Map<React.ReactElement<SvgIconButtonProps>, CardSetReceiver>()
         actionList.set(IconEye, cardSet => showSetCardsModal(cardSet.set_code))
