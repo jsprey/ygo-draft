@@ -55,7 +55,7 @@ function withBackground(element: JSX.Element) {
 
 function withContainer(element: JSX.Element) {
     return <>
-        <Container className={"bg-dark"}>
+        <Container className={"bg-light"}>
             {element}
         </Container>
     </>
