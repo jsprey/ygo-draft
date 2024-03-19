@@ -54,7 +54,7 @@ function CardSelectedSetList(props: CardSetListProps) {
             svgIcons.push(svgElement)
         })
 
-        return <div className={"select-none flex justify-content-between"} key={currentSet.set_code}>
+        return <div className={"select-none flex justify-content-between"} key={currentSet.set_name}>
             {currentSet.set_name}
             <div className={"flex gap-1 ml-5"}>
                 {svgIcons}

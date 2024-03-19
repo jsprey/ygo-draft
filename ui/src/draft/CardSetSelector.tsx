@@ -50,8 +50,8 @@ function CardSetSelector(props: CardSetSelectorProps) {
     } else if (error) {
         allSetItems = <Alert variant={"danger"}>Failed to load all sets!</Alert>
     } else if (data && data.sets) {
-        let availableSets: CardSet[] = sortSets(data.sets)
-        availableSets = availableSets.filter(availableSet => {
+        console.log(`I got ${data.sets.length} sets from the database.`)
+        let filteredSets = data.sets.filter(availableSet => {
             let selectCardSet = true
             props.selectedSets.forEach(selectedSet => {
                 if (availableSet.set_name === selectedSet.set_name) {
@@ -61,6 +61,9 @@ function CardSetSelector(props: CardSetSelectorProps) {
             })
             return selectCardSet
         })
+        console.log(`I got ${filteredSets.length} sets after removing the selected sets.`)
+        filteredSets = sortSets(filteredSets)
+        console.log(`I have ${filteredSets.length} sets after sorting them.`)
 
         const actionList = new Map<React.ReactElement<SvgIconButtonProps>, CardSetReceiver>()
         actionList.set(IconEye, cardSet => showSetCardsModal(cardSet.set_code))
@@ -72,7 +75,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
         })
 
         allSetItems = <>
-            <CardSelectedSetList isTargetList={false} title={"Available Sets"} cardSets={availableSets}
+            <CardSelectedSetList isTargetList={false} title={"Available Sets"} cardSets={filteredSets}
                                  actionList={actionList} allAction={function () {
                 let newSelectedCardSets: CardSet[]
                 newSelectedCardSets = (data as SetList).sets

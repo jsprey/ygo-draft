@@ -75,7 +75,7 @@ func (yc *YgoCache) GetCard(id int) (*model.Card, error) {
 
 func (yc *YgoCache) SaveAllCards(cards *[]*model.Card) error {
 	numberOfCards := len(*cards)
-	logrus.Infof("Cache -> Starting the synchronization of %d cards...", numberOfCards)
+	logrus.Debugf("Cache -> Starting the synchronization of %d cards...", numberOfCards)
 
 	currentCard := 0
 	updateTicker := time.NewTicker(5 * time.Second)
