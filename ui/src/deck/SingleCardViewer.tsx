@@ -9,17 +9,30 @@ export type SingleCardViewerProps = {
     card: Card
     bottomElement ?: JSX.Element
     onlyImage ?: boolean
+    readonly ?: boolean
+}
+
+type CardViewDivProps = {
+    className: string
+    onClick?: () => void
 }
 
 function SingleCardViewer(props: SingleCardViewerProps) {
     const [isShowingDetailView, setIsShowingDetailView] = useState(false);
     const handleShowDetailModal = () => setIsShowingDetailView(true);
 
+    const cardViewProps: CardViewDivProps = {
+        className: ""
+    }
+
+    if (!props.readonly) {
+        cardViewProps.className = "hover:outline-none hover:ring hover:ring-sky-600 active:outline-none active:ring active:ring-sky-400"
+        cardViewProps.onClick = handleShowDetailModal
+    }
+
     return <>
         <div className={"justify-center place-content-center flex flex-wrap"}>
-            <div
-                className={"hover:outline-none hover:ring hover:ring-sky-600 active:outline-none active:ring active:ring-sky-400"}
-                onClick={handleShowDetailModal}>
+            <div {...cardViewProps}>
                 {getCardAsImage(props.card, props.onlyImage)}
             </div>
             {props.bottomElement ? props.bottomElement : <></>}

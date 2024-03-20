@@ -22,7 +22,7 @@ function YgoBackground() {
         let myInt = 50000
 
         let cardsViewBody = data.cards.map((card: Card) =>
-            <span key={myInt++}><SingleCardViewer card={card} onlyImage={true}/></span>
+            <span key={myInt++}><SingleCardViewer card={card} onlyImage={true} readonly={true}/></span>
         );
         content = <div className={"blur-sm loginBackgroundContainer mySpecialBackground p-2 grid gap-3 bg-black -z-50"}>
             {cardsViewBody}
