@@ -23,7 +23,6 @@ const login = async ({email, password}: LoginVariables): Promise<string> => {
             },
         });
 
-        console.log(response.data.token)
         return response.data.token;
     } catch (error) {
         throw new Error('Login failed');

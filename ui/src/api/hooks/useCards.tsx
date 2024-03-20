@@ -44,8 +44,6 @@ export function useMagicMethodAxios<GenericJsonType>(
                 return {} as GenericJsonType;
             }
 
-            console.log(response)
-
             return response.data as GenericJsonType;
         } catch (error) {
             throw new Error('Call failed');
