@@ -32,6 +32,7 @@ type Card struct {
 	Images    []CardImage `json:"card_images"`
 }
 
+// CreateSetList creates a string list containing the identifier of all sets that are embedded in the card.
 func (c *Card) CreateSetList() {
 	setList := ""
 	for i, set := range c.SetsMeta {

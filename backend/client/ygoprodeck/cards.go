@@ -23,6 +23,7 @@ func (ypdc YgoProDeckClient) GetAllCards() (*[]*model.Card, error) {
 	}
 
 	for _, card := range cards.Data {
+		ypdc.eliminateDuplicateSets(card)
 		card.CreateSetList()
 	}
 
@@ -47,8 +48,30 @@ func (ypdc YgoProDeckClient) GetCard(id int) (*model.Card, error) {
 	}
 
 	for _, card := range cards.Data {
+		ypdc.eliminateDuplicateSets(card)
 		card.CreateSetList()
 	}
 
 	return cards.Data[0], nil
+}
+
+//eliminateDuplicateSets This function reduces the complexity of sets by merging sets with different codes but same names.
+func (ypdc YgoProDeckClient) eliminateDuplicateSets(card *model.Card) {
+	var newSetMetaList []model.CardSet
+
+	for _, newSet := range card.SetsMeta {
+		alreadyExists := false
+
+		for _, addedSet := range newSetMetaList {
+			if newSet.SetName == addedSet.SetName {
+				alreadyExists = true
+			}
+		}
+
+		if !alreadyExists {
+			newSetMetaList = append(newSetMetaList, newSet)
+		}
+	}
+
+	card.SetsMeta = newSetMetaList
 }
