@@ -4,10 +4,13 @@ import {useAuth} from "../auth/AuthProvider";
 import {useNavigate} from "react-router";
 import UserNavbarBadge from "../auth/UserNavbarBadge";
 import React from "react";
+import ThemeSwitcher from "./ThemeSwitcher";
+import {useTheme} from "./context/ColorThemeProvider";
 
 function YgoNavbar() {
     const navigation = useNavigate();
     const {token, setToken} = useAuth();
+    const {isDarkMode} = useTheme();
 
     const logout = () => {
         setToken(null)
@@ -26,7 +29,7 @@ function YgoNavbar() {
 
     // noinspection TypeScriptValidateTypes
     return <>
-        <Navbar expand="lg" bg="dark" variant="dark">
+        <Navbar expand="lg" bg={isDarkMode ? "dark" : "light"} data-bs-theme={isDarkMode ? "dark" : "light"}>
             <Container>
                 <Navbar.Brand as={Link} to="/">
                     <img
@@ -44,6 +47,7 @@ function YgoNavbar() {
                     {token ? <Nav.Link as={Link} to="/draftdeck">Mode: Draft</Nav.Link> : <></>}
                 </Nav>
                 <Nav>
+                    <ThemeSwitcher/>
                     {!token ? <Nav.Link as={Link} to="/login">Login</Nav.Link> : <></>}
                     {token ?  userInformation : <></>}
                 </Nav>
