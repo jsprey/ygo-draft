@@ -1,9 +1,9 @@
 .loginBackgroundContainer {
     position: fixed;
-    top: -5px;
-    left: -5px;
-    width: 100vw;
-    /*padding-left: calc(100vw - 100%);*/
-    height: 100vh;
+    top: -10px;
+    left: -10px;
+    width: calc(100vw + 20px);
+    height: calc(100vh + 20px);
+    overflow: hidden;
     grid-template-columns: repeat(15, minmax(0, 1fr));
 }

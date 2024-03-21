@@ -17,7 +17,7 @@ export type SettingsEntryProps = {
 function SettingsEntry(props: SettingsEntryProps) {
     return <Form.Group as={Col} md={props.md}>
         <Form.Label className={"flex"}>
-            <div className={"self-center mr-1"}>{props.title}</div>
+            <div className={"self-center mr-1  dark:text-white"}>{props.title}</div>
             <HelpTooltip size={20}
                          message={props.tooltip}/>
         </Form.Label>

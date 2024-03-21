@@ -25,6 +25,14 @@ code {
 /* Apply this to top level containers to fix their layout shift when scrollbar appears */
 @media (min-width: 1024px /* breakpoint for desktop layout */ ) {
   .rootContainer {
-    width: 100vw;
+    padding-left: calc(100vw - 100%);
+  }
+}
+
+/* We need to offset the navbar after adding a whole padding to the root container. This fix prevents the page from jumping when a scrollbar appears.*/
+@media (min-width: 1024px /* breakpoint for desktop layout */ ) {
+  .navBarContainer {
+    margin-left: calc(-1*(100vw - 100%)) !important;
+    padding-left: calc(100vw - 100%) !important;
   }
 }

@@ -95,7 +95,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
     return <>
         <Row className={props.rowClass}><Form.Group as={Col}>
             <Form.Label className={"flex"}>
-                <div className={"self-center mr-1"}>Select Packs for your drafting phases</div>
+                <div className={"self-center mr-1 dark:text-white"}>Select Packs for your drafting phases</div>
                 <HelpTooltip size={20}
                              message={props.tooltip}/>
             </Form.Label>

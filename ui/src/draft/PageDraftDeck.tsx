@@ -96,14 +96,14 @@ function PageDraftDeck(props: PageDraftDeckProps) {
         {!finished && isDrafted? <><MultiCardDraftArea name={"Draft Area"} maxRound={props.maxRounds} draftRound={currentDraftRound}
                                            cards={draftDeck.cards}
                                            draftAction={draftCard}/><br/></> : <></>}
-        <p className={"text-3xl"}>Current Deck</p>
+        <p className={"text-3xl dark:text-white"}>Current Deck</p>
         <DeckViewer deck={props.deck}/>
         <Modal show={showAbortDialog} onHide={handleCloseAbortDraftProcessModal}>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton className={"bg-ygo-light dark:bg-ygo-dark dark:text-white"}>
                 <Modal.Title>Abort Draft Process?</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Your currently drafted deck is going to be deleted.</Modal.Body>
-            <Modal.Footer>
+            <Modal.Body className={"bg-ygo-light dark:bg-ygo-dark dark:text-white"}>Your currently drafted deck is going to be deleted.</Modal.Body>
+            <Modal.Footer className={"bg-ygo-light dark:bg-ygo-dark dark:text-white"}>
                 <Button variant="secondary" onClick={handleCloseAbortDraftProcessModal}>
                     No
                 </Button>
@@ -127,7 +127,6 @@ function PageDraftDeck(props: PageDraftDeckProps) {
                 Next
             </Button>
         </div>
-        <br/>
     </>
 }
 

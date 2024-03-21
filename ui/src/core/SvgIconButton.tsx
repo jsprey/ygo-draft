@@ -1,7 +1,7 @@
 export type SvgIconButtonProps = {
-    size?: number
-    rootClassNames?: string
-    classNames?: string
+    size?: number | undefined
+    rootClassNames?: string| undefined
+    classNames?: string| undefined
     onClick?: React.MouseEventHandler<SVGSVGElement>
     children: JSX.Element | JSX.Element[]
 }
@@ -17,7 +17,7 @@ function SvgIconButton(props: SvgIconButtonProps) {
         imageClassNames = "fill-blue-600 hover:fill-blue-500 active:fill-blue-400"
     }
 
-    return <div className={props.rootClassNames ? "self-center ".concat(props?.rootClassNames) : "self-center"}>
+    return <div className={props.rootClassNames ? "self-center ".concat(props?.rootClassNames as string) : "self-center"}>
         <svg onClick={props.onClick !== undefined ? props.onClick : function () {}} xmlns="http://www.w3.org/2000/svg" width={imageSize} height={imageSize} fill="currentColor"
              className={imageClassNames} viewBox="0 0 16 16">
             {props.children}

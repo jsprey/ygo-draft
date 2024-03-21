@@ -12,6 +12,7 @@ module.exports = {
             backgroundColor: {
                 'ygo-light':'#f8f9fa',
                 'ygo-dark':'#212529',
+                'ygo-card-viewer':'#3f3f46',
             }
         },
     },

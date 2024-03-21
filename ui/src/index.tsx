@@ -17,7 +17,7 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-    <div className={"rootContainer"}>
+    <div className={"rootContainer overflow-x-hidden"}>
         <React.StrictMode>
             <BrowserRouter>
                 <QueryClientProvider client={YgoQueryClient}>

@@ -23,11 +23,11 @@ function MultiCardDraftArea(props: MultiCardDraftAreaProps) {
     );
 
     return <>
-        <span className={"fw-bold font-monospace text-xl"}>{props.name}</span>
+        <span className={"fw-bold font-monospace text-xl dark:text-white"}>{props.name}</span>
         <div>
-            <span className={"mr-2 font-monospace fw-light"}>Round: {props.draftRound} / {props.maxRound}</span>
+            <span className={"mr-2 font-monospace fw-light dark:text-white"}>Round: {props.draftRound} / {props.maxRound}</span>
         </div>
-        <div className={"p-2 grid grid-cols-10 gap-1 bg-dark mt-2 mb-4"}>{cardsViewBody}</div>
+        <div className={"p-2 grid grid-cols-10 gap-1 bg-ygo-card-viewer mt-2 mb-4"}>{cardsViewBody}</div>
     </>
 }
 

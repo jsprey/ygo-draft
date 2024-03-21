@@ -56,7 +56,7 @@ function CardSelectedSetList(props: CardSetListProps) {
             svgIcons.push(svgElement)
         })
 
-        return <div key={currentSet.set_name} className={"select-none flex justify-content-between"}>
+        return <div key={currentSet.set_name} className={"select-none flex justify-content-between  dark:text-white"}>
             {currentSet.set_name}
             <div className={"flex gap-1 ml-5"}>
                 {svgIcons}
@@ -69,7 +69,7 @@ function CardSelectedSetList(props: CardSetListProps) {
     </div>
 
     return <div className={props.rootClassName}>
-        <div className={"m-0 text-center"}>{props.title}</div>
+        <div className={"m-0 text-center dark:text-white"}>{props.title}</div>
         <div className={"flex justify-content-center m-2"}>
             <FormControl
                 autoFocus

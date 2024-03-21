@@ -27,8 +27,8 @@ function SetDetailModal(props: SetDetailModalProps) {
     return <Modal show={props.isShowing}
                   onHide={handleClose}
                   size={"xl"}
-                  contentClassName={"border border-white"}>
-        <Modal.Body className={"bg-dark rounded-md text-white "}>
+                  contentClassName={"dark:text-white"}>
+        <Modal.Body className={"bg-ygo-light dark:bg-ygo-dark dark:text-white"}>
             {content}
         </Modal.Body>
     </Modal>

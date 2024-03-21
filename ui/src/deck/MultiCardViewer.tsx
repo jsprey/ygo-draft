@@ -30,7 +30,7 @@ function MultiCardViewer(props: MultiCardViewerProps) {
             <span className={"mr-2 font-monospace fw-light dark:text-white"}>{cardsSpellCardsCount} Spell Cards |</span>
             <span className={"mr-2 font-monospace fw-light dark:text-white"}>{cardsTrapCardsCount} Trap Cards</span>
         </div>: <></>}
-        <div className={"shadow-md p-2 grid grid-cols-10 gap-1 bg-zinc-700 mt-2 mb-4"}>{cardsViewBody}</div>
+        <div className={"shadow-md p-2 grid grid-cols-10 gap-1 bg-ygo-card-viewer mt-2 mb-4"}>{cardsViewBody}</div>
     </>
 }
 

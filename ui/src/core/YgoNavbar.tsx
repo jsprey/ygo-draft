@@ -29,7 +29,7 @@ function YgoNavbar() {
 
     // noinspection TypeScriptValidateTypes
     return <>
-        <Navbar expand="lg" className={"border-bottom border-body"} bg={isDarkMode ? "dark" : "light"} data-bs-theme={isDarkMode ? "dark" : "light"}>
+        <Navbar expand="lg" className={"border-bottom border-body navBarContainer"} bg={isDarkMode ? "dark" : "light"} data-bs-theme={isDarkMode ? "dark" : "light"}>
             <Container>
                 <Navbar.Brand as={Link} to="/">
                     <img
