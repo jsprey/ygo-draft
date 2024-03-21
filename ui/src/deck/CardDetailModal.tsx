@@ -15,8 +15,8 @@ function CardDetailModal(props: CardDetailModalProps) {
     return <Modal show={props.isShowing}
                   onHide={handleClose}
                   size={"xl"}
-                  contentClassName={"border border-white"}>
-        <Modal.Body className={"bg-dark rounded-md text-white "}>
+                  contentClassName={""}>
+        <Modal.Body className={"bg-ygo-light border border-white dark:bg-ygo-dark dark:text-white"}>
             <div className="flex flex-row">
                 <div>
                     {getCardAsBigImage(card)}
@@ -31,10 +31,10 @@ function CardDetailModal(props: CardDetailModalProps) {
                         {card.atk !== 0 ? <Badge className={"mr-1"} bg={"danger"}>{card.atk}</Badge> : <></>}
                         {card.def !== 0 ? <Badge className={"mr-1"} bg={"success"}>{card.def}</Badge> : <></>}
                     </div>
-                    <p className={"p-2 mb-0 mt-2 ml-2 bg-gray-800"}>Description:</p>
-                    <div className={"p-2 mb-1 ml-2 bg-gray-700"}>{card.desc}</div>
-                    <p className={"p-2 mb-0 mt-2 ml-2 bg-gray-800"}>Included in the following Sets:</p>
-                    <div className={"p-2 mb-1 ml-2 bg-gray-700"}>
+                    <p className={"p-2 mb-0 mt-2 ml-2 font-bold bg-gray-400 dark:bg-gray-700 dark:text-white"}>Description:</p>
+                    <div className={"p-2 mb-1 ml-2 bg-gray-200 dark:bg-gray-600 dark:text-white"}>{card.desc}</div>
+                    <p className={"p-2 mb-0 mt-2 ml-2 font-bold bg-gray-400 dark:bg-gray-700 dark:text-white"}>Included in the following Sets:</p>
+                    <div className={"p-2 mb-1 ml-2 bg-gray-200 dark:bg-gray-600 dark:text-white"}>
                         {card.sets.length === 0 ? <div key={"empty"}>This card is not available in any set.</div> : <SetList card={card} />}
                     </div>
                 </div>

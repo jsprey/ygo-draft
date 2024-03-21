@@ -35,7 +35,7 @@ function DeckRandomGeneratorPage() {
     }
 
     return <div className={"pt-2 pb-3"}>
-        <h1 className={"mt-3 mb-3"}>
+        <h1 className={"mt-3 mb-3 dark:text-white"}>
             Deck Generation
             <Button className={"ml-4 object-center"}
                     variant="primary"

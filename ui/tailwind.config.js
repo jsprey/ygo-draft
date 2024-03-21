@@ -8,6 +8,10 @@ module.exports = {
         extend: {
             fontFamily: {
                 'logo': ['CarterOne']
+            },
+            backgroundColor: {
+                'ygo-light':'#f8f9fa',
+                'ygo-dark':'#212529',
             }
         },
     },

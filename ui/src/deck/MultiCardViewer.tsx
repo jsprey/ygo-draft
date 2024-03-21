@@ -24,13 +24,13 @@ function MultiCardViewer(props: MultiCardViewerProps) {
     );
 
     return <>
-        <span className={"fw-bold font-monospace text-xl"}>{props.name}</span>
+        <span className={"fw-bold font-monospace text-xl dark:text-white"}>{props.name}</span>
         {props.showDetails ? <div>
-            <span className={"mr-2 font-monospace fw-light"}>{cardsMonsterCardsCount} Monster Cards |</span>
-            <span className={"mr-2 font-monospace fw-light"}>{cardsSpellCardsCount} Spell Cards |</span>
-            <span className={"mr-2 font-monospace fw-light"}>{cardsTrapCardsCount} Trap Cards</span>
+            <span className={"mr-2 font-monospace fw-light dark:text-white"}>{cardsMonsterCardsCount} Monster Cards |</span>
+            <span className={"mr-2 font-monospace fw-light dark:text-white"}>{cardsSpellCardsCount} Spell Cards |</span>
+            <span className={"mr-2 font-monospace fw-light dark:text-white"}>{cardsTrapCardsCount} Trap Cards</span>
         </div>: <></>}
-        <div className={"p-2 grid grid-cols-10 gap-1 bg-dark mt-2 mb-4"}>{cardsViewBody}</div>
+        <div className={"shadow-md p-2 grid grid-cols-10 gap-1 bg-zinc-700 mt-2 mb-4"}>{cardsViewBody}</div>
     </>
 }
 
