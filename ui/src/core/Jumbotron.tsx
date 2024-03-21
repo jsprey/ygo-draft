@@ -10,13 +10,13 @@ var sectionStyle = {
 
 function Jumbotron() {
     return <>
-        <div className="container-fluid text-light bg-dark p-3 mb-2">
+        <div className="container-fluid text-light p-1 mb-2">
             <div style={sectionStyle} className="container-fluid text-light p-0 ">
                 <div className="container bg-dark bg-opacity-75 p-5">
                     <h1 className="display-4">Welcome to YGO Draft</h1>
                     <hr/>
                     <p>Create your first randomized deck!</p>
-                    <Link to="/randomdeck" className="btn btn-primary">Create Deck!</Link>
+                    <Link to="/randomdeck" className="btn btn-light" >Create Deck!</Link>
                 </div>
             </div>
         </div>

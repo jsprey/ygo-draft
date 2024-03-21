@@ -9,20 +9,22 @@ import DeckDraftWizard from "../draft/DeckDraftWizard";
 import {Route, Routes} from "react-router-dom";
 import LoginPage from "../login/LoginPage";
 import {ProtectedRoute} from "./ProtectedRoute";
+import {useTheme} from "../core/context/ColorThemeProvider";
 
 const AppRouter = () => {
     const {token} = useAuth();
+    var {isDarkMode} = useTheme();
 
     // Define public routes accessible to all users
     const routesForPublic: JSX.Element = <>
-        <Route path={"/"} element={withBackground(withNavbar(withContainer(<Home/>)))}/>
+        <Route path={"/"} element={withBackground(withNavbar(withContainer(<Home/>, isDarkMode)))}/>
     </>
 
     // Define routes accessible only to authenticated users
     const routesForAuthenticatedOnly: JSX.Element = <>
         <Route element={<ProtectedRoute/>}>
-            <Route path={"/randomdeck"} element={withBackground(withNavbar(withContainer(<DeckRandomGeneratorPage/>)))}/>
-            <Route path={"/draftdeck"} element={withBackground(withNavbar(withContainer(<DeckDraftWizard/>)))}/>
+            <Route path={"/randomdeck"} element={withBackground(withNavbar(withContainer(<DeckRandomGeneratorPage/>, isDarkMode)))}/>
+            <Route path={"/draftdeck"} element={withBackground(withNavbar(withContainer(<DeckDraftWizard/>, isDarkMode)))}/>
         </Route>
     </>
 
@@ -53,9 +55,9 @@ function withBackground(element: JSX.Element) {
     </>
 }
 
-function withContainer(element: JSX.Element) {
+function withContainer(element: JSX.Element, isDarkMode: boolean) {
     return <>
-        <Container className={"bg-light"}>
+        <Container className={isDarkMode ? "bg-dark" : "bg-light"}>
             {element}
         </Container>
     </>

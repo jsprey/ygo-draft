@@ -21,3 +21,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Apply this to top level containers to fix their layout shift when scrollbar appears */
+@media (min-width: 1024px /* breakpoint for desktop layout */ ) {
+  .rootContainer {
+    width: 100vw;
+  }
+}

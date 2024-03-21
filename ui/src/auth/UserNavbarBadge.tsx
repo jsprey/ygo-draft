@@ -17,7 +17,7 @@ function UserNavbarBadge() {
             <div className={"bg-danger text-white pl-1 pr-1"}>Failed to get user!</div>
         </div>
     } else if (data) {
-        content = <>Signed in as: <b>{data.display_name}</b></>
+        content = <span className={"pl-2"}>Signed in as: <b>{data.display_name}</b></span>
     }
 
     return <>

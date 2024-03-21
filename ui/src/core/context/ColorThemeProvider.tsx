@@ -3,7 +3,7 @@ import {Context, createContext, useContext, useMemo, useState} from "react";
 const ThemeContext: Context<ThemeContextType> = createContext({} as ThemeContextType);
 export type ThemeContextType = {
     isDarkMode: boolean,
-    toggleDarkMode: () => void
+    setDarkMode: (newMode: boolean) => void
 }
 
 // Contains the identifier to save the current state of the dark mode
@@ -15,17 +15,15 @@ export type ColorThemeProviderProps = {
 
 const ColorThemeProvider = (props: ColorThemeProviderProps) => {
     // State to hold the current theme
-    const [isDarkMode, setDarkMode] = useState<boolean>(() => {
+    const [isDarkMode, setDarkMode_] = useState<boolean>(() => {
         const isDarkMode = localStorage.getItem(DarkModeStorageKey) === 'true';
         document.documentElement.classList.toggle('dark', isDarkMode);
         return isDarkMode ? isDarkMode : false;
     });
 
     // Function to set the current theme
-    const toggleDarkMode = (): void => {
-        const newMode = !isDarkMode
-
-        setDarkMode(newMode)
+    const setDarkMode = (newMode: boolean): void => {
+        setDarkMode_(newMode)
         document.documentElement.classList.toggle('dark', newMode);
         localStorage.setItem(DarkModeStorageKey, String(newMode));
     };
@@ -34,7 +32,7 @@ const ColorThemeProvider = (props: ColorThemeProviderProps) => {
     const contextValue = useMemo(
         () => ({
             isDarkMode,
-            toggleDarkMode,
+            setDarkMode,
         }),
         [isDarkMode]
     );
