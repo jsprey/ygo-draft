@@ -46,6 +46,9 @@ func SetupUnprotectedAPI(router gin.IRoutes, client *ygo.YgoClientWithCache, han
 
 func SetupAuthenticatedUserApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, authHandler *authenticationHandler) {
 	router.GET("user", authHandler.CurrentUser)
+	router.GET("user/friends", authHandler.GetFriends)
+	router.GET("user/friends/requests", authHandler.GetFriendRequests)
+	router.POST("user/friends/requests/:id", authHandler.PostRequestFriend)
 }
 
 func SetupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, authHandler *authenticationHandler) {

@@ -57,7 +57,7 @@ func (u usermgtClient) GetUser(email string) (*model.User, error) {
 		return nil, fmt.Errorf("failed to select select user by email query: %w", err)
 	}
 
-	userList := []*model.User{}
+	var userList []*model.User
 	err = u.Client.Select(selectUserQuery, &userList)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query user by email: %w", err)
@@ -65,6 +65,25 @@ func (u usermgtClient) GetUser(email string) (*model.User, error) {
 
 	if userList == nil || (userList != nil && len(userList) == 0) {
 		return nil, model.ErrorUserDoesNotExist.WithParam(email)
+	}
+
+	return userList[0], nil
+}
+
+func (u usermgtClient) GetUserByID(userID int) (*model.User, error) {
+	selectUserQuery, err := u.QueryTemplater.SelectUserByID(userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select select user by email query: %w", err)
+	}
+
+	var userList []*model.User
+	err = u.Client.Select(selectUserQuery, &userList)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query user by email: %w", err)
+	}
+
+	if userList == nil || (userList != nil && len(userList) == 0) {
+		return nil, model.ErrorUserDoesNotExist.WithParam(string(rune(userID)))
 	}
 
 	return userList[0], nil

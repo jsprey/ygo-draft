@@ -9,6 +9,24 @@ import (
 	"ygodraft/backend/query"
 )
 
+//go:embed test_templates/users/testQuerySelectUserByID.sql
+var testQueryUsersSelectUserByID string
+
+func Test_newSqlQueryTemplater_QuerySelectUserByID(t *testing.T) {
+	t.Run("correctly create query", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.SelectUserByID(0)
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQueryUsersSelectUserByID, myString)
+	})
+}
+
 //go:embed test_templates/users/testQuerySelectUserByEmail.sql
 var testQueryUsersSelectUserByEmail string
 

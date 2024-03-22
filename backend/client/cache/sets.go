@@ -16,7 +16,7 @@ var (
 
 func (yc *YgoCache) SaveSets(sets []model.CardSet) error {
 	numberOfSets := len(sets)
-	logrus.Infof("Cache -> Starting the synchronization of %d sets...", numberOfSets)
+	logrus.Debugf("Cache -> Starting the synchronization of %d sets...", numberOfSets)
 
 	for _, set := range sets {
 		err := yc.saveSet(set)

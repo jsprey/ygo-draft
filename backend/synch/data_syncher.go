@@ -66,7 +66,7 @@ func (yds *YgoDataSyncher) SyncAllCards() error {
 	}
 
 	numberOfCards := len(*cards)
-	logrus.Infof("YgoDataSyncher -> Starting the synchronization of %d cards...", numberOfCards)
+	logrus.Debugf("YgoDataSyncher -> Starting the synchronization of %d cards...", numberOfCards)
 
 	currentCard := 0
 	updateTicker := time.NewTicker(5 * time.Second)

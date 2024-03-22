@@ -7,9 +7,21 @@ import (
 )
 
 func (sqt *sqlQueryTemplater) AddUserTemplates(templateMap *map[string]string) {
+	(*templateMap)["SelectUserByID"] = templateContentUsersSelectUserByID
 	(*templateMap)["SelectUserByEmail"] = templateContentUsersSelectUserByEmail
 	(*templateMap)["InsertUser"] = templateContentUsersInsertUser
 	(*templateMap)["DeleteUser"] = templateContentUsersDeleteUser
+}
+
+//go:embed templates/users/QuerySelectUserByID.sql
+var templateContentUsersSelectUserByID string
+
+func (sqt *sqlQueryTemplater) SelectUserByID(id int) (string, error) {
+	idObject := struct {
+		ID int `json:"id"`
+	}{ID: id}
+
+	return sqt.Template("SelectUserByID", &idObject)
 }
 
 //go:embed templates/users/QuerySelectUserByEmail.sql

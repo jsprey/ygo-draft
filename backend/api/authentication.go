@@ -9,8 +9,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/mail"
+	"strconv"
 	"ygodraft/backend/model"
 )
+
+const InvalidGivenUserErrorMessage = "Bad request. You need to provide a valid user id."
+const BadRequestCannotReferenceYourself = "Bad request. You need to provide the user id of another user. Not you own."
 
 type authenticationHandler struct {
 	ygoAuthClient model.YGOJwtAuthClient
@@ -250,4 +254,145 @@ func (ah *authenticationHandler) CurrentUser(ctx *gin.Context) {
 func asteriskEmail(email string) string {
 	asteriskEmail := string([]rune(email)[:5]) + "**********"
 	return asteriskEmail
+}
+
+func (ah *authenticationHandler) GetFriends(ctx *gin.Context) {
+	logrus.Debugf("API-Handler -> CurrentUser -> Call to GetFriends endoint...")
+
+	token, err := ExtractBearerToken(ctx)
+	if err != nil {
+		ctx.String(http.StatusUnauthorized, "you need to provide a valid bearer token")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to extract bearer token: %w", err))
+	}
+
+	tokenClaims, err := ah.ygoAuthClient.ValidateToken(token)
+	if err != nil {
+		ctx.String(http.StatusUnauthorized, "your provided token is not valid")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to validate token: %w", err))
+	}
+
+	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		return
+	}
+
+	friendList, err := ah.usermgtClient.GetFriends(user.ID)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to retrieve friends of user: %w", err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, friendList)
+}
+
+func (ah *authenticationHandler) GetFriendRequests(ctx *gin.Context) {
+	logrus.Debugf("API-Handler -> CurrentUser -> Call to GetFriendRequests endoint...")
+
+	token, err := ExtractBearerToken(ctx)
+	if err != nil {
+		ctx.String(http.StatusUnauthorized, "you need to provide a valid bearer token")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to extract bearer token: %w", err))
+	}
+
+	tokenClaims, err := ah.ygoAuthClient.ValidateToken(token)
+	if err != nil {
+		ctx.String(http.StatusUnauthorized, "your provided token is not valid")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to validate token: %w", err))
+	}
+
+	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		return
+	}
+
+	friendRequests, err := ah.usermgtClient.GetFriendRequests(user.ID)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to retrieve friends of user: %w", err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, friendRequests)
+}
+func (ah *authenticationHandler) PostRequestFriend(ctx *gin.Context) {
+	logrus.Debugf("API-Handler -> CurrentUser -> Call to PostRequestFriend endoint...")
+
+	targetUserID, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "you need to provide a valid user id")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to read the target user id: %w", err))
+	}
+
+	token, err := ExtractBearerToken(ctx)
+	if err != nil {
+		ctx.String(http.StatusUnauthorized, "you need to provide a valid bearer token")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to extract bearer token: %w", err))
+	}
+
+	tokenClaims, err := ah.ygoAuthClient.ValidateToken(token)
+	if err != nil {
+		ctx.String(http.StatusUnauthorized, "your provided token is not valid")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to validate token: %w", err))
+	}
+
+	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		return
+	}
+
+	targetUser, err := ah.usermgtClient.GetUserByID(targetUserID)
+	if err != nil && model.IsErrorUserDoesNotExist(err) {
+		ctx.String(http.StatusBadRequest, InvalidGivenUserErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get target user: %w", err))
+		return
+	} else if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get target user: %w", err))
+		return
+	}
+
+	if user.ID == targetUserID {
+		ctx.String(http.StatusBadRequest, BadRequestCannotReferenceYourself)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("invalid operation: %w", err))
+		return
+	}
+
+	friendRequests, err := ah.usermgtClient.GetFriendRequests(user.ID)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to retrieve friend requests of user: %w", err))
+		return
+	}
+
+	for _, friendRequest := range friendRequests {
+		if friendRequest.ID == targetUser.ID {
+			err = ah.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusFriends)
+			if err != nil {
+				ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+				_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to set relationship status: %w", err))
+				return
+			}
+
+			ctx.Status(http.StatusOK)
+			return
+		}
+	}
+
+	// not invited -> send invite to friend
+	err = ah.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusInvited)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to set relationship status: %w", err))
+		return
+	}
+
+	ctx.Status(http.StatusOK)
+	return
 }
