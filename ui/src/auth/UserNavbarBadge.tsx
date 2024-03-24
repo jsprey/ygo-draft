@@ -1,6 +1,7 @@
 import SvgIconButton from "../core/SvgIconButton";
 import {useCurrentUser} from "../api/hooks/useUser";
 import {Nav, Spinner} from "react-bootstrap";
+import {Link} from "react-router-dom";
 
 const userIcon = <SvgIconButton size={18} classNames={"fill-dark dark:fill-white"}>
     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
@@ -23,16 +24,16 @@ function UserNavbarBadge() {
             <div className={"bg-danger text-white pl-1 pr-1"}>Failed to get user!</div>
         </div>
     } else if (data) {
-        content = <button className={"flex justify-content-center"}>
+        content = <div className={"flex justify-content-center"}>
             {userIcon}
             <span className={"ml-2"}>
                 {data.display_name}
             </span>
-        </button>
+        </div>
     }
 
     return <>
-        <Nav.Link className="justify-content-end">
+        <Nav.Link as={Link} to="/user" className="justify-content-end">
             {content}
         </Nav.Link>
     </>

@@ -13,6 +13,11 @@ module.exports = {
                 'ygo-light': '#f8f9fa',
                 'ygo-dark': '#212529',
                 'ygo-card-viewer': '#3f3f46',
+                'ygo-success': '#198754',
+                'ygo-success-hover': '#167e4e',
+                'ygo-success-active': '#117346',
+                'ygo-success-disabled': '#506258',
+                'ygo-danger': '#dc3545',
             }
         },
     },

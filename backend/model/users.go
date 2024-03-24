@@ -17,6 +17,7 @@ type RelationshipStatus string
 
 const FriendStatusInvited RelationshipStatus = "invited"
 const FriendStatusFriends RelationshipStatus = "friends"
+const FriendStatusUnrelated RelationshipStatus = "unrelated"
 
 // User represents a user in the database and is used for authentication.
 type User struct {
@@ -54,6 +55,8 @@ type UsermgtClient interface {
 	GetFriendRequests(userID int) ([]FriendRequest, error)
 	// SetRelationshipStatus sets the relationship between two users.
 	SetRelationshipStatus(userID int, user2ID int, status RelationshipStatus) error
+	// GetRelationshipStatus retrieves the current relationship between two users.
+	//GetRelationshipStatus(userID int, user2ID int) (RelationshipStatus, error)
 }
 
 type UsermgtQueryGenerator interface {
@@ -71,6 +74,8 @@ type UsermgtQueryGenerator interface {
 	GetFriendRequests(userID int) (string, error)
 	// SetFriendRelation creates an execution query to define the relation between two users.
 	SetFriendRelation(fromUserID int, toUserID int, status RelationshipStatus) (string, error)
+	// GetFriendRelation creates a select query to request the relation between two users.
+	GetFriendRelation(fromUserID int, toUserID int) (string, error)
 }
 
 // IsErrorUserDoesNotExist checks if the given error is of type ErrorUserDoesNotExist.

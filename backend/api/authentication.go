@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/mail"
@@ -14,7 +15,7 @@ import (
 )
 
 const InvalidGivenUserErrorMessage = "Bad request. You need to provide a valid user id."
-const BadRequestCannotReferenceYourself = "Bad request. You need to provide the user id of another user. Not you own."
+const BadRequestCannotReferenceYourself = "Bad request. You need to provide another user. Not you own."
 
 type authenticationHandler struct {
 	ygoAuthClient model.YGOJwtAuthClient
@@ -319,6 +320,7 @@ func (ah *authenticationHandler) GetFriendRequests(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, friendRequests)
 }
+
 func (ah *authenticationHandler) PostRequestFriend(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> CurrentUser -> Call to PostRequestFriend endoint...")
 
@@ -386,6 +388,73 @@ func (ah *authenticationHandler) PostRequestFriend(ctx *gin.Context) {
 	}
 
 	// not invited -> send invite to friend
+	err = ah.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusInvited)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to set relationship status: %w", err))
+		return
+	}
+
+	ctx.Status(http.StatusOK)
+	return
+}
+
+func (ah *authenticationHandler) PostRequestFriendByEmail(ctx *gin.Context) {
+	logrus.Debugf("API-Handler -> CurrentUser -> Call to PostRequestFriendByEmail endoint...")
+
+	rawBody, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("cannot read body of request"))
+		return
+	}
+
+	var bodyData struct {
+		FriendEmail string `json:"friend_email"`
+	}
+	err = json.Unmarshal(rawBody, &bodyData)
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "Form data is incorrect/invalid.")
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("bad request missing friend email"))
+		return
+	}
+
+	token, err := ExtractBearerToken(ctx)
+	if err != nil {
+		ctx.String(http.StatusUnauthorized, "you need to provide a valid bearer token")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to extract bearer token: %w", err))
+	}
+
+	tokenClaims, err := ah.ygoAuthClient.ValidateToken(token)
+	if err != nil {
+		ctx.String(http.StatusUnauthorized, "your provided token is not valid")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to validate token: %w", err))
+	}
+
+	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		return
+	}
+
+	targetUser, err := ah.usermgtClient.GetUser(bodyData.FriendEmail)
+	if err != nil && model.IsErrorUserDoesNotExist(err) {
+		logrus.Debug("The user to add does not seem to exist -> skip...")
+		ctx.Status(http.StatusOK)
+		return
+	} else if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get target user by email: %w", err))
+		return
+	}
+
+	if user.Email == targetUser.Email {
+		ctx.String(http.StatusBadRequest, BadRequestCannotReferenceYourself)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("invalid operation: %w", err))
+		return
+	}
+
 	err = ah.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusInvited)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)

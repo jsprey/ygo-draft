@@ -98,3 +98,33 @@ func Test_sqlQueryTemplater_SetFriendRelation(t *testing.T) {
 		assert.Equal(t, testQuerySetFriendRelation, myString)
 	})
 }
+
+//go:embed test_templates/users/friends/testQueryGetFriendRelation.sql
+var testQueryGetFriendRelation string
+
+func Test_sqlQueryTemplater_GetFriendRelation(t *testing.T) {
+	t.Run("wrongly create query", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.GetFriendRelation(4, 7)
+
+		// then
+		require.NoError(t, err)
+		assert.NotEqual(t, testQueryGetFriendRelation, myString)
+	})
+	t.Run("correctly create query", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.GetFriendRelation(4, 6)
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQueryGetFriendRelation, myString)
+	})
+}

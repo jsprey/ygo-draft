@@ -49,6 +49,7 @@ func SetupAuthenticatedUserApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, au
 	router.GET("user/friends", authHandler.GetFriends)
 	router.GET("user/friends/requests", authHandler.GetFriendRequests)
 	router.POST("user/friends/requests/:id", authHandler.PostRequestFriend)
+	router.POST("user/friends/requests", authHandler.PostRequestFriendByEmail)
 }
 
 func SetupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, authHandler *authenticationHandler) {

@@ -10,6 +10,7 @@ import {Route, Routes} from "react-router-dom";
 import LoginPage from "../login/LoginPage";
 import {ProtectedRoute} from "./ProtectedRoute";
 import {useTheme} from "../core/context/ColorThemeProvider";
+import UserPage from "../auth/UserPage";
 
 const AppRouter = () => {
     const {token} = useAuth();
@@ -25,6 +26,7 @@ const AppRouter = () => {
         <Route element={<ProtectedRoute/>}>
             <Route path={"/randomdeck"} element={withBackground(withNavbar(withContainer(<DeckRandomGeneratorPage/>, isDarkMode)))}/>
             <Route path={"/draftdeck"} element={withBackground(withNavbar(withContainer(<DeckDraftWizard/>, isDarkMode)))}/>
+            <Route path={"/user"} element={withBackground(withNavbar(withContainer(<UserPage/>, isDarkMode)))}/>
         </Route>
     </>
 

@@ -34,7 +34,7 @@ function CardSelectedSetList(props: CardSetListProps) {
     const [filter, setFilter] = useState<string>("")
 
     const filteredSets = props.cardSets.filter((currentSet) => {
-        if (filter == "") return true;
+        if (filter === "") return true;
 
         return filter !== "" && !currentSet.set_name.toLowerCase().includes(filter.toLowerCase())
     })

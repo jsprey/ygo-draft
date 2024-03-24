@@ -79,3 +79,22 @@ func (u usermgtClient) SetRelationshipStatus(userID int, user2ID int, status mod
 
 	return nil
 }
+
+func (u usermgtClient) GetRelationshipStatus(userID int, user2ID int) (model.RelationshipStatus, error) {
+	query, err := u.QueryTemplater.GetFriendRelation(userID, user2ID)
+	if err != nil {
+		return model.FriendStatusUnrelated, fmt.Errorf("failed to create [GetFriendRelation] template: %w", err)
+	}
+
+	var relationshipStatues []model.RelationshipStatus
+	err = u.Client.Select(query, &relationshipStatues)
+	if err != nil {
+		return model.FriendStatusUnrelated, fmt.Errorf("failed to exec get relation of users: %w", err)
+	}
+
+	if relationshipStatues == nil && len(relationshipStatues) == 0 {
+		return model.FriendStatusUnrelated, nil
+	}
+
+	return relationshipStatues[0], nil
+}

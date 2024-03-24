@@ -21,7 +21,7 @@ function YgoNavbar() {
     if (token) {
         userInformation = <div className={"flex"}>
             <UserNavbarBadge/>
-            <Navbar.Collapse className="ml-3 justify-content-end">
+            <Navbar.Collapse className="justify-content-end">
                 <Nav.Link onClick={logout}>Logout</Nav.Link>
             </Navbar.Collapse>
         </div>
