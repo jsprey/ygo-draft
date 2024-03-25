@@ -8,6 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"io"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/mail"
 	"strconv"
@@ -16,6 +17,8 @@ import (
 
 const InvalidGivenUserErrorMessage = "Bad request. You need to provide a valid user id."
 const BadRequestCannotReferenceYourself = "Bad request. You need to provide another user. Not you own."
+const GetUsersPageParameter = "page"
+const GetUsersPageSizeParameter = "page_size"
 
 type authenticationHandler struct {
 	ygoAuthClient model.YGOJwtAuthClient
@@ -396,7 +399,6 @@ func (ah *authenticationHandler) PostRequestFriend(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusOK)
-	return
 }
 
 func (ah *authenticationHandler) PostRequestFriendByEmail(ctx *gin.Context) {
@@ -463,5 +465,51 @@ func (ah *authenticationHandler) PostRequestFriendByEmail(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusOK)
-	return
+}
+
+func (ah *authenticationHandler) GetUsers(ctx *gin.Context) {
+	logrus.Debugf("API-Handler -> CurrentUser -> Call to GetUsers endoint...")
+
+	pageParameter, err := GetQueryParameterInt(ctx, GetUsersPageParameter)
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "%s", err.Error())
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to get query integer parameter [%s]: %w", GetUsersPageParameter, err))
+		return
+	}
+
+	pageSizeParameter, err := GetQueryParameterInt(ctx, GetUsersPageSizeParameter)
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "%s", err.Error())
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to get query integer parameter [%s]: %w", GetUsersPageSizeParameter, err))
+		return
+	}
+
+	usersCount, err := ah.usermgtClient.CountUsers()
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to retrieve number of users: %w", err))
+		return
+	}
+
+	numberOfPages := int(math.Ceil(float64(usersCount) / float64(pageSizeParameter)))
+	if pageParameter >= numberOfPages {
+		ctx.String(http.StatusBadRequest, "parameter [%s=%d] cannot exceed number of pages [%d]", GetUsersPageParameter, pageParameter, numberOfPages)
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("parameter [%s=%d] cannot exceed number of pages [%d]", GetUsersPageParameter, pageParameter, numberOfPages))
+		return
+	}
+
+	userList, err := ah.usermgtClient.GetUsers(pageParameter, pageSizeParameter)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get users: %w", err))
+		return
+	}
+
+	var getUsersResponse = &struct {
+		NumberOfUsers int          `json:"numberOfUsers"`
+		NumberOfPages int          `json:"numberOfPages"`
+		Users         []model.User `json:"users"`
+	}{NumberOfUsers: usersCount, Users: userList, NumberOfPages: numberOfPages}
+
+	ctx.JSON(http.StatusOK, &getUsersResponse)
 }

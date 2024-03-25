@@ -7,6 +7,8 @@ import (
 )
 
 func (sqt *sqlQueryTemplater) AddUserTemplates(templateMap *map[string]string) {
+	(*templateMap)["CountUsers"] = templateContentCountUsers
+	(*templateMap)["SelectUsers"] = templateContentSelectUsers
 	(*templateMap)["SelectUserByID"] = templateContentUsersSelectUserByID
 	(*templateMap)["SelectUserByEmail"] = templateContentUsersSelectUserByEmail
 	(*templateMap)["InsertUser"] = templateContentUsersInsertUser
@@ -65,4 +67,26 @@ func (sqt *sqlQueryTemplater) DeleteUser(email string) (string, error) {
 	}
 
 	return sqt.Template("DeleteUser", &idObject)
+}
+
+//go:embed templates/users/QueryCountUsers.sql
+var templateContentCountUsers string
+
+func (sqt *sqlQueryTemplater) CountUsers() string {
+	return templateContentCountUsers
+}
+
+//go:embed templates/users/QuerySelectUsers.sql
+var templateContentSelectUsers string
+
+func (sqt *sqlQueryTemplater) SelectUsers(page int, pageSize int) (string, error) {
+	idObject := struct {
+		Offset   int `json:"offset"`
+		PageSize int `json:"pageSize"`
+	}{
+		Offset:   page * pageSize,
+		PageSize: pageSize,
+	}
+
+	return sqt.Template("SelectUsers", &idObject)
 }

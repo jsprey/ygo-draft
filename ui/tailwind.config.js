@@ -9,6 +9,10 @@ module.exports = {
             fontFamily: {
                 'logo': ['CarterOne']
             },
+            colors: {
+                'ygo-table-header-text': '#64748b',
+                'ygo-table-header-text-dark': '#ccd9ee'
+            },
             backgroundColor: {
                 'ygo-light': '#f8f9fa',
                 'ygo-dark': '#212529',
@@ -18,6 +22,10 @@ module.exports = {
                 'ygo-success-active': '#117346',
                 'ygo-success-disabled': '#506258',
                 'ygo-danger': '#dc3545',
+                'ygo-table-header': '#f8fafc',
+                'ygo-table-header-dark': '#77797a',
+                'ygo-table': '#f8f9fa',
+                'ygo-table-dark': '#212529',
             }
         },
     },

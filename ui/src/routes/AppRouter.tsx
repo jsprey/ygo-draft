@@ -11,9 +11,13 @@ import LoginPage from "../login/LoginPage";
 import {ProtectedRoute} from "./ProtectedRoute";
 import {useTheme} from "../core/context/ColorThemeProvider";
 import UserPage from "../auth/UserPage";
+import AdminPage from "../auth/AdminPage";
+import {useCurrentUser} from "../api/hooks/useUser";
+import {Navigate} from "react-router";
 
 const AppRouter = () => {
     const {token} = useAuth();
+    const user = useCurrentUser()
     var {isDarkMode} = useTheme();
 
     // Define public routes accessible to all users
@@ -30,6 +34,13 @@ const AppRouter = () => {
         </Route>
     </>
 
+    // Define routes accessible only to authenticated users
+    const routesForAdminOnly: JSX.Element = <>
+        <Route element={<ProtectedRoute/>}>
+            <Route path={"/admin"} element={withBackground(withNavbar(withContainer(<AdminPage/>, isDarkMode)))}/>
+        </Route>
+    </>
+
     // Define routes accessible only to non-authenticated users
     const routesForNotAuthenticatedOnly: JSX.Element = <>
         <Route path={"/login"} element={withBackground(withNavbar(<LoginPage/>))}/>
@@ -40,6 +51,8 @@ const AppRouter = () => {
         {routesForPublic}
         {routesForAuthenticatedOnly}
         {!token ? routesForNotAuthenticatedOnly : <></>}
+        {routesForAdminOnly}
+        {<Route path="*" element={<Navigate to="/" replace />} />}
     </Routes>
 };
 

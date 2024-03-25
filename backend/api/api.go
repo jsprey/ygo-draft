@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"strconv"
 	"strings"
 	"ygodraft/backend/client/auth"
 	"ygodraft/backend/client/ygo"
@@ -53,6 +54,7 @@ func SetupAuthenticatedUserApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, au
 }
 
 func SetupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, authHandler *authenticationHandler) {
+	router.GET("users", authHandler.GetUsers)
 	router.POST("users", authHandler.RegisterUser)
 	router.DELETE("users", authHandler.DeleteUser)
 }
@@ -69,4 +71,18 @@ func ExtractBearerToken(c *gin.Context) (string, error) {
 	}
 
 	return "", fmt.Errorf("no bearer token provided")
+}
+
+func GetQueryParameterInt(ctx *gin.Context, parameterName string) (int, error) {
+	raw, exists := ctx.GetQuery(parameterName)
+	if !exists {
+		return 0, fmt.Errorf("required query parameter [%s] does not exist", parameterName)
+	}
+
+	parameterValue, err := strconv.Atoi(raw)
+	if err != nil {
+		return 0, fmt.Errorf("required query parameter [%s=%s] does not seem to be a valid integer", parameterName, raw)
+	}
+
+	return parameterValue, nil
 }

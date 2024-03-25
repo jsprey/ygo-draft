@@ -41,10 +41,14 @@ type FriendRequest struct {
 }
 
 type UsermgtClient interface {
+	// CountUsers returns the number of users in the database.
+	CountUsers() (int, error)
 	// GetUser returns the user with the given email. Throws an error if the user does not exist.
 	GetUser(email string) (*User, error)
-	// GetUser returns the user with the given id. Throws an error if the user does not exist.
+	// GetUserByID returns the user with the given id. Throws an error if the user does not exist.
 	GetUserByID(id int) (*User, error)
+	// GetUsers returns the users of the database with the given paginated offset.
+	GetUsers(page int, pageSize int) ([]User, error)
 	// CreateUser creates a new user with the given data.
 	CreateUser(newUser User) error
 	// DeleteUser deletes the user with the given email.
@@ -56,10 +60,14 @@ type UsermgtClient interface {
 	// SetRelationshipStatus sets the relationship between two users.
 	SetRelationshipStatus(userID int, user2ID int, status RelationshipStatus) error
 	// GetRelationshipStatus retrieves the current relationship between two users.
-	//GetRelationshipStatus(userID int, user2ID int) (RelationshipStatus, error)
+	GetRelationshipStatus(userID int, user2ID int) (RelationshipStatus, error)
 }
 
 type UsermgtQueryGenerator interface {
+	// CountUsers creates a select query to count all users.
+	CountUsers() string
+	// SelectUsers creates a select query retrieve the users at a given paginated offset.
+	SelectUsers(page int, pageSize int) (string, error)
 	// InsertUser creates an insert query for a new user.
 	InsertUser(newUser User) (string, error)
 	// SelectUserByEmail creates a select query for a specific user by the given email.

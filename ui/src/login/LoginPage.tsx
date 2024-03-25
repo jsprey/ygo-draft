@@ -91,11 +91,6 @@ function LoginPage() {
                         </button>
                     </div>
                 </form>
-
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Don't have an account yet? <a href="register.html"
-                                                  className="text-blue-600 hover:underline">Register</a>
-                </div>
             </div>
         </div>
     </div>

@@ -92,3 +92,21 @@ func TestNewSqlQueryTemplater_QueryDeleteUser(t *testing.T) {
 		assert.Equal(t, testQueryUsersDeleteUser, myString)
 	})
 }
+
+//go:embed test_templates/users/testQuerySelectUsers.sql
+var testQuerySelectUsers string
+
+func Test_newSqlQueryTemplater_SelectUsers(t *testing.T) {
+	t.Run("correctly create query", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.SelectUsers(1, 20)
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQuerySelectUsers, myString)
+	})
+}

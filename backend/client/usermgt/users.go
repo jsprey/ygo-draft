@@ -51,6 +51,38 @@ func (u usermgtClient) DeleteUser(userEmail string) error {
 	return nil
 }
 
+func (u usermgtClient) GetUsers(page int, pageSize int) ([]model.User, error) {
+	sqlQuery, err := u.QueryTemplater.SelectUsers(page, pageSize)
+	if err != nil {
+		return []model.User{}, fmt.Errorf("failed to template select users query %w", err)
+	}
+
+	var userList []model.User
+	err = u.Client.Select(sqlQuery, &userList)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query user with pagination: %w", err)
+	}
+
+	return userList, nil
+}
+
+func (u usermgtClient) CountUsers() (int, error) {
+	countQuery := u.QueryTemplater.CountUsers()
+
+	var totalUsers int
+	row, err := u.Client.QueryRow(countQuery)
+	if err != nil {
+		return 0, fmt.Errorf("failed to query users count: %w", err)
+	}
+
+	err = row.Scan(&totalUsers)
+	if err != nil {
+		return 0, fmt.Errorf("failed to query users count: %w", err)
+	}
+
+	return totalUsers, nil
+}
+
 func (u usermgtClient) GetUser(email string) (*model.User, error) {
 	selectUserQuery, err := u.QueryTemplater.SelectUserByEmail(email)
 	if err != nil {
