@@ -12,12 +12,10 @@ import {ProtectedRoute} from "./ProtectedRoute";
 import {useTheme} from "../core/context/ColorThemeProvider";
 import UserPage from "../auth/UserPage";
 import AdminPage from "../auth/AdminPage";
-import {useCurrentUser} from "../api/hooks/useUser";
 import {Navigate} from "react-router";
 
 const AppRouter = () => {
     const {token} = useAuth();
-    const user = useCurrentUser()
     var {isDarkMode} = useTheme();
 
     // Define public routes accessible to all users

@@ -11,7 +11,7 @@ import (
 
 // ErrorTemplateDoesNotExist this error is returned when a template with a given name does not exist.
 var ErrorTemplateDoesNotExist = customerrors.WithCode{
-	Code:        "", // TODO add code
+	Code:        "EC_TEMPLATE_NOT_FOUND",
 	InternalMsg: "template %s does not exist",
 }
 

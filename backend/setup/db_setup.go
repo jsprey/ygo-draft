@@ -78,27 +78,6 @@ func (ds *DatabaseSetup) setupUsermgt() error {
 		return fmt.Errorf("failed to create admin user: %w", err)
 	}
 
-	//// todo remove this
-	//logrus.Debugf("Creating default admin user...")
-	//err = createTestUsers(client, 100)
-	//if err != nil {
-	//	return fmt.Errorf("failed to create test users: %w", err)
-	//}
-
-	return nil
-}
-
-// todo remove this
-func createTestUsers(client model.UsermgtClient, numberOfUsers int) error {
-	for i := 0; i < numberOfUsers; i++ {
-		email := fmt.Sprintf("test%d@test.de", i)
-		name := fmt.Sprintf("Test User %d", i)
-		err := createUserIfNotExist(client, email, name, false, "test")
-		if err != nil {
-			return fmt.Errorf("failed to create test user [%d]: %w", i, err)
-		}
-	}
-
 	return nil
 }
 

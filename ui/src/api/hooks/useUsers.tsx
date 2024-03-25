@@ -1,5 +1,4 @@
 import {UseQueryResult} from "react-query";
-import {GetUserReponse} from "../UserModel";
 import {useMagicMethodAxios} from "./useCards";
 
 export type User = {
