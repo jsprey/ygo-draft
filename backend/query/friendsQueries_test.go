@@ -128,3 +128,33 @@ func Test_sqlQueryTemplater_GetFriendRelation(t *testing.T) {
 		assert.Equal(t, testQueryGetFriendRelation, myString)
 	})
 }
+
+//go:embed test_templates/users/friends/testQueryDeleteFriendRelation.sql
+var testQueryDeleteFriendRelation string
+
+func Test_sqlQueryTemplater_DeleteFriendRelation(t *testing.T) {
+	t.Run("wrongly create query", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.DeleteFriendRelation(7)
+
+		// then
+		require.NoError(t, err)
+		assert.NotEqual(t, testQueryDeleteFriendRelation, myString)
+	})
+	t.Run("correctly create query", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.DeleteFriendRelation(5)
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQueryDeleteFriendRelation, myString)
+	})
+}

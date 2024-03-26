@@ -10,8 +10,8 @@ import {Route, Routes} from "react-router-dom";
 import LoginPage from "../login/LoginPage";
 import {ProtectedRoute} from "./ProtectedRoute";
 import {useTheme} from "../core/context/ColorThemeProvider";
-import UserPage from "../auth/UserPage";
-import AdminPage from "../auth/AdminPage";
+import UserPage from "../users/UserPage";
+import AdminPage from "../users/AdminPage";
 import {Navigate} from "react-router";
 
 const AppRouter = () => {

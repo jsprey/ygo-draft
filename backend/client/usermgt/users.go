@@ -37,7 +37,18 @@ func (u usermgtClient) CreateUser(newUser model.User) error {
 	return nil
 }
 
-func (u usermgtClient) DeleteUser(userEmail string) error {
+func (u usermgtClient) DeleteUser(userID int, userEmail string) error {
+	// delete all friendships
+	deleteFriendshipsQuery, err := u.QueryTemplater.DeleteFriendRelation(userID)
+	if err != nil {
+		return fmt.Errorf("failed to create delete friendship query: %w", err)
+	}
+
+	_, err = u.Client.Exec(deleteFriendshipsQuery)
+	if err != nil {
+		return fmt.Errorf("failed to exec delete relations: %w", err)
+	}
+
 	deleteUserQuery, err := u.QueryTemplater.DeleteUser(userEmail)
 	if err != nil {
 		return fmt.Errorf("failed to select select user by email query: %w", err)

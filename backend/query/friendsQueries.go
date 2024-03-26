@@ -10,6 +10,7 @@ func (sqt *sqlQueryTemplater) AddFriendsTemplates(templateMap *map[string]string
 	(*templateMap)["SetFriendRelation"] = templateContentSetFriendRelation
 	(*templateMap)["GetFriendRequests"] = templateContentGetFriendRequests
 	(*templateMap)["GetFriendRelation"] = templateContentGetFriendRelation
+	(*templateMap)["DeleteFriendRelation"] = templateContentDeleteFriendRelation
 }
 
 //go:embed templates/users/friends/QueryGetFriends.sql
@@ -66,4 +67,17 @@ func (sqt *sqlQueryTemplater) GetFriendRelation(fromUserID int, toUserID int) (s
 	}
 
 	return sqt.Template("GetFriendRelation", &templateObject)
+}
+
+//go:embed templates/users/friends/QueryDeleteFriendRelation.sql
+var templateContentDeleteFriendRelation string
+
+func (sqt *sqlQueryTemplater) DeleteFriendRelation(userID int) (string, error) {
+	templateObject := struct {
+		UserID int `json:"userID"`
+	}{
+		UserID: userID,
+	}
+
+	return sqt.Template("DeleteFriendRelation", &templateObject)
 }

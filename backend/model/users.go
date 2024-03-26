@@ -52,7 +52,7 @@ type UsermgtClient interface {
 	// CreateUser creates a new user with the given data.
 	CreateUser(newUser User) error
 	// DeleteUser deletes the user with the given email.
-	DeleteUser(userEmail string) error
+	DeleteUser(id int, userEmail string) error
 	// GetFriends returns the friends of a given user.
 	GetFriends(userID int) ([]Friend, error)
 	// GetFriendRequests returns the pending friend requests for the user.
@@ -84,6 +84,8 @@ type UsermgtQueryGenerator interface {
 	SetFriendRelation(fromUserID int, toUserID int, status RelationshipStatus) (string, error)
 	// GetFriendRelation creates a select query to request the relation between two users.
 	GetFriendRelation(fromUserID int, toUserID int) (string, error)
+	// DeleteFriendRelation creates a deleted query to delete all entries of the user in the friends table.
+	DeleteFriendRelation(id int) (string, error)
 }
 
 // IsErrorUserDoesNotExist checks if the given error is of type ErrorUserDoesNotExist.

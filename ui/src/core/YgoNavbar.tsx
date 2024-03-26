@@ -2,7 +2,7 @@ import {Container, Nav, Navbar} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {useAuth} from "../auth/AuthProvider";
 import {useNavigate} from "react-router";
-import UserNavbarBadge from "../auth/UserNavbarBadge";
+import UserNavbarBadge from "../users/UserNavbarBadge";
 import React from "react";
 import ThemeSwitcher from "./ThemeSwitcher";
 import {useTheme} from "./context/ColorThemeProvider";

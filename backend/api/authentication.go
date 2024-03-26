@@ -8,6 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"io"
 	"io/ioutil"
+	"log"
 	"math"
 	"net/http"
 	"net/mail"
@@ -118,14 +119,14 @@ func (ah *authenticationHandler) DeleteUser(ctx *gin.Context) {
 		return
 	}
 
-	err = ah.usermgtClient.DeleteUser(user.Email)
+	err = ah.usermgtClient.DeleteUser(user.ID, user.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to delete user: %w", err))
 		return
 	}
 
-	ctx.Status(204)
+	ctx.Status(http.StatusNoContent)
 	logrus.Debugf("API-Handler -> DeleteUser -> User [%s] successfully deleted.", asteriskEmail(deleteRequest.Email))
 }
 
@@ -139,6 +140,8 @@ func (ah *authenticationHandler) RegisterUser(ctx *gin.Context) {
 		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read request body: %w", err))
 		return
 	}
+
+	log.Printf("%+v", string(body))
 
 	userRegistrationRequest := &struct {
 		Email       string `json:"email"`
