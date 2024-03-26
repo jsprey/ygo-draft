@@ -1,9 +1,11 @@
 port: 8080
 context_path: /
-log_level: WARNING
-#stage: development
-stage: production
+log_level: INFO
+stage: development
+#stage: production
 sync_at_startup: true
+development_context:
+  number_of_card_syncs: 200
 database_context:
   database_url: localhost:5432
   database_name: ygodraft

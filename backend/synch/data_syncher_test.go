@@ -67,7 +67,8 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 			CacheSetSaver:  cacheCardSetSaverMock,
 			WebClient:      webRetrieverMocker,
 		}
-		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment}
+
+		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment, DevelopmentContext: config.DevelopmentContext{NumberOfCardSyncs: 100}}
 		snycher := synch.YgoDataSyncher{
 			Client: ygoClient,
 			YgoCtx: ygoCtx,
@@ -108,7 +109,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 			CacheSetSaver:  cacheCardSetSaverMock,
 			WebClient:      webRetrieverMocker,
 		}
-		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment}
+		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment, DevelopmentContext: config.DevelopmentContext{NumberOfCardSyncs: 100}}
 		snycher := synch.YgoDataSyncher{
 			Client: ygoClient,
 			YgoCtx: ygoCtx,
@@ -140,7 +141,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 			CacheSetSaver:  cacheCardSetSaverMock,
 			WebClient:      webRetrieverMocker,
 		}
-		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment}
+		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment, DevelopmentContext: config.DevelopmentContext{NumberOfCardSyncs: 100}}
 		snycher := synch.YgoDataSyncher{
 			Client: ygoClient,
 			YgoCtx: ygoCtx,
@@ -183,7 +184,7 @@ func TestYgoDataSyncher_Sync(t *testing.T) {
 			CacheSetSaver:  cacheCardSetSaverMock,
 			WebClient:      webRetrieverMocker,
 		}
-		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment}
+		ygoCtx := &config.YgoContext{Stage: config.StageDevelopment, DevelopmentContext: config.DevelopmentContext{NumberOfCardSyncs: 100}}
 		snycher := synch.YgoDataSyncher{
 			Client: ygoClient,
 			YgoCtx: ygoCtx,

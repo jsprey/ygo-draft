@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
-	"ygodraft/backend/client/usermgt"
 	"ygodraft/backend/config"
 	"ygodraft/backend/model"
 )
@@ -24,12 +23,12 @@ var createTableFriends string
 
 // DatabaseSetup is responsible to setup the database including the creation of the database and the data tables.
 type DatabaseSetup struct {
-	Client      model.DatabaseClient
-	authContext config.AuthContext
+	Client        model.DatabaseClient
+	UsermgtClient model.UsermgtClient
 }
 
-func NewDatabaseSetup(client model.DatabaseClient, context config.AuthContext) *DatabaseSetup {
-	return &DatabaseSetup{Client: client, authContext: context}
+func NewDatabaseSetup(client model.DatabaseClient, usermgtClient model.UsermgtClient) *DatabaseSetup {
+	return &DatabaseSetup{Client: client, UsermgtClient: usermgtClient}
 }
 
 func (ds *DatabaseSetup) Setup() error {
@@ -66,14 +65,8 @@ func (ds *DatabaseSetup) Setup() error {
 }
 
 func (ds *DatabaseSetup) setupUsermgt() error {
-	// create default admin user if not exists
-	client, err := usermgt.NewUsermgtClient(ds.Client)
-	if err != nil {
-		return fmt.Errorf("failed to create new usermgt client: %w", err)
-	}
-
 	logrus.Debugf("Creating default admin user...")
-	err = createUserIfNotExist(client, config.AdminUserEmail, "Admin", true, "adminadmin")
+	err := createUserIfNotExist(ds.UsermgtClient, config.AdminUserEmail, "Admin", true, "adminadmin")
 	if err != nil {
 		return fmt.Errorf("failed to create admin user: %w", err)
 	}

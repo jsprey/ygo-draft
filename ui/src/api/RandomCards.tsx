@@ -3,7 +3,7 @@ import {PUBLIC_URL} from "../index";
 
 export function getRandomCards(size: number): Promise<Deck> {
     return new Promise<Deck>((resolve, reject) => {
-        return fetch(`${PUBLIC_URL}/api/v1/randomCards?size=${size}`).then(function (response) {
+        return fetch(`${PUBLIC_URL}/api/v1/cards/random?size=${size}`).then(function (response) {
             if (!response.ok) {
                 return response.json().then(res => {
                         reject(res)

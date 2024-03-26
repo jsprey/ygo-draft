@@ -18,8 +18,12 @@ b-check: b-vet b-unit-test b-build ## Vet, test and build the backend.
 b-run: b-build ## Run the go backend.
 	@GOOS=$(GOOS) GOARCH=$(GOARCH) go run .
 
+.PHONY: b-run-no-build
+b-run-no-build: generate-api-docs ## Run the go backend.
+	@GOOS=$(GOOS) GOARCH=$(GOARCH) go run .
+
 .PHONY: b-build
-b-build: $(BUILD_DIR) ## Builds the golang backend of YGODraft and creates a statically linked binary.
+b-build: $(BUILD_DIR) generate-api-docs ## Builds the golang backend of YGODraft and creates a statically linked binary.
 	@echo "Running go build..."
 	@GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(GO_BUILD_FLAGS)
 

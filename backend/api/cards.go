@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 	"ygodraft/backend/model"
 )
 
@@ -17,22 +16,33 @@ const GetRandomCardsQueryParamSize = "size"
 const GetRandomCardsQueryParamSets = "sets"
 const GetRandomCardsQueryParamTypes = "types"
 
-type CardRetrieveHandler struct {
+type ygoRetrieveHandler struct {
 	YGOClient model.YgoClient
 }
 
-type getCardResponse struct {
-	CardIds []int `json:"card_ids"`
-	Number  int   `json:"number"`
+func newYgoRetrieveHandler(client model.YgoClient) *ygoRetrieveHandler {
+	return &ygoRetrieveHandler{YGOClient: client}
 }
 
-func (crh *CardRetrieveHandler) GetCards(ctx *gin.Context) {
+// GetCards Endpoint used to retrieve all cards.
+// @Summary Endpoint used to retrieve all cards.
+// @Description Endpoint used to retrieve all cards.
+// @Tags Yu-Gi-Oh
+// @Produce json
+// @Success 200 {object} api.GetCards.getCardResponse
+// @Failure 500
+// @Router /cards [get]
+func (crh *ygoRetrieveHandler) GetCards(ctx *gin.Context) {
 	cards, err := crh.YGOClient.GetAllCards()
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
+	type getCardResponse struct {
+		CardIds []int `json:"card_ids"`
+		Number  int   `json:"number"`
+	}
 	response := getCardResponse{
 		Number:  len(*cards),
 		CardIds: make([]int, len(*cards)),
@@ -44,10 +54,21 @@ func (crh *CardRetrieveHandler) GetCards(ctx *gin.Context) {
 	ctx.JSONP(http.StatusOK, response)
 }
 
-func (crh *CardRetrieveHandler) GetCard(ctx *gin.Context) {
+// GetCard Endpoint used to retrieve a specific card.
+// @Summary Endpoint used to retrieve a specific card.
+// @Description Endpoint used to retrieve a specific cards.
+// @Tags Yu-Gi-Oh
+// @Produce json
+// @Param cardID path int true "The id of the requested card."
+// @Success 200 {object} model.Card
+// @Success 400
+// @Failure 500
+// @Router /cards/{cardID} [get]
+func (crh *ygoRetrieveHandler) GetCard(ctx *gin.Context) {
 	queryID, err := strconv.Atoi(ctx.Param(GetCardQueryParamID))
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	logrus.Debugf("API-Handler -> Retrieve api [%d]", queryID)
@@ -63,26 +84,21 @@ func (crh *CardRetrieveHandler) GetCard(ctx *gin.Context) {
 	ctx.JSONP(http.StatusOK, card)
 }
 
-func (crh *CardRetrieveHandler) GetRandomCard(ctx *gin.Context) {
-	logrus.Debugf("API-Handler -> Retrieve random card")
-
-	cards, err := crh.YGOClient.GetAllCards()
-	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-	cardsBox := *cards
-
-	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
-	randomCard := cardsBox[rand.Intn(len(cardsBox))]
-
-	logrus.Debug(randomCard)
-
-	ctx.JSONP(http.StatusOK, randomCard)
-}
-
-func (crh *CardRetrieveHandler) GetRandomCards(ctx *gin.Context) {
-	logrus.Debugf("API-Handler -> Retrieve random deck")
+// GetRandomCards Endpoint used to retrieve a certain amount of random card at once.
+// @Summary Retrieve a certain amount of random card at once.
+// @Description Retrieve a certain amount of random card at once. Calling the endpoint without any parameters returns
+// @Description a only one random card.
+// @Tags Yu-Gi-Oh
+// @Produce json
+// @Param size query int false "Determines the amount of random cards to be returned."
+// @Param sets query string false "Contains the filtered sets, separated by comma, e.g., 'Set 1,Set 2,Set 3'"
+// @Param types query string false "Contains the filtered types, separated by comma, e.g., 'Fire, Water, Dragon'"
+// @Success 200 {object} api.GetRandomCards.getRandomCardsResponse
+// @Failure 400
+// @Failure 500
+// @Router /cards/random [get]
+func (crh *ygoRetrieveHandler) GetRandomCards(ctx *gin.Context) {
+	logrus.Debugf("API-Handler -> Retrieve random cards")
 
 	numberOfCards, cardFilter, err := getRandomCardsCheckQueryAttributes(ctx)
 	if err != nil {
@@ -95,6 +111,10 @@ func (crh *CardRetrieveHandler) GetRandomCards(ctx *gin.Context) {
 		return
 	}
 
+	type getRandomCardsResponse struct {
+		Cards []*model.Card `json:"cards"`
+	}
+
 	if *cards != nil {
 		cardsBox := *cards
 
@@ -102,16 +122,12 @@ func (crh *CardRetrieveHandler) GetRandomCards(ctx *gin.Context) {
 		for i := 0; i < numberOfCards; i++ {
 			randomDeck[i] = cardsBox[rand.Intn(len(cardsBox))]
 		}
-		randomCardsResponse := struct {
-			Cards []*model.Card `json:"cards"`
-		}{Cards: randomDeck}
+		randomCardsResponse := &getRandomCardsResponse{Cards: randomDeck}
 
 		ctx.JSONP(http.StatusOK, randomCardsResponse)
 	} else {
 		emptyCards := []*model.Card{}
-		emptyResponse := struct {
-			Cards []*model.Card `json:"cards"`
-		}{Cards: emptyCards}
+		emptyResponse := getRandomCardsResponse{Cards: emptyCards}
 
 		ctx.JSONP(http.StatusOK, emptyResponse)
 	}
@@ -119,7 +135,7 @@ func (crh *CardRetrieveHandler) GetRandomCards(ctx *gin.Context) {
 
 func getRandomCardsCheckQueryAttributes(ctx *gin.Context) (int, model.CardFilter, error) {
 	filter := model.CardFilter{}
-	numberOfCards := 0
+	numberOfCards := 1
 
 	numberOfCardsRaw, ok := ctx.Request.URL.Query()[GetRandomCardsQueryParamSize]
 	if ok {

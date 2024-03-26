@@ -25,7 +25,7 @@ export function useRandomCards(clientID: string, size: number, cardFilter: CardF
     const queryParams = FilterToQuery(cardFilter)
     queryParams.set("size", String(size))
 
-    return useMagicMethod<Deck>(["random", clientID], `randomCards`, queryParams, queryOptions)
+    return useMagicMethod<Deck>(["random", clientID], `cards/random`, queryParams, queryOptions)
 }
 
 export function useMagicMethodAxios<GenericJsonType>(

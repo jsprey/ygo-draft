@@ -5,14 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 
 	"golang.org/x/time/rate"
 )
 
-//RLHTTPClient Rate Limited HTTP Client.
+// RLHTTPClient Rate Limited HTTP Client.
 type RLHTTPClient struct {
 	Client      HttpClient
 	RateLimiter Limiter
@@ -39,7 +38,7 @@ func NewDefaultRateLimitedClient() *RLHTTPClient {
 	}
 }
 
-//Do dispatches the HTTP request to the network
+// Do dispatches the HTTP request to the network
 func (c *RLHTTPClient) Do(req *http.Request) (*http.Response, error) {
 	// Comment out the below 5 lines to turn off ratelimiting
 	ctx := context.Background()
@@ -63,7 +62,7 @@ func (c *RLHTTPClient) GetJsonFromTarget(targetUrl string, data any) error {
 		return fmt.Errorf("failed to get [%s]: %w", targetUrl, err)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {

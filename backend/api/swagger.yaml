@@ -1,0 +1,653 @@
+definitions:
+  api.DeleteUser.deleteUserRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  api.GetCards.getCardResponse:
+    properties:
+      card_ids:
+        items:
+          type: integer
+        type: array
+      number:
+        type: integer
+    type: object
+  api.GetCurrentUser.getCurrentUserResponse:
+    properties:
+      display_name:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      is_admin:
+        type: boolean
+    type: object
+  api.GetRandomCards.getRandomCardsResponse:
+    properties:
+      cards:
+        items:
+          $ref: '#/definitions/model.Card'
+        type: array
+    type: object
+  api.GetSet.getSetResponse:
+    properties:
+      set:
+        $ref: '#/definitions/model.CardSet'
+    type: object
+  api.GetSetCards.getSetCardsResponse:
+    properties:
+      cards:
+        items:
+          $ref: '#/definitions/model.Card'
+        type: array
+      set:
+        $ref: '#/definitions/model.CardSet'
+    type: object
+  api.GetSets.getSetsResponse:
+    properties:
+      sets:
+        items:
+          $ref: '#/definitions/model.CardSet'
+        type: array
+    type: object
+  api.GetUsers.getUsersResponse:
+    properties:
+      numberOfPages:
+        type: integer
+      numberOfUsers:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/model.User'
+        type: array
+    type: object
+  api.Login.LoginCredentials:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  api.Login.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  api.PostUsers.postUsersRequest:
+    properties:
+      display_name:
+        type: string
+      email:
+        type: string
+      is_admin:
+        type: boolean
+      password:
+        type: string
+    type: object
+  model.Card:
+    properties:
+      atk:
+        type: integer
+      attribute:
+        type: string
+      card_images:
+        items:
+          $ref: '#/definitions/model.CardImage'
+        type: array
+      card_sets:
+        items:
+          $ref: '#/definitions/model.CardSet'
+        type: array
+      def:
+        type: integer
+      desc:
+        type: string
+      id:
+        type: integer
+      level:
+        type: integer
+      name:
+        type: string
+      race:
+        type: string
+      sets:
+        type: string
+      type:
+        type: string
+    type: object
+  model.CardImage:
+    properties:
+      id:
+        type: integer
+      image_url:
+        type: string
+      image_url_small:
+        type: string
+    type: object
+  model.CardSet:
+    properties:
+      set_code:
+        type: string
+      set_name:
+        type: string
+      set_rarity:
+        type: string
+      set_rarity_code:
+        type: string
+    type: object
+  model.Friend:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  model.FriendRequest:
+    properties:
+      id:
+        type: integer
+      invitation_date:
+        type: string
+      name:
+        type: string
+    type: object
+  model.User:
+    properties:
+      display_name:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      is_admin:
+        type: boolean
+      password_hash:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /cards:
+    get:
+      description: Endpoint used to retrieve all cards.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetCards.getCardResponse'
+        "500":
+          description: Internal Server Error
+      summary: Endpoint used to retrieve all cards.
+      tags:
+      - Yu-Gi-Oh
+  /cards/{cardID}:
+    get:
+      description: Endpoint used to retrieve a specific cards.
+      parameters:
+      - description: The id of the requested card.
+        in: path
+        name: cardID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Card'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Endpoint used to retrieve a specific card.
+      tags:
+      - Yu-Gi-Oh
+  /cards/random:
+    get:
+      description: |-
+        Retrieve a certain amount of random card at once. Calling the endpoint without any parameters returns
+        a only one random card.
+      parameters:
+      - description: Determines the amount of random cards to be returned.
+        in: query
+        name: size
+        type: integer
+      - description: Contains the filtered sets, separated by comma, e.g., 'Set 1,Set
+          2,Set 3'
+        in: query
+        name: sets
+        type: string
+      - description: Contains the filtered types, separated by comma, e.g., 'Fire,
+          Water, Dragon'
+        in: query
+        name: types
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetRandomCards.getRandomCardsResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Retrieve a certain amount of random card at once.
+      tags:
+      - Yu-Gi-Oh
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: The user provides his credentials and receives a valid JWT that
+        can be used for authentication against the backend server.
+      parameters:
+      - description: No further comment
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/api.Login.LoginCredentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Login.LoginResponse'
+        "401":
+          description: Unauthorized
+      summary: The user provides his credentials and receives a valid JWT that can
+        be used for authentication against the backend server.
+      tags:
+      - Authentication
+  /sets:
+    get:
+      description: Retrieve all sets.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetSets.getSetsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieve all sets.
+      tags:
+      - Yu-Gi-Oh
+  /sets/{code}:
+    get:
+      description: Retrieve a specific set.
+      parameters:
+      - description: The identifier of the set.
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetSet.getSetResponse'
+        "404":
+          description: Set does not exist.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieve a specific set.
+      tags:
+      - Yu-Gi-Oh
+  /sets/{code}/cards:
+    get:
+      description: Retrieve all cards of a specific set.
+      parameters:
+      - description: The identifier of the set.
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetSetCards.getSetCardsResponse'
+        "404":
+          description: Set does not exist or set contains no cards.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieve all cards of a specific set.
+      tags:
+      - Yu-Gi-Oh
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the current user.
+      parameters:
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetCurrentUser.getCurrentUserResponse'
+        "400":
+          description: Body contains invalid data.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "409":
+          description: User already exists.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve the current user.
+      tags:
+      - User Management
+  /user/friends:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the friends of a user.
+      parameters:
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Friend'
+            type: array
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve the friends of a user.
+      tags:
+      - User Management
+  /user/friends/requests:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the friend requests of a user.
+      parameters:
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.FriendRequest'
+            type: array
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve the friend requests of a user.
+      tags:
+      - User Management
+    post:
+      consumes:
+      - application/json
+      description: send/accept a friend request from the current user to another.
+        When the target user does not exist, nothing happens.
+      parameters:
+      - description: Contains the email of the target user.
+        in: body
+        name: targetUser
+        required: true
+        schema:
+          type: integer
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Cannot post a request to yourself.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: send/accept a friend request from the current user to another.
+      tags:
+      - User Management
+  /user/friends/requests/{targetUser}:
+    post:
+      consumes:
+      - application/json
+      description: send/accept a friend request from the current user to another.
+        When the target user does not exist, nothing happens.
+      parameters:
+      - description: Contains the id of the target user.
+        in: path
+        name: targetUser
+        required: true
+        type: integer
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Cannot post a request to yourself.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: send/accept a friend request from the current user to another.
+      tags:
+      - User Management
+  /users:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a user.
+      parameters:
+      - description: Contains the identifier for the to be deleted user.
+        in: body
+        name: user_data
+        required: true
+        schema:
+          $ref: '#/definitions/api.DeleteUser.deleteUserRequest'
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Body contains invalid data.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "404":
+          description: User does not exist.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Deletes a user.
+      tags:
+      - User Management
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all users with pagination.
+      parameters:
+      - description: Current page for the pagination.
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: The size for the pages.
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetUsers.getUsersResponse'
+        "400":
+          description: The page parameter cannot exceed the available amount of pages.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve all users with pagination.
+      tags:
+      - User Management
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user.
+      parameters:
+      - description: Contains the information for the new user.
+        in: body
+        name: user_data
+        required: true
+        schema:
+          $ref: '#/definitions/api.PostUsers.postUsersRequest'
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Body contains invalid data.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "409":
+          description: User already exists.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Creates a new user.
+      tags:
+      - User Management
+swagger: "2.0"

@@ -6,6 +6,7 @@ include make/variables.mk
 include make/go-tools.mk
 include make/backend.mk
 include make/frontend.mk
+include make/api-docs.mk
 
 ##@ General
 

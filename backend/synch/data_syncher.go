@@ -50,10 +50,10 @@ func (yds *YgoDataSyncher) SyncAllCards() error {
 	}
 
 	if yds.YgoCtx.Stage == config.StageDevelopment {
-		logrus.Warn("YgoDataSyncher -> [DEVELOPMENT-STAGE] Only synchronizing 20 cards")
+		logrus.Warnf("YgoDataSyncher -> [DEVELOPMENT-STAGE] Only synchronizing %d cards", yds.YgoCtx.DevelopmentContext.NumberOfCardSyncs)
 		limitedCards := []*model.Card{}
 
-		for i := 0; i < 200; i++ {
+		for i := 0; i < yds.YgoCtx.DevelopmentContext.NumberOfCardSyncs; i++ {
 			if i >= len(*cards) {
 				break
 			}

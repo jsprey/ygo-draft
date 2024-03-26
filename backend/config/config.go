@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"os"
 )
 
@@ -15,13 +14,19 @@ const (
 
 // YgoContext contains various configuration values used while running ygo draft.
 type YgoContext struct {
-	Port                  int         `yaml:"port"`
-	LogLevel              string      `yaml:"log_level"`
-	ContextPath           string      `yaml:"context_path"`
-	SyncAtStartup         bool        `yaml:"sync_at_startup"`
-	Stage                 string      `yaml:"stage"`
-	DatabaseContext       DbContext   `yaml:"database_context"`
-	AuthenticationContext AuthContext `yaml:"authentication_context"`
+	Port                  int                `yaml:"port"`
+	LogLevel              string             `yaml:"log_level"`
+	ContextPath           string             `yaml:"context_path"`
+	SyncAtStartup         bool               `yaml:"sync_at_startup"`
+	Stage                 string             `yaml:"stage"`
+	DatabaseContext       DbContext          `yaml:"database_context"`
+	AuthenticationContext AuthContext        `yaml:"authentication_context"`
+	DevelopmentContext    DevelopmentContext `yaml:"development_context"`
+}
+
+// DevelopmentContext contains information when starting the application in development mode.
+type DevelopmentContext struct {
+	NumberOfCardSyncs int `yaml:"number_of_card_syncs"`
 }
 
 // DbContext contains information about the database to use.
@@ -63,7 +68,7 @@ func ReadConfig(path string) (*YgoContext, error) {
 		return nil, fmt.Errorf("could not find configuration at %s", path)
 	}
 
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read configuration %s: %w", path, err)
 	}

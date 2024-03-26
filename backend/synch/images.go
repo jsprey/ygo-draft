@@ -4,9 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
+	"path"
 	"ygodraft/backend/model"
 )
 
@@ -37,7 +38,7 @@ func fetchAndSaveImage(id int, fileName string, imageUrl string) error {
 		return fmt.Errorf("failed to ensure folder for [%s]: %w", getFolderPath(id), err)
 	}
 
-	imagePath := fmt.Sprintf("%s%c%s", getFolderPath(id), os.PathSeparator, fileName)
+	imagePath := path.Join(getFolderPath(id), fileName)
 	exists, err := isFileExisting(imagePath)
 	if err != nil {
 		return err
@@ -66,11 +67,11 @@ func getImage(url string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to get [%s]: %w", url, err)
 	}
 
-	return ioutil.ReadAll(response.Body)
+	return io.ReadAll(response.Body)
 }
 
 func saveImage(filePath string, image []byte) error {
-	err := ioutil.WriteFile(filePath, image, 0744)
+	err := os.WriteFile(filePath, image, 0744)
 	if err != nil {
 		return fmt.Errorf("failed to save image [%s]: %w", filePath, err)
 	}
@@ -88,7 +89,7 @@ func isFileExisting(path string) (bool, error) {
 }
 
 func getFolderPath(cardID int) string {
-	return fmt.Sprintf(".%c%s%c%d", os.PathSeparator, ImagesDirectoryName, os.PathSeparator, cardID)
+	return path.Join(".", ImagesDirectoryName, string(rune(cardID)))
 }
 
 func ensurePathExists(folder string) error {

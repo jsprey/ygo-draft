@@ -2,7 +2,7 @@ package customerrors_test
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -48,7 +48,7 @@ func TestWriteErrorWithMessage_SimpleErrorWithCode(t *testing.T) {
 	customerrors.WriteErrorWithMessage(c, simpleErrorWithCode, nil, http.StatusBadRequest)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	body, _ := ioutil.ReadAll(w.Body)
+	body, _ := io.ReadAll(w.Body)
 	assert.Equal(t, "{\"message\":\"Ein interner Serverfehler ist aufgetreten.\"}", string(body))
 	assert.Equal(t, "Error #01: test error\n", c.Errors.String())
 }
@@ -60,7 +60,7 @@ func TestWriteErrorWithMessage_WithParams(t *testing.T) {
 	customerrors.WriteErrorWithMessage(c, errorWithParams, nil, http.StatusNotFound)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	body, _ := ioutil.ReadAll(w.Body)
+	body, _ := io.ReadAll(w.Body)
 	assert.Equal(t, "{\"message\":\"Die Karte [115] existiert nicht.\"}", string(body))
 }
 
@@ -73,7 +73,7 @@ func TestWriteErrorWithMessage_MultiError(t *testing.T) {
 	customerrors.WriteErrorWithMessage(c, embeddingError, internalError, http.StatusBadRequest)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	body, _ := ioutil.ReadAll(w.Body)
+	body, _ := io.ReadAll(w.Body)
 	assert.Equal(t, "{\"message\":\"Die Karte [115] existiert nicht. Ein interner Serverfehler ist aufgetreten.\"}", string(body))
 }
 
@@ -84,6 +84,6 @@ func TestWriteErrorWithMessage_MultiWithParams(t *testing.T) {
 	customerrors.WriteErrorWithMessage(c, errorWithParams, internalWithParams, http.StatusNotFound)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	body, _ := ioutil.ReadAll(w.Body)
+	body, _ := io.ReadAll(w.Body)
 	assert.Equal(t, "{\"message\":\"Die Karte [115] existiert nicht. Die Karte [115] existiert nicht.\"}", string(body))
 }

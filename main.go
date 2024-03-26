@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
 	"ygodraft/backend/api"
 	"ygodraft/backend/client/auth"
@@ -72,7 +74,12 @@ func setupDB(ygoCtx *config.YgoContext) (*postgresql.PostgresClient, error) {
 		return nil, fmt.Errorf("failed to create new db client: %w", err)
 	}
 
-	databaseSetup := setup.NewDatabaseSetup(client, ygoCtx.AuthenticationContext)
+	usermgtClient, err := usermgt.NewUsermgtClient(client)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new usermgt client: %w", err)
+	}
+
+	databaseSetup := setup.NewDatabaseSetup(client, usermgtClient)
 	err = databaseSetup.Setup()
 	if err != nil {
 		return nil, fmt.Errorf("failed to perform database setup: %w", err)
@@ -134,6 +141,7 @@ func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache, user
 	publicAPI.Static("static", "build/ui/static")
 	publicAPI.Static("/images/cards", "./imageStore")
 
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	apiV1Group := publicAPI.Group("api/v1")
 	err := api.SetupAPI(apiV1Group, authClient, client, usermgtClient)
 	if err != nil {

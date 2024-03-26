@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
-	"strings"
 	"ygodraft/backend/client/auth"
 	"ygodraft/backend/client/ygo"
 	"ygodraft/backend/model"
@@ -12,67 +11,55 @@ import (
 
 const InternalServerErrorMessage = "Internal server error. Check server logs for more information."
 
+// SetupAPI creates the routes for the api endpoints.
 func SetupAPI(router *gin.RouterGroup, authClient model.YGOJwtAuthClient, client *ygo.YgoClientWithCache, usermgtClient model.UsermgtClient) error {
+	SwaggerInfo.BasePath = "/api/v1"
+
 	authHandler := newAuthenticationHandler(authClient, usermgtClient)
+	usermgtHandler := newUserManagementHandler(usermgtClient)
 
 	// unprotected access for login and stuff
-	SetupUnprotectedAPI(router, client, authHandler)
+	setupUnprotectedAPI(router, client, authHandler)
 
 	// access for authenticated default user
 	userGroup := router.Use(auth.PermissionMiddleware(authClient, false))
-	SetupAuthenticatedUserApi(userGroup, client, authHandler)
+	setupAuthenticatedUserApi(userGroup, client, usermgtHandler)
 
 	// access for authenticated admin user
 	adminGroup := router.Use(auth.PermissionMiddleware(authClient, true))
-	SetupAuthenticatedAdminApi(adminGroup, client, authHandler)
+	setupAuthenticatedAdminApi(adminGroup, client, usermgtHandler)
 
 	return nil
 }
 
-func SetupUnprotectedAPI(router gin.IRoutes, client *ygo.YgoClientWithCache, handler *authenticationHandler) {
+func setupUnprotectedAPI(router gin.IRoutes, client *ygo.YgoClientWithCache, handler *authenticationHandler) {
 	router.POST("login", handler.Login)
 
-	cardRetriever := CardRetrieveHandler{
-		YGOClient: client,
-	}
+	cardRetriever := newYgoRetrieveHandler(client)
 
 	router.GET("cards", cardRetriever.GetCards)
 	router.GET("cards/:id", cardRetriever.GetCard)
-	router.GET("randomCard", cardRetriever.GetRandomCard)
-	router.GET("randomCards", cardRetriever.GetRandomCards)
+	router.GET("cards/random", cardRetriever.GetRandomCards)
 	router.GET("sets", cardRetriever.GetSets)
 	router.GET("sets/:code", cardRetriever.GetSet)
 	router.GET("sets/:code/cards", cardRetriever.GetSetCards)
 }
 
-func SetupAuthenticatedUserApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, authHandler *authenticationHandler) {
-	router.GET("user", authHandler.CurrentUser)
-	router.GET("user/friends", authHandler.GetFriends)
-	router.GET("user/friends/requests", authHandler.GetFriendRequests)
-	router.POST("user/friends/requests/:id", authHandler.PostRequestFriend)
-	router.POST("user/friends/requests", authHandler.PostRequestFriendByEmail)
+func setupAuthenticatedUserApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, usermgtHandler *userManagementHandler) {
+	router.GET("user", usermgtHandler.GetCurrentUser)
+	router.GET("user/friends", usermgtHandler.GetFriends)
+	router.GET("user/friends/requests", usermgtHandler.GetFriendRequests)
+	router.POST("user/friends/requests/:id", usermgtHandler.PostFriendRequest)
+	router.POST("user/friends/requests", usermgtHandler.PostFriendRequestByEmail)
 }
 
-func SetupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, authHandler *authenticationHandler) {
-	router.GET("users", authHandler.GetUsers)
-	router.POST("users", authHandler.RegisterUser)
-	router.DELETE("users", authHandler.DeleteUser)
+func setupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, usermgtHandler *userManagementHandler) {
+	router.GET("users", usermgtHandler.GetUsers)
+	router.POST("users", usermgtHandler.PostUsers)
+	router.DELETE("users", usermgtHandler.DeleteUser)
 }
 
-func ExtractBearerToken(c *gin.Context) (string, error) {
-	authHeader := c.GetHeader("Authorization")
-	if authHeader == "" {
-		return "", fmt.Errorf("no authorization header provided")
-	}
-
-	if strings.HasPrefix(authHeader, "Bearer ") {
-		token := authHeader[len("Bearer "):]
-		return token, nil
-	}
-
-	return "", fmt.Errorf("no bearer token provided")
-}
-
+// GetQueryParameterInt retrieves an integer query parameter from the context.
 func GetQueryParameterInt(ctx *gin.Context, parameterName string) (int, error) {
 	raw, exists := ctx.GetQuery(parameterName)
 	if !exists {
