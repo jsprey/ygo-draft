@@ -1,7 +1,7 @@
 import {Card,} from "../api/CardModel"
 import SingleCardViewer from "../deck/SingleCardViewer";
 import "./YgoBackground.css"
-import {useRandomCards} from "../api/hooks/useCards";
+import {useRandomCards} from "../api/hooks/cards/useCards";
 import {CardFilter} from "../api/CardFilter";
 import {Alert, Spinner} from "react-bootstrap";
 import React from "react";

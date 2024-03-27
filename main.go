@@ -54,7 +54,7 @@ func startProgram() error {
 		return fmt.Errorf("failed to setup ygo client: %w", err)
 	}
 
-	router, err := setupRouter(ygoCtx, ygoClient, usermgtClient)
+	router, err := setupRouter(ygoCtx, dbClient, ygoClient, usermgtClient)
 	if err != nil {
 		return fmt.Errorf("failed to setup router: %w", err)
 	}
@@ -113,7 +113,7 @@ func setupYgoClient(ygoCtx *config.YgoContext, dbClient model.DatabaseClient) (*
 	return client, nil
 }
 
-func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache, usermgtClient model.UsermgtClient) (*gin.Engine, error) {
+func setupRouter(ygoCtx *config.YgoContext, dbClient *postgresql.PostgresClient, client *ygo.YgoClientWithCache, usermgtClient model.UsermgtClient) (*gin.Engine, error) {
 	authClient := auth.NewYgoJwtAuthClient(ygoCtx.AuthenticationContext.JWTSecretKey)
 
 	router := gin.Default()
@@ -143,7 +143,7 @@ func setupRouter(ygoCtx *config.YgoContext, client *ygo.YgoClientWithCache, user
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	apiV1Group := publicAPI.Group("api/v1")
-	err := api.SetupAPI(apiV1Group, authClient, client, usermgtClient)
+	err := api.SetupAPI(apiV1Group, dbClient, authClient, client, usermgtClient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to setup api: %w", err)
 	}

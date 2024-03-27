@@ -12,7 +12,7 @@ import (
 //go:embed test_templates/users/friends/testQueryGetFriends.sql
 var testQueryGetFriends string
 
-func Test_sqlQueryTemplater_QueryGetFriends(t *testing.T) {
+func Test_sqlQueryTemplater_GetFriends(t *testing.T) {
 	t.Run("wrongly create query", func(t *testing.T) {
 		// given
 		templater, err := query.NewSqlQueryTemplater()

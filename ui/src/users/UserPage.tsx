@@ -1,5 +1,5 @@
 import React from "react";
-import {useCurrentUser} from "../api/hooks/useUser";
+import {useCurrentUser} from "../api/hooks/users/useUser";
 import {Spinner} from "react-bootstrap";
 import FriendList from "./FriendList";
 import FriendRequestList from "./FriendRequestList";

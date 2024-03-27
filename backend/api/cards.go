@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"ygodraft/backend/customerrors"
 	"ygodraft/backend/model"
 )
 
@@ -35,7 +36,7 @@ func newYgoRetrieveHandler(client model.YgoClient) *ygoRetrieveHandler {
 func (crh *ygoRetrieveHandler) GetCards(ctx *gin.Context) {
 	cards, err := crh.YGOClient.GetAllCards()
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -75,7 +76,7 @@ func (crh *ygoRetrieveHandler) GetCard(ctx *gin.Context) {
 
 	card, err := crh.YGOClient.GetCard(queryID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -107,7 +108,7 @@ func (crh *ygoRetrieveHandler) GetRandomCards(ctx *gin.Context) {
 
 	cards, err := crh.YGOClient.GetAllCardsWithFilter(cardFilter)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 

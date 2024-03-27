@@ -20,6 +20,7 @@ func NewYgoJwtAuthClient(secretKey string) model.YGOJwtAuthClient {
 
 func (jc *ygoJwtAuthClient) GenerateToken(user model.User) (string, error) {
 	claims := model.YgoClaims{
+		ID:          user.ID,
 		Email:       user.Email,
 		IsAdmin:     user.IsAdmin,
 		DisplayName: user.DisplayName,

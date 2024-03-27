@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import SvgIconButton from "../core/SvgIconButton";
-import {AddUserPayload, useAddUser} from "../api/hooks/useAddUser";
+import {AddUserPayload, useAddUser} from "../api/hooks/users/useAddUser";
 import {enqueueSnackbar} from "notistack";
 import {useQueryClient} from "react-query";
 import {Spinner} from "react-bootstrap";

@@ -1,6 +1,6 @@
 import React, {Dispatch, SetStateAction, useState} from "react";
 import {Deck, ToYdkFileString} from "../api/CardModel";
-import {useRandomCards} from "../api/hooks/useCards";
+import {useRandomCards} from "../api/hooks/cards/useCards";
 import DeckViewer from "./DeckViewer";
 import {Alert, Button, Spinner} from "react-bootstrap";
 import {YgoQueryClient} from "../index";

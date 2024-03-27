@@ -5,14 +5,15 @@ import React from "react";
 import {Container} from "react-bootstrap";
 import Home from "../home/Home";
 import DeckRandomGeneratorPage from "../deck/DeckRandomGeneratorPage";
-import DeckDraftWizard from "../draft/DeckDraftWizard";
+import DeckDraftWizard from "../draft-local/DeckDraftWizard";
 import {Route, Routes} from "react-router-dom";
-import LoginPage from "../login/LoginPage";
+import LoginPage from "../auth/LoginPage";
 import {ProtectedRoute} from "./ProtectedRoute";
 import {useTheme} from "../core/context/ColorThemeProvider";
 import UserPage from "../users/UserPage";
 import AdminPage from "../users/AdminPage";
 import {Navigate} from "react-router";
+import ChallengeDraftPage from "../draft-challenge/ChallengeDraftPage";
 
 const AppRouter = () => {
     const {token} = useAuth();
@@ -29,6 +30,7 @@ const AppRouter = () => {
             <Route path={"/randomdeck"} element={withBackground(withNavbar(withContainer(<DeckRandomGeneratorPage/>, isDarkMode)))}/>
             <Route path={"/draftdeck"} element={withBackground(withNavbar(withContainer(<DeckDraftWizard/>, isDarkMode)))}/>
             <Route path={"/user"} element={withBackground(withNavbar(withContainer(<UserPage/>, isDarkMode)))}/>
+            <Route path={"/challenge"} element={withBackground(withNavbar(withContainer(<ChallengeDraftPage/>, isDarkMode)))}/>
         </Route>
     </>
 

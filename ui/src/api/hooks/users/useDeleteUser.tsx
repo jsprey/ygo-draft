@@ -1,6 +1,6 @@
 import {MutationFunction, useMutation, UseMutationOptions} from "react-query";
 import axios from "axios";
-import {PUBLIC_URL} from "../../index";
+import {PUBLIC_URL} from "../../../index";
 
 type DeleteUserPayload = {
     email: string

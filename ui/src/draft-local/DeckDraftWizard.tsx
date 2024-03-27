@@ -49,7 +49,7 @@ function DeckDraftWizard() {
             break
         default:
         case DraftStages.Settings:
-            stageBody = <PageSettings setCurrentStage={setCurrentStage} setDraftSettings={setDraftSettings}/>
+            stageBody = <PageSettings setDraftSettings={setDraftSettings} submitButtonName={"Next"} onSettingsSubmit={() => setCurrentStage(DraftStages.DraftMain)}/>
             break
     }
 

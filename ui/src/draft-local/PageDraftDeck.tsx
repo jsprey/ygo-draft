@@ -1,12 +1,12 @@
 import React, {useState} from "react";
 import {Card, Deck} from "../api/CardModel";
-import {useRandomCards} from "../api/hooks/useCards";
+import {useRandomCards} from "../api/hooks/cards/useCards";
 import DeckViewer from "../deck/DeckViewer";
 import {Alert, Button, Modal, Spinner} from "react-bootstrap";
 import MultiCardDraftArea from "./MultiCardDraftArea";
 import {YgoQueryClient} from "../index";
 import {DraftStages} from "./DeckDraftWizard";
-import {usePrompt} from "../core/hooks/usePromptBlocker";
+import {usePrompt} from "../api/hooks/usePromptBlocker";
 import {CardFilter} from "../api/CardFilter";
 
 const componentRandomQueryID = "draft_generator"

@@ -119,6 +119,229 @@ const docTemplate = `{
                 }
             }
         },
+        "/drafts/challenges": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve the challenges of the current user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft"
+                ],
+                "summary": "Retrieve the challenges of the current user.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Contains the authorization token.",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetChallenges.getChallengesResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Challenge a friend to a draft.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft"
+                ],
+                "summary": "Challenge a friend to a draft.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Contains the authorization token.",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Contains the information for the receiving party.",
+                        "name": "receiver",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.ChallengeFriend.challengeFriendRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Body data is not correct/valid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/drafts/challenges/{id}/accept": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Accept a draft challenge from another user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft"
+                ],
+                "summary": "Accept a draft challenge from another user.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Contains the authorization token.",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Contains the id of the challenge to be accepted.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Body data is not correct/valid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Thrown when anyone except the receiver tries to accept a challenge.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/drafts/challenges/{id}/decline": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Decline a draft challenge from another user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft"
+                ],
+                "summary": "Decline a draft challenge from another user.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Contains the authorization token.",
+                        "name": "authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Contains the id of the challenge to be declined.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Body data is not correct/valid",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Thrown when anyone except the receiver tries to decline a challenge.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "The user provides his credentials and receives a valid JWT that can be used for authentication against the backend server.",
@@ -748,6 +971,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "api.ChallengeFriend.challengeFriendRequest": {
+            "type": "object",
+            "properties": {
+                "friend_id": {
+                    "type": "integer"
+                },
+                "settings": {
+                    "$ref": "#/definitions/model.DraftSettings"
+                }
+            }
+        },
         "api.DeleteUser.deleteUserRequest": {
             "type": "object",
             "properties": {
@@ -767,6 +1001,17 @@ const docTemplate = `{
                 },
                 "number": {
                     "type": "integer"
+                }
+            }
+        },
+        "api.GetChallenges.getChallengesResponse": {
+            "type": "object",
+            "properties": {
+                "challenges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DraftChallenge"
+                    }
                 }
             }
         },
@@ -959,6 +1204,63 @@ const docTemplate = `{
                 },
                 "set_rarity_code": {
                     "type": "string"
+                }
+            }
+        },
+        "model.DraftChallenge": {
+            "type": "object",
+            "properties": {
+                "challenge_date": {
+                    "type": "string"
+                },
+                "challenger_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "receiver_id": {
+                    "type": "integer"
+                },
+                "settings": {
+                    "$ref": "#/definitions/model.DraftSettings"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DraftMode": {
+            "type": "string",
+            "enum": [
+                "bestof",
+                "round"
+            ],
+            "x-enum-varnames": [
+                "DraftModeBestOf",
+                "DraftGoalRounds"
+            ]
+        },
+        "model.DraftSettings": {
+            "type": "object",
+            "properties": {
+                "extra_deck_draws": {
+                    "type": "integer"
+                },
+                "main_deck_draws": {
+                    "type": "integer"
+                },
+                "mode": {
+                    "$ref": "#/definitions/model.DraftMode"
+                },
+                "modeValue": {
+                    "type": "integer"
+                },
+                "sets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CardSet"
+                    }
                 }
             }
         },

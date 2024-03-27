@@ -1,5 +1,5 @@
 import {Alert, Modal, Spinner} from "react-bootstrap";
-import {useSetCards} from "../api/hooks/useSets";
+import {useSetCards} from "../api/hooks/cards/useSets";
 import React from "react";
 import MultiCardViewer from "../deck/MultiCardViewer";
 

@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Alert, Col, Form, Placeholder, Row} from "react-bootstrap";
 import HelpTooltip from "../core/HelpTooltip";
 import {CardSet, SetList, sortSets} from "../api/Sets";
-import {useSets} from "../api/hooks/useSets";
+import {useSets} from "../api/hooks/cards/useSets";
 import CardSelectedSetList, {CardSetReceiver} from "./CardSelectedSetList";
 import SvgIconButton, {SvgIconButtonProps} from "../core/SvgIconButton";
 import SetDetailModal from "./SetDetailModal";

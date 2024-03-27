@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"ygodraft/backend/client/cache"
+	"ygodraft/backend/customerrors"
 	"ygodraft/backend/model"
 )
 
@@ -22,7 +23,7 @@ func (crh *ygoRetrieveHandler) GetSets(ctx *gin.Context) {
 
 	sets, err := crh.YGOClient.GetAllSets()
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -45,7 +46,7 @@ func (crh *ygoRetrieveHandler) checkSetExists(ctx *gin.Context, setCode string) 
 		_ = ctx.AbortWithError(http.StatusNotFound, err)
 		return nil, err
 	} else if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return nil, err
 	}
 
@@ -105,7 +106,7 @@ func (crh *ygoRetrieveHandler) GetSetCards(ctx *gin.Context) {
 	setFilter := model.CardFilter{Sets: []string{set.SetName}}
 	cards, err := crh.YGOClient.GetAllCardsWithFilter(setFilter)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 

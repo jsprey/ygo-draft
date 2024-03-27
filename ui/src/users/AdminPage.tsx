@@ -1,5 +1,5 @@
 import React from "react";
-import {useCurrentUser} from "../api/hooks/useUser";
+import {useCurrentUser} from "../api/hooks/users/useUser";
 import {Alert, Spinner} from "react-bootstrap";
 import UserManagement from "./UserManagement";
 import AddNewUserWidget from "./AddNewUserWidget";

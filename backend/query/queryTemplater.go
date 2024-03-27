@@ -27,6 +27,7 @@ func NewSqlQueryTemplater() (*sqlQueryTemplater, error) {
 	templater.AddCardTemplates(templateStringMap)
 	templater.AddUserTemplates(templateStringMap)
 	templater.AddFriendsTemplates(templateStringMap)
+	templater.AddChallengeQueries(templateStringMap)
 
 	for templateName, templateString := range *templateStringMap {
 		parsedTemplate, err := template.New(templateName).Funcs(customFunctions).Parse(templateString)

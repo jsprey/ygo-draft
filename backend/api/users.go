@@ -13,6 +13,7 @@ import (
 	"net/mail"
 	"strconv"
 	"ygodraft/backend/client/auth"
+	"ygodraft/backend/customerrors"
 	"ygodraft/backend/model"
 )
 
@@ -65,7 +66,7 @@ func (ah *userManagementHandler) GetUsers(ctx *gin.Context) {
 	usersCount, err := ah.usermgtClient.CountUsers()
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to retrieve number of users: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -79,7 +80,7 @@ func (ah *userManagementHandler) GetUsers(ctx *gin.Context) {
 	userList, err := ah.usermgtClient.GetUsers(pageParameter, pageSizeParameter)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get users: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -110,25 +111,19 @@ func (ah *userManagementHandler) GetUsers(ctx *gin.Context) {
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /users [delete]
 func (ah *userManagementHandler) DeleteUser(ctx *gin.Context) {
-	logrus.Debugf("API-Handler -> DeleteUser -> Call to DeleteUser endoint...")
-
-	body, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read request body: %w", err))
-		return
-	}
-
-	// type contains username and password
 	type deleteUserRequest struct {
 		Email string `json:"email"`
 	}
-	deleteRequest := &deleteUserRequest{}
 
-	err = json.Unmarshal(body, deleteRequest)
+	logrus.Debugf("API-Handler -> DeleteUser -> Call to DeleteUser endoint...")
+
+	deleteRequest := &deleteUserRequest{}
+	err := GetRequestData(ctx, deleteRequest)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read delete request from body: %w", err))
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to get request data: %w", err))
 		return
 	}
+
 	logrus.Debugf("API-Handler -> DeleteUser -> Delete request for user [%s]...", asteriskEmail(deleteRequest.Email))
 
 	// check user exists in database
@@ -139,14 +134,14 @@ func (ah *userManagementHandler) DeleteUser(ctx *gin.Context) {
 		return
 	} else if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
 	err = ah.usermgtClient.DeleteUser(user.ID, user.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to delete user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -230,7 +225,7 @@ func (ah *userManagementHandler) PostUsers(ctx *gin.Context) {
 	user, err := ah.usermgtClient.GetUser(userRegistrationRequest.Email)
 	if err != nil && !model.IsErrorUserDoesNotExist(err) {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	} else if err == nil && user != nil {
 		ctx.String(http.StatusConflict, "user already exists")
@@ -242,7 +237,7 @@ func (ah *userManagementHandler) PostUsers(ctx *gin.Context) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userRegistrationRequest.Password), bcrypt.DefaultCost)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to hash password: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -256,7 +251,7 @@ func (ah *userManagementHandler) PostUsers(ctx *gin.Context) {
 	err = ah.usermgtClient.CreateUser(newUser)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to create user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 	}
 
 	ctx.Status(204)
@@ -285,12 +280,13 @@ func (ah *userManagementHandler) GetCurrentUser(ctx *gin.Context) {
 	if !ok {
 		ctx.String(http.StatusUnauthorized, "unauthorized")
 		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
 	}
 
 	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -333,19 +329,20 @@ func (ah *userManagementHandler) GetFriends(ctx *gin.Context) {
 	if !ok {
 		ctx.String(http.StatusUnauthorized, "unauthorized")
 		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
 	}
 
 	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
 	friendList, err := ah.usermgtClient.GetFriends(user.ID)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to retrieve friends of user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -371,19 +368,20 @@ func (ah *userManagementHandler) GetFriendRequests(ctx *gin.Context) {
 	if !ok {
 		ctx.String(http.StatusUnauthorized, "unauthorized")
 		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
 	}
 
 	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
 	friendRequests, err := ah.usermgtClient.GetFriendRequests(user.ID)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to retrieve friends of user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -411,42 +409,44 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "you need to provide a valid user id")
 		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to read the target user id: %w", err))
+		return
 	}
 
 	tokenClaims, ok := auth.GetClaims(ctx)
 	if !ok {
 		ctx.String(http.StatusUnauthorized, "unauthorized")
 		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
 	}
 
 	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
 	targetUser, err := ah.usermgtClient.GetUserByID(targetUserID)
 	if err != nil && model.IsErrorUserDoesNotExist(err) {
 		ctx.String(http.StatusBadRequest, InvalidGivenUserErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get target user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	} else if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get target user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
 	if user.ID == targetUserID {
 		ctx.String(http.StatusBadRequest, BadRequestCannotReferenceYourself)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("invalid operation: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
 	friendRequests, err := ah.usermgtClient.GetFriendRequests(user.ID)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to retrieve friend requests of user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -455,7 +455,7 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 			err = ah.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusFriends)
 			if err != nil {
 				ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-				_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to set relationship status: %w", err))
+				_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 				return
 			}
 
@@ -468,7 +468,7 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 	err = ah.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusInvited)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to set relationship status: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -490,23 +490,16 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /user/friends/requests [post]
 func (ah *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
-	logrus.Debugf("API-Handler -> GetCurrentUser -> Call to PostFriendRequestByEmail endoint...")
-
-	rawBody, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("cannot read body of request"))
-		return
-	}
-
 	type postFriendRequestViaEmailRequest struct {
 		FriendEmail string `json:"friend_email"`
 	}
+
+	logrus.Debugf("API-Handler -> GetCurrentUser -> Call to PostFriendRequestByEmail endoint...")
+
 	var bodyData postFriendRequestViaEmailRequest
-	err = json.Unmarshal(rawBody, &bodyData)
+	err := GetRequestData(ctx, bodyData)
 	if err != nil {
-		ctx.String(http.StatusBadRequest, "Form data is incorrect/invalid.")
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("bad request missing friend email"))
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to get request data: %w", err))
 		return
 	}
 
@@ -514,12 +507,13 @@ func (ah *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
 	if !ok {
 		ctx.String(http.StatusUnauthorized, "unauthorized")
 		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
 	}
 
 	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -530,20 +524,20 @@ func (ah *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
 		return
 	} else if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get target user by email: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
 	if user.Email == targetUser.Email {
 		ctx.String(http.StatusBadRequest, BadRequestCannotReferenceYourself)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("invalid operation: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
 	err = ah.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusInvited)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to set relationship status: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 

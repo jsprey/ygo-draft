@@ -1,13 +1,12 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
-	"io"
 	"net/http"
+	"ygodraft/backend/customerrors"
 	"ygodraft/backend/model"
 )
 
@@ -31,26 +30,20 @@ func newAuthenticationHandler(ygoAuthClient model.YGOJwtAuthClient, usermgtClien
 // @Success 200 {object} api.Login.LoginResponse
 // @Router /login [post]
 func (ah *authenticationHandler) Login(ctx *gin.Context) {
-	logrus.Debugf("API-Handler -> Login -> Endpoint called...")
-
-	body, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read request body: %w", err))
-		return
-	}
-
-	// type contains username and password
 	type LoginCredentials struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
-	loginCredentials := &LoginCredentials{}
 
-	err = json.Unmarshal(body, loginCredentials)
+	logrus.Debugf("API-Handler -> Login -> Endpoint called...")
+
+	loginCredentials := &LoginCredentials{}
+	err := GetRequestData(ctx, loginCredentials)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read crendentials from body: %w", err))
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to get request data: %w", err))
 		return
 	}
+
 	logrus.Debugf("API-Handler -> Login -> Login request for user [%s]...", asteriskEmail(loginCredentials.Email))
 
 	// check user exists in database
@@ -59,7 +52,7 @@ func (ah *authenticationHandler) Login(ctx *gin.Context) {
 		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to get user: %w", err))
 		return
 	} else if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get user: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
@@ -73,7 +66,7 @@ func (ah *authenticationHandler) Login(ctx *gin.Context) {
 	// create new token with sufficient permissions
 	token, err := ah.ygoAuthClient.GenerateToken(*user)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to create user token: %w", err))
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 

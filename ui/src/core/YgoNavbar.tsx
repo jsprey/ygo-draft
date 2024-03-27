@@ -6,7 +6,7 @@ import UserNavbarBadge from "../users/UserNavbarBadge";
 import React from "react";
 import ThemeSwitcher from "./ThemeSwitcher";
 import {useTheme} from "./context/ColorThemeProvider";
-import {useCurrentUser} from "../api/hooks/useUser";
+import {useCurrentUser} from "../api/hooks/users/useUser";
 import SvgIconButton from "./SvgIconButton";
 
 const CogWheelIcon = <SvgIconButton size={18} classNames={"fill-neutral-600 dark:fill-neutral-50"}>

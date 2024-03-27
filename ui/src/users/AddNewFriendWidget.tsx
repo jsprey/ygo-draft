@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {useSendFriendRequest} from "../api/hooks/friends/useSendFriendRequest";
 import {Spinner} from "react-bootstrap";
 import {enqueueSnackbar} from "notistack";
-import {useCurrentUser} from "../api/hooks/useUser";
+import {useCurrentUser} from "../api/hooks/users/useUser";
 
 function AddNewFriendWidget() {
     var user = useCurrentUser();

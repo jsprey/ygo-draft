@@ -21,6 +21,9 @@ var createTableUsers string
 //go:embed queries/friends.sql
 var createTableFriends string
 
+//go:embed queries/draft_challenge.sql
+var createTableDraftChallenge string
+
 // DatabaseSetup is responsible to setup the database including the creation of the database and the data tables.
 type DatabaseSetup struct {
 	Client        model.DatabaseClient
@@ -59,6 +62,12 @@ func (ds *DatabaseSetup) Setup() error {
 	err = ds.setupUsermgt()
 	if err != nil {
 		return fmt.Errorf("failed to setup usermgt database stuff: %w", err)
+	}
+
+	logrus.Debug("Setup -> Database -> Creating `draft_challenge` table")
+	_, err = ds.Client.Exec(createTableDraftChallenge)
+	if err != nil {
+		return fmt.Errorf("failed to exec: %w", err)
 	}
 
 	return nil

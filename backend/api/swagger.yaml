@@ -1,4 +1,11 @@
 definitions:
+  api.ChallengeFriend.challengeFriendRequest:
+    properties:
+      friend_id:
+        type: integer
+      settings:
+        $ref: '#/definitions/model.DraftSettings'
+    type: object
   api.DeleteUser.deleteUserRequest:
     properties:
       email:
@@ -12,6 +19,13 @@ definitions:
         type: array
       number:
         type: integer
+    type: object
+  api.GetChallenges.getChallengesResponse:
+    properties:
+      challenges:
+        items:
+          $ref: '#/definitions/model.DraftChallenge'
+        type: array
     type: object
   api.GetCurrentUser.getCurrentUserResponse:
     properties:
@@ -137,6 +151,44 @@ definitions:
       set_rarity_code:
         type: string
     type: object
+  model.DraftChallenge:
+    properties:
+      challenge_date:
+        type: string
+      challenger_id:
+        type: integer
+      id:
+        type: integer
+      receiver_id:
+        type: integer
+      settings:
+        $ref: '#/definitions/model.DraftSettings'
+      status:
+        type: string
+    type: object
+  model.DraftMode:
+    enum:
+    - bestof
+    - round
+    type: string
+    x-enum-varnames:
+    - DraftModeBestOf
+    - DraftGoalRounds
+  model.DraftSettings:
+    properties:
+      extra_deck_draws:
+        type: integer
+      main_deck_draws:
+        type: integer
+      mode:
+        $ref: '#/definitions/model.DraftMode'
+      modeValue:
+        type: integer
+      sets:
+        items:
+          $ref: '#/definitions/model.CardSet'
+        type: array
+    type: object
   model.Friend:
     properties:
       id:
@@ -241,6 +293,149 @@ paths:
       summary: Retrieve a certain amount of random card at once.
       tags:
       - Yu-Gi-Oh
+  /drafts/challenges:
+    get:
+      description: Retrieve the challenges of the current user.
+      parameters:
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetChallenges.getChallengesResponse'
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error.
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve the challenges of the current user.
+      tags:
+      - Draft
+    post:
+      consumes:
+      - application/json
+      description: Challenge a friend to a draft.
+      parameters:
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: Contains the information for the receiving party.
+        in: body
+        name: receiver
+        required: true
+        schema:
+          $ref: '#/definitions/api.ChallengeFriend.challengeFriendRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Body data is not correct/valid
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error.
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Challenge a friend to a draft.
+      tags:
+      - Draft
+  /drafts/challenges/{id}/accept:
+    post:
+      description: Accept a draft challenge from another user.
+      parameters:
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: Contains the id of the challenge to be accepted.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Body data is not correct/valid
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "403":
+          description: Thrown when anyone except the receiver tries to accept a challenge.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error.
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Accept a draft challenge from another user.
+      tags:
+      - Draft
+  /drafts/challenges/{id}/decline:
+    post:
+      description: Decline a draft challenge from another user.
+      parameters:
+      - description: Contains the authorization token.
+        in: header
+        name: authorization
+        required: true
+        type: string
+      - description: Contains the id of the challenge to be declined.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Body data is not correct/valid
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "403":
+          description: Thrown when anyone except the receiver tries to decline a challenge.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error.
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Decline a draft challenge from another user.
+      tags:
+      - Draft
   /login:
     post:
       consumes:

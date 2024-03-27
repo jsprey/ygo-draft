@@ -1,10 +1,10 @@
 import React, {useState} from "react";
-import {User, useUsers} from "../api/hooks/useUsers";
+import {User, useUsers} from "../api/hooks/users/useUsers";
 import {Alert, Button, Modal, Spinner} from "react-bootstrap";
 import classNames from "classnames";
 import {useQueryClient} from "react-query";
 import {enqueueSnackbar} from "notistack";
-import {useDeleteUser} from "../api/hooks/useDeleteUser";
+import {useDeleteUser} from "../api/hooks/users/useDeleteUser";
 import SvgIconButton from "../core/SvgIconButton";
 
 const TrashIcon = <SvgIconButton size={18} classNames={"fill-white"}>

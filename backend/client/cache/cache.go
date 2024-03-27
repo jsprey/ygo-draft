@@ -10,7 +10,7 @@ import (
 // YgoCache handles the caching of generic data in a postgres database.
 type YgoCache struct {
 	Client         model.DatabaseClient
-	QueryTemplater model.QueryGenerator
+	QueryTemplater model.YgoQueryGenerator
 }
 
 // NewYgoCache creates a new cache by the given name.

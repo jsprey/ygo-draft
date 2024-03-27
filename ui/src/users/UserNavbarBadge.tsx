@@ -1,5 +1,5 @@
 import SvgIconButton from "../core/SvgIconButton";
-import {useCurrentUser} from "../api/hooks/useUser";
+import {useCurrentUser} from "../api/hooks/users/useUser";
 import {Nav, Spinner} from "react-bootstrap";
 import {Link} from "react-router-dom";
 
