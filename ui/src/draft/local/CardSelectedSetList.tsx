@@ -1,7 +1,7 @@
 import React, {useState} from "react";
-import {CardSet} from "../api/Sets";
+import {CardSet} from "../../api/Sets";
 import {FormControl} from "react-bootstrap";
-import SvgIconButton, {SvgIconButtonProps} from "../core/SvgIconButton";
+import SvgIconButton, {SvgIconButtonProps} from "../../core/SvgIconButton";
 
 const IconSelectAll = <SvgIconButton size={25}
                                      classNames={"fill-red-600 stroke-green-600 hover:stroke-green-500 active:stroke-green-400"}>

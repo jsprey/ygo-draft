@@ -1,7 +1,7 @@
 import React from "react";
-import {Deck} from "../api/CardModel";
-import DeckViewer from "../deck/DeckViewer";
-import {ExportDeck} from "../deck/DeckRandomGeneratorPage";
+import {Deck} from "../../api/CardModel";
+import DeckViewer from "../../deck/DeckViewer";
+import {ExportDeck} from "../../deck/DeckRandomGeneratorPage";
 import {Button} from "react-bootstrap";
 
 export type PageOverviewProps = {

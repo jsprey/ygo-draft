@@ -123,7 +123,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Retrieve the challenges of the current user.",
@@ -134,15 +134,6 @@ const docTemplate = `{
                     "Draft"
                 ],
                 "summary": "Retrieve the challenges of the current user.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Contains the authorization token.",
-                        "name": "authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -167,7 +158,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Challenge a friend to a draft.",
@@ -182,13 +173,6 @@ const docTemplate = `{
                 ],
                 "summary": "Challenge a friend to a draft.",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Contains the authorization token.",
-                        "name": "authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "description": "Contains the information for the receiving party.",
                         "name": "receiver",
@@ -222,7 +206,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Accept a draft challenge from another user.",
@@ -234,13 +218,6 @@ const docTemplate = `{
                 ],
                 "summary": "Accept a draft challenge from another user.",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Contains the authorization token.",
-                        "name": "authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "Contains the id of the challenge to be accepted.",
@@ -284,7 +261,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Decline a draft challenge from another user.",
@@ -491,7 +468,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Retrieve the current user.",
@@ -552,7 +529,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Retrieve the friends of a user.",
@@ -566,15 +543,6 @@ const docTemplate = `{
                     "User Management"
                 ],
                 "summary": "Retrieve the friends of a user.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Contains the authorization token.",
-                        "name": "authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -604,7 +572,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Retrieve the friend requests of a user.",
@@ -618,15 +586,6 @@ const docTemplate = `{
                     "User Management"
                 ],
                 "summary": "Retrieve the friend requests of a user.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Contains the authorization token.",
-                        "name": "authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -654,7 +613,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "send/accept a friend request from the current user to another. When the target user does not exist, nothing happens.",
@@ -715,7 +674,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "send/accept a friend request from the current user to another. When the target user does not exist, nothing happens.",
@@ -735,13 +694,6 @@ const docTemplate = `{
                         "description": "Contains the id of the target user.",
                         "name": "targetUser",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Contains the authorization token.",
-                        "name": "authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -774,7 +726,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Retrieve all users with pagination.",
@@ -801,13 +753,6 @@ const docTemplate = `{
                         "description": "The size for the pages.",
                         "name": "page_size",
                         "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Contains the authorization token.",
-                        "name": "authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -841,7 +786,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Creates a new user.",
@@ -864,13 +809,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/api.PostUsers.postUsersRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Contains the authorization token.",
-                        "name": "authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -906,7 +844,7 @@ const docTemplate = `{
             "delete": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Deletes a user.",
@@ -929,13 +867,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/api.DeleteUser.deleteUserRequest"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Contains the authorization token.",
-                        "name": "authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -1226,9 +1157,24 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.DraftSettings"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.DraftChallengeStatus"
                 }
             }
+        },
+        "model.DraftChallengeStatus": {
+            "type": "string",
+            "enum": [
+                "all",
+                "pending",
+                "accepted",
+                "declined"
+            ],
+            "x-enum-varnames": [
+                "StatusAll",
+                "StatusPending",
+                "StatusAccepted",
+                "StatusDeclined"
+            ]
         },
         "model.DraftMode": {
             "type": "string",
@@ -1247,7 +1193,13 @@ const docTemplate = `{
                 "extra_deck_draws": {
                     "type": "integer"
                 },
+                "extra_deck_size": {
+                    "type": "integer"
+                },
                 "main_deck_draws": {
+                    "type": "integer"
+                },
+                "main_deck_size": {
                     "type": "integer"
                 },
                 "mode": {
@@ -1309,16 +1261,24 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "0.0.0-dev",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
+	Title:            "Test Title",
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

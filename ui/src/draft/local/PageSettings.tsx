@@ -1,9 +1,9 @@
 import React, {useState} from "react";
-import {DraftSettings} from "./DeckDraftWizard";
 import {Button, Form, Row} from "react-bootstrap";
 import SettingsEntry from "./SettingsEntry";
 import CardSetSelector from "./CardSetSelector";
-import {CardSet} from "../api/Sets";
+import {CardSet} from "../../api/Sets";
+import {DraftSettings} from "../../api/Draft";
 
 export type PageSettingsProps = {
     setDraftSettings: React.Dispatch<React.SetStateAction<DraftSettings>>
@@ -34,11 +34,13 @@ function PageSettings(props: PageSettingsProps) {
             setValidated(true)
 
             const draftSettings: DraftSettings = {
-                mainDraftSize: mainDraftSize,
-                mainDraftRound: mainDraftRound,
-                extraDraftRound: extraDraftRound,
-                extraDraftSize: extraDraftSize,
-                selectedCardSets: generalDraftCardSets
+                mode: "bestof",
+                modeValue: 5,
+                main_deck_size: mainDraftSize,
+                main_deck_draws: mainDraftRound,
+                extra_deck_draws: extraDraftRound,
+                extra_deck_size: extraDraftSize,
+                sets: generalDraftCardSets
             }
             props.setDraftSettings(draftSettings)
             props.onSettingsSubmit()

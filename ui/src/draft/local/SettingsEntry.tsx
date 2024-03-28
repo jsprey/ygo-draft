@@ -1,6 +1,6 @@
 import React from "react";
 import {Col, Form} from "react-bootstrap";
-import HelpTooltip from "../core/HelpTooltip";
+import HelpTooltip from "../../core/HelpTooltip";
 
 export type SettingsEntryProps = {
     value: number

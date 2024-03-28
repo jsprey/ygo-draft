@@ -25,8 +25,6 @@ function AddNewFriendWidget() {
     let sendFriendRequest = useSendFriendRequest({onSuccess: onMutationSuccess, onError: onMutationError});
 
     function validateInput(value: string) {
-        console.log(`Validate the value '${value}'`)
-
         if (value === "") {
             setInvalidInput("Value cannot be empty.")
             return

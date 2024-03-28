@@ -34,12 +34,11 @@ func newUserManagementHandler(usermgtClient model.UsermgtClient) *userManagement
 // @Summary Retrieve all users with pagination.
 // @Description Retrieve all users with pagination.
 // @Tags User Management
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Accept json
 // @Produce json
 // @Param page query int true "Current page for the pagination."
 // @Param page_size query int true "The size for the pages."
-// @Param authorization header string true "Contains the authorization token."
 // @Success 200 {object} api.GetUsers.getUsersResponse
 // @Failure 400 {string} string "Missing query parameter."
 // @Failure 400 {string} string "The page parameter cannot exceed the available amount of pages."
@@ -98,11 +97,10 @@ func (ah *userManagementHandler) GetUsers(ctx *gin.Context) {
 // @Summary Deletes a user.
 // @Description Deletes a user.
 // @Tags User Management
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Accept json
 // @Produce json
 // @Param user_data body api.DeleteUser.deleteUserRequest true "Contains the identifier for the to be deleted user."
-// @Param authorization header string true "Contains the authorization token."
 // @Success 204
 // @Failure 401 {string} string "Unauthorized."
 // @Failure 400 {string} string "Missing body."
@@ -153,11 +151,10 @@ func (ah *userManagementHandler) DeleteUser(ctx *gin.Context) {
 // @Summary Creates a new user.
 // @Description Creates a new user.
 // @Tags User Management
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Accept json
 // @Produce json
 // @Param user_data body api.PostUsers.postUsersRequest true "Contains the information for the new user."
-// @Param authorization header string true "Contains the authorization token."
 // @Success 204
 // @Failure 400 {string} string "Missing body."
 // @Failure 401 {string} string "Unauthorized."
@@ -262,7 +259,7 @@ func (ah *userManagementHandler) PostUsers(ctx *gin.Context) {
 // @Summary Retrieve the current user.
 // @Description Retrieve the current user.
 // @Tags User Management
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Accept json
 // @Produce json
 // @Param authorization header string true "Contains the authorization token."
@@ -314,10 +311,9 @@ func asteriskEmail(email string) string {
 // @Summary Retrieve the friends of a user.
 // @Description Retrieve the friends of a user.
 // @Tags User Management
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Accept json
 // @Produce json
-// @Param authorization header string true "Contains the authorization token."
 // @Success 200 {array} model.Friend
 // @Failure 401 {string} string "Unauthorized."
 // @Failure 500 {string} string "Internal Server Error"
@@ -353,10 +349,9 @@ func (ah *userManagementHandler) GetFriends(ctx *gin.Context) {
 // @Summary Retrieve the friend requests of a user.
 // @Description Retrieve the friend requests of a user.
 // @Tags User Management
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Accept json
 // @Produce json
-// @Param authorization header string true "Contains the authorization token."
 // @Success 200 {array} model.FriendRequest
 // @Failure 401 {string} string "Unauthorized."
 // @Failure 500 {string} string "Internal Server Error"
@@ -392,11 +387,10 @@ func (ah *userManagementHandler) GetFriendRequests(ctx *gin.Context) {
 // @Summary send/accept a friend request from the current user to another.
 // @Description send/accept a friend request from the current user to another. When the target user does not exist, nothing happens.
 // @Tags User Management
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Accept json
 // @Produce json
 // @Param targetUser path int true "Contains the id of the target user."
-// @Param authorization header string true "Contains the authorization token."
 // @Success 201
 // @Failure 400 {string} string "Cannot post a request to yourself."
 // @Failure 401 {string} string "Unauthorized."
@@ -479,7 +473,7 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 // @Summary send/accept a friend request from the current user to another.
 // @Description send/accept a friend request from the current user to another. When the target user does not exist, nothing happens.
 // @Tags User Management
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Accept json
 // @Produce json
 // @Param targetUser body int true "Contains the email of the target user."

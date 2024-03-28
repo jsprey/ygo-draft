@@ -18,6 +18,14 @@ import (
 	"ygodraft/backend/synch"
 )
 
+// Configuration for golang swagger
+// @Title Test Title
+// @Version 0.0.0-dev
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
+
 func main() {
 	err := startProgram()
 	if err != nil {

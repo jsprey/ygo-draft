@@ -56,6 +56,10 @@ func (c challengeClient) GetChallenges(userID int, status model.DraftChallengeSt
 		return nil, fmt.Errorf("failed to exec [SelectReceivedChallenges]: %w", err)
 	}
 
+	if challengeList == nil {
+		challengeList = []model.DraftChallenge{}
+	}
+
 	return challengeList, nil
 }
 

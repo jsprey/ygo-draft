@@ -164,8 +164,20 @@ definitions:
       settings:
         $ref: '#/definitions/model.DraftSettings'
       status:
-        type: string
+        $ref: '#/definitions/model.DraftChallengeStatus'
     type: object
+  model.DraftChallengeStatus:
+    enum:
+    - all
+    - pending
+    - accepted
+    - declined
+    type: string
+    x-enum-varnames:
+    - StatusAll
+    - StatusPending
+    - StatusAccepted
+    - StatusDeclined
   model.DraftMode:
     enum:
     - bestof
@@ -178,7 +190,11 @@ definitions:
     properties:
       extra_deck_draws:
         type: integer
+      extra_deck_size:
+        type: integer
       main_deck_draws:
+        type: integer
+      main_deck_size:
         type: integer
       mode:
         $ref: '#/definitions/model.DraftMode'
@@ -220,6 +236,8 @@ definitions:
     type: object
 info:
   contact: {}
+  title: Test Title
+  version: 0.0.0-dev
 paths:
   /cards:
     get:
@@ -296,12 +314,6 @@ paths:
   /drafts/challenges:
     get:
       description: Retrieve the challenges of the current user.
-      parameters:
-      - description: Contains the authorization token.
-        in: header
-        name: authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -318,7 +330,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Retrieve the challenges of the current user.
       tags:
       - Draft
@@ -327,11 +339,6 @@ paths:
       - application/json
       description: Challenge a friend to a draft.
       parameters:
-      - description: Contains the authorization token.
-        in: header
-        name: authorization
-        required: true
-        type: string
       - description: Contains the information for the receiving party.
         in: body
         name: receiver
@@ -352,7 +359,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Challenge a friend to a draft.
       tags:
       - Draft
@@ -360,11 +367,6 @@ paths:
     post:
       description: Accept a draft challenge from another user.
       parameters:
-      - description: Contains the authorization token.
-        in: header
-        name: authorization
-        required: true
-        type: string
       - description: Contains the id of the challenge to be accepted.
         in: path
         name: id
@@ -392,7 +394,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Accept a draft challenge from another user.
       tags:
       - Draft
@@ -432,7 +434,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Decline a draft challenge from another user.
       tags:
       - Draft
@@ -568,7 +570,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Retrieve the current user.
       tags:
       - User Management
@@ -577,12 +579,6 @@ paths:
       consumes:
       - application/json
       description: Retrieve the friends of a user.
-      parameters:
-      - description: Contains the authorization token.
-        in: header
-        name: authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -601,7 +597,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Retrieve the friends of a user.
       tags:
       - User Management
@@ -610,12 +606,6 @@ paths:
       consumes:
       - application/json
       description: Retrieve the friend requests of a user.
-      parameters:
-      - description: Contains the authorization token.
-        in: header
-        name: authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -634,7 +624,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Retrieve the friend requests of a user.
       tags:
       - User Management
@@ -673,7 +663,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: send/accept a friend request from the current user to another.
       tags:
       - User Management
@@ -689,11 +679,6 @@ paths:
         name: targetUser
         required: true
         type: integer
-      - description: Contains the authorization token.
-        in: header
-        name: authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -712,7 +697,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: send/accept a friend request from the current user to another.
       tags:
       - User Management
@@ -728,11 +713,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/api.DeleteUser.deleteUserRequest'
-      - description: Contains the authorization token.
-        in: header
-        name: authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -755,7 +735,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Deletes a user.
       tags:
       - User Management
@@ -774,11 +754,6 @@ paths:
         name: page_size
         required: true
         type: integer
-      - description: Contains the authorization token.
-        in: header
-        name: authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -799,7 +774,7 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Retrieve all users with pagination.
       tags:
       - User Management
@@ -814,11 +789,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/api.PostUsers.postUsersRequest'
-      - description: Contains the authorization token.
-        in: header
-        name: authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -841,8 +811,14 @@ paths:
           schema:
             type: string
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Creates a new user.
       tags:
       - User Management
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

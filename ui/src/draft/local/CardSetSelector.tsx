@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import {Alert, Col, Form, Placeholder, Row} from "react-bootstrap";
-import HelpTooltip from "../core/HelpTooltip";
-import {CardSet, SetList, sortSets} from "../api/Sets";
-import {useSets} from "../api/hooks/cards/useSets";
+import HelpTooltip from "../../core/HelpTooltip";
+import {CardSet, SetList, sortSets} from "../../api/Sets";
+import {useSets} from "../../api/hooks/cards/useSets";
 import CardSelectedSetList, {CardSetReceiver} from "./CardSelectedSetList";
-import SvgIconButton, {SvgIconButtonProps} from "../core/SvgIconButton";
+import SvgIconButton, {SvgIconButtonProps} from "../../core/SvgIconButton";
 import SetDetailModal from "./SetDetailModal";
 
 export type CardSetSelectorProps = {
@@ -34,7 +34,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
 
     const [isShowingSetCardsView, setIsShowingSetCardsView] = useState(false);
     const [currentDetailSet, setCurrentDetailSet] = useState("");
-    const showSetCardsModal = (currentSet:string) => {
+    const showSetCardsModal = (currentSet: string) => {
         setCurrentDetailSet(currentSet)
         setIsShowingSetCardsView(true);
     }
@@ -113,7 +113,8 @@ function CardSetSelector(props: CardSetSelectorProps) {
 
         </Form.Group>
         </Row>
-        {isShowingSetCardsView ? <SetDetailModal setCode={currentDetailSet} setShow={setIsShowingSetCardsView} isShowing={isShowingSetCardsView}/> : <></>}
+        {isShowingSetCardsView ? <SetDetailModal setCode={currentDetailSet} setShow={setIsShowingSetCardsView}
+                                                 isShowing={isShowingSetCardsView}/> : <></>}
     </>
 }
 

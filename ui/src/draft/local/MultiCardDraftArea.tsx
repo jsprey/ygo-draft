@@ -1,5 +1,5 @@
-import SingleCardViewer from "../deck/SingleCardViewer";
-import {Card, SortCards} from "../api/CardModel";
+import SingleCardViewer from "../../deck/SingleCardViewer";
+import {Card, SortCards} from "../../api/CardModel";
 import {Button} from "react-bootstrap";
 import React from "react";
 

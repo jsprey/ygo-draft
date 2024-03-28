@@ -42,9 +42,8 @@ func newDraftHandler(dbClient model.DatabaseClient, usermgtClient model.UsermgtC
 // @Summary Retrieve the challenges of the current user.
 // @Description Retrieve the challenges of the current user.
 // @Tags Draft
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Produce json
-// @Param authorization header string true "Contains the authorization token."
 // @Success 200 {object} api.GetChallenges.getChallengesResponse
 // @Failure 401 {string} string "Unauthorized."
 // @Failure 500 {string} string "Internal Server Error."
@@ -79,10 +78,9 @@ func (dh *draftHandler) GetChallenges(ctx *gin.Context) {
 // @Summary Challenge a friend to a draft.
 // @Description Challenge a friend to a draft.
 // @Tags Draft
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Accept json
 // @Produce json
-// @Param authorization header string true "Contains the authorization token."
 // @Param receiver body api.ChallengeFriend.challengeFriendRequest true "Contains the information for the receiving party."
 // @Success 204
 // @Failure 400 {string} string "Body data is not correct/valid"
@@ -125,9 +123,8 @@ func (dh *draftHandler) ChallengeFriend(ctx *gin.Context) {
 // @Summary Accept a draft challenge from another user.
 // @Description Accept a draft challenge from another user.
 // @Tags Draft
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Produce json
-// @Param authorization header string true "Contains the authorization token."
 // @Param id path int true "Contains the id of the challenge to be accepted."
 // @Success 204
 // @Failure 400 {string} string "Body data is not correct/valid"
@@ -203,7 +200,7 @@ func extractChallengeReceiver(ctx *gin.Context, dh *draftHandler) (model.DraftCh
 // @Summary Decline a draft challenge from another user.
 // @Description Decline a draft challenge from another user.
 // @Tags Draft
-// @Security ApiKeyAuth
+// @Security Bearer
 // @Produce json
 // @Param authorization header string true "Contains the authorization token."
 // @Param id path int true "Contains the id of the challenge to be declined."

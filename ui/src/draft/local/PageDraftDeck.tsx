@@ -1,13 +1,13 @@
 import React, {useState} from "react";
-import {Card, Deck} from "../api/CardModel";
-import {useRandomCards} from "../api/hooks/cards/useCards";
-import DeckViewer from "../deck/DeckViewer";
+import {Card, Deck} from "../../api/CardModel";
+import {useRandomCards} from "../../api/hooks/cards/useCards";
+import DeckViewer from "../../deck/DeckViewer";
 import {Alert, Button, Modal, Spinner} from "react-bootstrap";
 import MultiCardDraftArea from "./MultiCardDraftArea";
-import {YgoQueryClient} from "../index";
-import {DraftStages} from "./DeckDraftWizard";
-import {usePrompt} from "../api/hooks/usePromptBlocker";
-import {CardFilter} from "../api/CardFilter";
+import {YgoQueryClient} from "../../index";
+import {LocalDraftStages} from "./DeckDraftWizard";
+import {usePrompt} from "../../api/hooks/usePromptBlocker";
+import {CardFilter} from "../../api/CardFilter";
 
 const componentRandomQueryID = "draft_generator"
 
@@ -15,7 +15,7 @@ export type PageDraftDeckProps = {
     isMainDraft: boolean
     deck: Deck
     setDeck: React.Dispatch<React.SetStateAction<Deck>>
-    setCurrentStage: React.Dispatch<React.SetStateAction<DraftStages>>
+    setCurrentStage: React.Dispatch<React.SetStateAction<LocalDraftStages>>
     draftSize: number
     maxRounds: number
     filter: CardFilter
@@ -56,7 +56,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
         setDrafted(false)
         setCurrentDraftRound(1)
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
-        props.setCurrentStage(DraftStages.Settings)
+        props.setCurrentStage(LocalDraftStages.Settings)
         setShowAbortDialog(false)
     }
 
@@ -66,7 +66,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
         setCurrentDraftRound(1)
         setFinished(false)
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
-        props.setCurrentStage(props.isMainDraft ? DraftStages.DraftExtra : DraftStages.DeckOverview)
+        props.setCurrentStage(props.isMainDraft ? LocalDraftStages.DraftExtra : LocalDraftStages.DeckOverview)
     }
 
     let body

@@ -65,7 +65,9 @@ const (
 // DraftSettings contains the configurable settings for a draft.
 type DraftSettings struct {
 	MainDeckDraws  int       `json:"main_deck_draws"`
+	MainDeckSize   int       `json:"main_deck_size"`
 	ExtraDeckDraws int       `json:"extra_deck_draws"`
+	ExtraDeckSize  int       `json:"extra_deck_size"`
 	Mode           DraftMode `json:"mode"`
 	ModeValue      int       `json:"modeValue"`
 	Sets           []CardSet `json:"sets"`

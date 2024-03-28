@@ -5,7 +5,7 @@ import React from "react";
 import {Container} from "react-bootstrap";
 import Home from "../home/Home";
 import DeckRandomGeneratorPage from "../deck/DeckRandomGeneratorPage";
-import DeckDraftWizard from "../draft-local/DeckDraftWizard";
+import DeckDraftWizard from "../draft/local/DeckDraftWizard";
 import {Route, Routes} from "react-router-dom";
 import LoginPage from "../auth/LoginPage";
 import {ProtectedRoute} from "./ProtectedRoute";
@@ -13,7 +13,7 @@ import {useTheme} from "../core/context/ColorThemeProvider";
 import UserPage from "../users/UserPage";
 import AdminPage from "../users/AdminPage";
 import {Navigate} from "react-router";
-import ChallengeDraftPage from "../draft-challenge/ChallengeDraftPage";
+import ChallengeDraftPage from "../draft/challenge/ChallengeDraftPage";
 
 const AppRouter = () => {
     const {token} = useAuth();

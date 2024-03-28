@@ -1,12 +1,11 @@
 import React from "react";
-import {Nav, Spinner} from "react-bootstrap";
+import {Spinner} from "react-bootstrap";
 import {useFriends} from "../api/hooks/friends/useFriends";
-import classNames from "classnames";
-import {Link} from "react-router-dom";
-import {ChallengeDraftState} from "../draft-challenge/ChallengeDraftPage";
+import FriendListEntry from "./FriendListEntry";
 
 function FriendList() {
     const {data, isLoading, error} = useFriends()
+
     let content = <></>
     if (isLoading) {
         content = <div className={"flex align-content-center"}>
@@ -20,23 +19,7 @@ function FriendList() {
         let friendsEntries: JSX.Element[] = [];
         let isHighlightedBackground = true
         data.forEach((friend, index) => {
-            const friendChallengeState: ChallengeDraftState = {
-                friendID: friend.id,
-                friendName: friend.name
-            }
-
-            let cNames = classNames("flex justify-content-between p-2 border-start border-end", isHighlightedBackground ? "bg-blue-100 dark:bg-gray-700" : "bg-blue-50 dark:bg-gray-600", index === data.length - 1 ? "border-bottom" : "")
-            let entry = <div key={friend.id}
-                             className={cNames}>
-                <div className={"align-self-center dark:text-white"}>
-                    <b>
-                        {friend.name}
-                    </b>
-                </div>
-                <Nav.Link as={Link} state={friendChallengeState} to={"/challenge"}>
-                    <span className={"btn btn-primary"}>Challenge</span>
-                </Nav.Link>
-            </div>
+            let entry = <FriendListEntry friend={friend} highlightBackground={isHighlightedBackground} borderBottom={index === data.length - 1}/>
             isHighlightedBackground = !isHighlightedBackground
             friendsEntries.push(entry)
 
