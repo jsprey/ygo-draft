@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS draft_rounds
     draftID      INT REFERENCES drafts (id) NOT NULL,
     roundNumber  INT                        NOT NULL,
     status       VARCHAR(20)                NOT NULL,
-    deck         TEXT[]                     NOT NULL,
     winnerUserID INT REFERENCES users (id),
     CONSTRAINT unique_round_per_draft UNIQUE (draftID, roundNumber)
 );

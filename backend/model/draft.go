@@ -44,14 +44,32 @@ func IsErrorUserAlreadyChallenged(err error) bool {
 	return customError.Code == ErrorUserAlreadyChallenged.Code
 }
 
-// DraftChallengeStatus determines the current state of the challenge
+// DraftStatus determines the current state of the draft.
+type DraftStatus string
+
+const (
+	DraftStatusRunning  DraftStatus = "running"
+	DraftStatusCanceled DraftStatus = "canceled"
+	DraftStatusFinished DraftStatus = "finished"
+)
+
+// DraftChallengeStatus determines the current state of the challenge.
 type DraftChallengeStatus string
 
 const (
-	StatusAll      DraftChallengeStatus = "all"
-	StatusPending  DraftChallengeStatus = "pending"
-	StatusAccepted DraftChallengeStatus = "accepted"
-	StatusDeclined DraftChallengeStatus = "declined"
+	DraftChallengeStatusAll      DraftChallengeStatus = "all"
+	DraftChallengeStatusPending  DraftChallengeStatus = "pending"
+	DraftChallengeStatusAccepted DraftChallengeStatus = "accepted"
+	DraftChallengeStatusDeclined DraftChallengeStatus = "declined"
+)
+
+// DraftRoundStatus determines the current state of the draft round.
+type DraftRoundStatus string
+
+const (
+	DraftRoundStatusPreparation DraftRoundStatus = "preparation"
+	DraftRoundStatusFighting    DraftRoundStatus = "fighting"
+	DraftRoundStatusFinished    DraftRoundStatus = "finished"
 )
 
 // DraftMode determines the mode of the draft.

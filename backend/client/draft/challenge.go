@@ -80,7 +80,7 @@ func (c challengeClient) GetChallenges(userID int, status model.DraftChallengeSt
 }
 
 func (c challengeClient) IsChallenging(fromUser int, toUser int) (bool, error) {
-	selectQuery, err := c.QueryTemplater.SelectOutgoingChallenges(fromUser, model.StatusPending)
+	selectQuery, err := c.QueryTemplater.SelectOutgoingChallenges(fromUser, model.DraftChallengeStatusPending)
 	if err != nil {
 		return false, fmt.Errorf("failed to create [SelectOutgoingChallenges] template: %w", err)
 	}
@@ -124,7 +124,7 @@ func (c challengeClient) ChallengeUser(fromUser int, toUser int, settings model.
 }
 
 func (c challengeClient) AcceptChallenge(challengeID int) error {
-	updateQuery, err := c.QueryTemplater.UpdateChallenge(challengeID, model.StatusAccepted)
+	updateQuery, err := c.QueryTemplater.UpdateChallenge(challengeID, model.DraftChallengeStatusAccepted)
 	if err != nil {
 		return fmt.Errorf("failed to create [UpdateChallenge] template: %w", err)
 	}
@@ -140,7 +140,7 @@ func (c challengeClient) AcceptChallenge(challengeID int) error {
 }
 
 func (c challengeClient) DeclineChallenge(challengeID int) error {
-	updateQuery, err := c.QueryTemplater.UpdateChallenge(challengeID, model.StatusDeclined)
+	updateQuery, err := c.QueryTemplater.UpdateChallenge(challengeID, model.DraftChallengeStatusDeclined)
 	if err != nil {
 		return fmt.Errorf("failed to create [UpdateChallenge] template: %w", err)
 	}

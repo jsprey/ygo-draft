@@ -29,13 +29,11 @@ func TestDatabaseSetup_Setup(t *testing.T) {
 	t.Run("fail as retrieving admin throws error", func(t *testing.T) {
 		// given
 		dbMock := &mocks.DatabaseClient{}
-		defer mock.AssertExpectationsForObjects(t, dbMock)
 		usermgtMock := &mocks.UsermgtClient{}
-		defer mock.AssertExpectationsForObjects(t, usermgtMock)
 		databaseSetup := setup.NewDatabaseSetup(dbMock, usermgtMock)
 
 		dbMock.On("Exec", mock.Anything).Return(nil, nil)
-		usermgtMock.On("GetCurrentUser", config.AdminUserEmail).Return(nil, assert.AnError)
+		usermgtMock.On("GetUser", config.AdminUserEmail).Return(nil, assert.AnError)
 
 		// when
 		err := databaseSetup.Setup()
@@ -43,6 +41,7 @@ func TestDatabaseSetup_Setup(t *testing.T) {
 		// then
 		require.Error(t, err)
 		require.ErrorIs(t, err, assert.AnError)
+		mock.AssertExpectationsForObjects(t, dbMock, usermgtMock)
 	})
 
 	t.Run("perform setup fails on error", func(t *testing.T) {
@@ -71,7 +70,7 @@ func TestDatabaseSetup_Setup(t *testing.T) {
 		databaseSetup := setup.NewDatabaseSetup(dbMock, usermgtMock)
 
 		dbMock.On("Exec", mock.Anything).Return(nil, nil)
-		usermgtMock.On("GetCurrentUser", config.AdminUserEmail).Return(nil, model.ErrorUserDoesNotExist.WithParam("admin@admin"))
+		usermgtMock.On("GetUser", config.AdminUserEmail).Return(nil, model.ErrorUserDoesNotExist.WithParam("admin@admin"))
 		usermgtMock.On("CreateUser", mock.Anything).Return(nil)
 
 		// when
@@ -90,7 +89,7 @@ func TestDatabaseSetup_Setup(t *testing.T) {
 		databaseSetup := setup.NewDatabaseSetup(dbMock, usermgtMock)
 
 		dbMock.On("Exec", mock.Anything).Return(nil, nil)
-		usermgtMock.On("GetCurrentUser", config.AdminUserEmail).Return(nil, nil)
+		usermgtMock.On("GetUser", config.AdminUserEmail).Return(nil, nil)
 
 		// when
 		err := databaseSetup.Setup()

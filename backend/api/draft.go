@@ -62,7 +62,7 @@ func (dh *draftHandler) GetChallenges(ctx *gin.Context) {
 		return
 	}
 
-	challenges, err := dh.ChallengeClient.GetChallenges(tokenClaims.ID, model.StatusPending)
+	challenges, err := dh.ChallengeClient.GetChallenges(tokenClaims.ID, model.DraftChallengeStatusPending)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -142,12 +142,12 @@ func (dh *draftHandler) AcceptChallenge(ctx *gin.Context) {
 		return
 	}
 
-	if challenge.Status == model.StatusAccepted {
+	if challenge.Status == model.DraftChallengeStatusAccepted {
 		ctx.Status(http.StatusNoContent)
 		return
 	}
 
-	if challenge.Status == model.StatusDeclined {
+	if challenge.Status == model.DraftChallengeStatusDeclined {
 		ctx.String(http.StatusBadRequest, "challenges was already declined")
 		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("declined challenge cannot be accepted: %w", err))
 		return
@@ -220,12 +220,12 @@ func (dh *draftHandler) DeclineChallenge(ctx *gin.Context) {
 		return
 	}
 
-	if challenge.Status == model.StatusDeclined {
+	if challenge.Status == model.DraftChallengeStatusDeclined {
 		ctx.Status(http.StatusNoContent)
 		return
 	}
 
-	if challenge.Status == model.StatusAccepted {
+	if challenge.Status == model.DraftChallengeStatusAccepted {
 		ctx.String(http.StatusBadRequest, "challenges was already accepted")
 		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("accepted challenge cannot be declined: %w", err))
 		return

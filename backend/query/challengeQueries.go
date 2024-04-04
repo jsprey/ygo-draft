@@ -24,7 +24,7 @@ func (sqt *sqlQueryTemplater) SelectOutgoingChallenges(challengerID int, status 
 		Status       string `json:"status"`
 	}{ChallengerID: challengerID}
 
-	if status != model.StatusAll {
+	if status != model.DraftChallengeStatusAll {
 		templateObject.Status = escape(string(status))
 	}
 
@@ -40,7 +40,7 @@ func (sqt *sqlQueryTemplater) SelectReceivedChallenges(receiverID int, status mo
 		Status     string `json:"status"`
 	}{ReceiverID: receiverID}
 
-	if status != model.StatusAll {
+	if status != model.DraftChallengeStatusAll {
 		templateObject.Status = escape(string(status))
 	}
 
@@ -76,7 +76,7 @@ func (sqt *sqlQueryTemplater) InsertChallenge(challengerID int, receiverID int, 
 		ChallengerID: challengerID,
 		ReceiverID:   receiverID,
 		Settings:     escape(string(settingsJson)),
-		Status:       escape(string(model.StatusPending)),
+		Status:       escape(string(model.DraftChallengeStatusPending)),
 	}
 
 	return sqt.Template("InsertChallenge", &templateObject)
@@ -86,7 +86,7 @@ func (sqt *sqlQueryTemplater) InsertChallenge(challengerID int, receiverID int, 
 var templateContentUpdateChallenge string
 
 func (sqt *sqlQueryTemplater) UpdateChallenge(challengeID int, status model.DraftChallengeStatus) (string, error) {
-	if status == model.StatusAll {
+	if status == model.DraftChallengeStatusAll {
 		return "", fmt.Errorf("invalid status value for update")
 	}
 

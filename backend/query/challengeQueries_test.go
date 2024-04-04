@@ -22,7 +22,7 @@ func Test_sqlQueryTemplater_SelectOutgoingChallenges(t *testing.T) {
 		require.NoError(t, err)
 
 		// when
-		myString, err := templater.SelectOutgoingChallenges(0, model.StatusPending)
+		myString, err := templater.SelectOutgoingChallenges(0, model.DraftChallengeStatusPending)
 
 		// then
 		require.NoError(t, err)
@@ -34,7 +34,7 @@ func Test_sqlQueryTemplater_SelectOutgoingChallenges(t *testing.T) {
 		require.NoError(t, err)
 
 		// when
-		myString, err := templater.SelectOutgoingChallenges(0, model.StatusAll)
+		myString, err := templater.SelectOutgoingChallenges(0, model.DraftChallengeStatusAll)
 
 		// then
 		require.NoError(t, err)
@@ -55,7 +55,7 @@ func Test_sqlQueryTemplater_SelectReceivedChallenges(t *testing.T) {
 		require.NoError(t, err)
 
 		// when
-		myString, err := templater.SelectReceivedChallenges(3, model.StatusPending)
+		myString, err := templater.SelectReceivedChallenges(3, model.DraftChallengeStatusPending)
 
 		// then
 		require.NoError(t, err)
@@ -67,7 +67,7 @@ func Test_sqlQueryTemplater_SelectReceivedChallenges(t *testing.T) {
 		require.NoError(t, err)
 
 		// when
-		myString, err := templater.SelectReceivedChallenges(3, model.StatusAll)
+		myString, err := templater.SelectReceivedChallenges(3, model.DraftChallengeStatusAll)
 
 		// then
 		require.NoError(t, err)
@@ -103,7 +103,7 @@ func Test_sqlQueryTemplater_UpdateChallenge(t *testing.T) {
 		require.NoError(t, err)
 
 		// when
-		_, err = templater.UpdateChallenge(4, model.StatusAll)
+		_, err = templater.UpdateChallenge(4, model.DraftChallengeStatusAll)
 
 		// then
 		require.Error(t, err)
@@ -115,7 +115,7 @@ func Test_sqlQueryTemplater_UpdateChallenge(t *testing.T) {
 		require.NoError(t, err)
 
 		// when
-		myString, err := templater.UpdateChallenge(4, model.StatusPending)
+		myString, err := templater.UpdateChallenge(4, model.DraftChallengeStatusPending)
 
 		// then
 		require.NoError(t, err)
