@@ -15,7 +15,6 @@ export type ChallengeDraftState = {
 
 function ChallengeDraftPage() {
     const navigate = useNavigate()
-    const [draftSettings, setDraftSettings] = useState<DraftSettings>({} as DraftSettings)
     const [challengedSend, setChallengedSend] = useState<boolean>(false)
     const location = useLocation();
 
@@ -36,10 +35,10 @@ function ChallengeDraftPage() {
     }
     const challengeFriendMutation = useChallengeUser({onSuccess: onMutationSuccess, onError: onMutationError});
 
-    function sendChallenge(state: ChallengeDraftState) {
+    function sendChallenge(settings: DraftSettings, state: ChallengeDraftState) {
         const challengeFriendRequest: PostChallengeRequest = {
             friend_id: state.friendID,
-            settings: draftSettings
+            settings: settings
         }
 
         setChallengedSend(true)
@@ -57,9 +56,11 @@ function ChallengeDraftPage() {
                 <p className={"text-5xl align-text-center uppercase dark:text-neutral-50"}>Challenge: {state.friendName}</p>
             </div>
 
-            {challengeFriendMutation.isLoading ? <div className={"dark:text-neutral-50"}><Spinner animation={"border"}></Spinner> Sending Challenge</div> :
-                <PageSettings setDraftSettings={setDraftSettings} local={false} submitButtonName={"Challenge"}
-                              onSettingsSubmit={() => sendChallenge(state)}/>}
+            {challengeFriendMutation.isLoading ?
+                <div className={"dark:text-neutral-50"}><Spinner animation={"border"}></Spinner> Sending Challenge
+                </div> :
+                <PageSettings local={false} submitButtonName={"Challenge"}
+                              onSettingsSubmit={(settings: DraftSettings) => sendChallenge(settings, state)}/>}
         </div>
     }
 

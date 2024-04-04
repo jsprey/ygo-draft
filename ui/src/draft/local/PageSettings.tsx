@@ -6,8 +6,7 @@ import {CardSet} from "../../api/Sets";
 import {DraftSettings} from "../../api/Draft";
 
 export type PageSettingsProps = {
-    setDraftSettings: React.Dispatch<React.SetStateAction<DraftSettings>>
-    onSettingsSubmit: () => void
+    onSettingsSubmit: (settings: DraftSettings) => void
     submitButtonName: string
     local?: boolean
 }
@@ -33,6 +32,8 @@ function PageSettings(props: PageSettingsProps) {
         if (mainDraftSizeError === "" && mainDraftRoundError === "" && extraDraftRoundError === "" && extraDraftSizeError === "") {
             setValidated(true)
 
+            console.log(generalDraftCardSets)
+
             const draftSettings: DraftSettings = {
                 mode: "bestof",
                 modeValue: 5,
@@ -42,8 +43,8 @@ function PageSettings(props: PageSettingsProps) {
                 extra_deck_size: extraDraftSize,
                 sets: generalDraftCardSets
             }
-            props.setDraftSettings(draftSettings)
-            props.onSettingsSubmit()
+
+            props.onSettingsSubmit(draftSettings)
         }
     };
 

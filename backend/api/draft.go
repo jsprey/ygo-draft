@@ -102,6 +102,8 @@ func (dh *draftHandler) ChallengeFriend(ctx *gin.Context) {
 		return
 	}
 
+	logrus.Printf("%+v", requestData)
+
 	tokenClaims, ok := auth.GetClaims(ctx)
 	if !ok {
 		ctx.String(http.StatusUnauthorized, "unauthorized")

@@ -50,17 +50,33 @@ func (c challengeClient) GetChallenges(userID int, status model.DraftChallengeSt
 		return nil, fmt.Errorf("failed to create [SelectReceivedChallenges] template: %w", err)
 	}
 
-	var challengeList []model.DraftChallenge
-	err = c.Client.Select(selectQuery, &challengeList)
+	var receivedChallengedList []model.DraftChallenge
+	err = c.Client.Select(selectQuery, &receivedChallengedList)
 	if err != nil {
 		return nil, fmt.Errorf("failed to exec [SelectReceivedChallenges]: %w", err)
 	}
 
-	if challengeList == nil {
-		challengeList = []model.DraftChallenge{}
+	if receivedChallengedList == nil {
+		receivedChallengedList = []model.DraftChallenge{}
 	}
 
-	return challengeList, nil
+	selectQuery, err = c.QueryTemplater.SelectOutgoingChallenges(userID, status)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create [SelectOutgoingChallenges] template: %w", err)
+	}
+
+	var outgoingChallengesList []model.DraftChallenge
+	err = c.Client.Select(selectQuery, &outgoingChallengesList)
+	if err != nil {
+		return nil, fmt.Errorf("failed to exec [SelectOutgoingChallenges]: %w", err)
+	}
+
+	if outgoingChallengesList == nil {
+		outgoingChallengesList = []model.DraftChallenge{}
+	}
+
+	allChallengesList := append(receivedChallengedList, outgoingChallengesList...)
+	return allChallengesList, nil
 }
 
 func (c challengeClient) IsChallenging(fromUser int, toUser int) (bool, error) {

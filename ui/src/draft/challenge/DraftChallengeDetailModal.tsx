@@ -42,6 +42,7 @@ function DraftChallengeDetailModal(props: DraftChallengeDetailModalProps) {
     }
 
     const settings = props.challenge.settings
+    console.log(settings)
     return <Modal show={props.isShowing}
                   onHide={handleClose}
                   size={"xl"}
