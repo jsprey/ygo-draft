@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS draft_challenge
+CREATE TABLE IF NOT EXISTS draft_challenges
 (
     id             SERIAL PRIMARY KEY,
     challenger_id  INT         NOT NULL,
@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS draft_challenge
     CHECK (challenger_id <> receiver_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_draft_challenge_challenger_id ON draft_challenge (challenger_id);
-CREATE INDEX IF NOT EXISTS idx_draft_challenge_receiver_id ON draft_challenge (receiver_id);
+CREATE INDEX IF NOT EXISTS idx_draft_challenges_challenger_id ON draft_challenges (challenger_id);
+CREATE INDEX IF NOT EXISTS idx_draft_challenges_receiver_id ON draft_challenges (receiver_id);
