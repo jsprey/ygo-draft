@@ -164,7 +164,11 @@ definitions:
         type: string
       challenger_id:
         type: integer
+      current_round_number:
+        type: integer
       id:
+        type: integer
+      maximum_round_number:
         type: integer
       receiver_id:
         type: integer
@@ -172,6 +176,8 @@ definitions:
         $ref: '#/definitions/model.DraftSettings'
       status:
         $ref: '#/definitions/model.DraftStatus'
+      winner_user_id:
+        type: integer
     type: object
   model.DraftMode:
     enum:
@@ -322,7 +328,7 @@ paths:
       - Yu-Gi-Oh
   /drafts:
     get:
-      description: Get all the drafts for the current user.
+      description: Get a specific draft.
       produces:
       - application/json
       responses:
@@ -331,15 +337,15 @@ paths:
           schema:
             $ref: '#/definitions/api.GetDrafts.getDraftsResponse'
         "400":
-          description: Body data is not correct/valid
+          description: Missing draft id.
           schema:
             type: string
         "401":
           description: Unauthorized.
           schema:
             type: string
-        "403":
-          description: Thrown when anyone except the receiver tries to decline a challenge.
+        "404":
+          description: No access to draft.
           schema:
             type: string
         "500":
@@ -348,7 +354,7 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: Get all the drafts for the current user.
+      summary: Get a specific draft.
       tags:
       - Draft
     post:

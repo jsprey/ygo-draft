@@ -142,12 +142,12 @@ func (dh *draftsHandler) CreateDraftChallenge(ctx *gin.Context) {
 func (dh *draftsHandler) AcceptDraftChallenge(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> Call to AcceptDraftChallenge endoint...")
 
-	claims, draft, err := extractChallengeReceiver(ctx, dh)
+	claims, currentDraft, err := extractChallengeReceiver(ctx, dh)
 	if err != nil {
 		return
 	}
 
-	err = dh.DraftClient.AcceptDraftChallenge(draft.ID, claims.ID)
+	err = dh.DraftClient.AcceptDraftChallenge(currentDraft.ID, claims.ID)
 	if model.IsErrorCustom(err, model.ErrorDraftIsNotAChallenge) {
 		ctx.String(http.StatusBadRequest, fmt.Sprintf("The draft is not a challenge and can neither be accepted or declined."))
 		_ = ctx.AbortWithError(http.StatusBadRequest, customerrors.GenericError(err))
@@ -183,12 +183,12 @@ func (dh *draftsHandler) AcceptDraftChallenge(ctx *gin.Context) {
 func (dh *draftsHandler) DeclineChallenge(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> Call to DeclineChallenge endoint...")
 
-	claims, draft, err := extractChallengeReceiver(ctx, dh)
+	claims, currentDraft, err := extractChallengeReceiver(ctx, dh)
 	if err != nil {
 		return
 	}
 
-	err = dh.DraftClient.DeclineDraftChallenge(draft.ID, claims.ID)
+	err = dh.DraftClient.DeclineDraftChallenge(currentDraft.ID, claims.ID)
 	if model.IsErrorCustom(err, model.ErrorDraftIsNotAChallenge) {
 		ctx.String(http.StatusBadRequest, fmt.Sprintf("The draft is not a challenge and can neither be accepted or declined."))
 		_ = ctx.AbortWithError(http.StatusBadRequest, customerrors.GenericError(err))
@@ -221,9 +221,13 @@ func extractChallengeReceiver(ctx *gin.Context, dh *draftsHandler) (*model.YgoCl
 		return nil, model.Draft{}, err
 	}
 
-	draft, err := dh.DraftClient.GetDraft(draftID)
+	currentDraft, err := dh.DraftClient.GetDraft(draftID, tokenClaims.ID)
 	if model.IsErrorCustom(err, model.ErrorDraftDoesNotExist) {
 		ctx.String(http.StatusNotFound, "There is no draft by the given id.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft with id [%d]: %w", draftID, err))
+		return nil, model.Draft{}, err
+	} else if model.IsErrorCustom(err, model.ErrorUserIsNotParticipatingInDraft) {
+		ctx.String(http.StatusNotFound, "You are not part of this draft.")
 		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft with id [%d]: %w", draftID, err))
 		return nil, model.Draft{}, err
 	} else if err != nil {
@@ -232,12 +236,12 @@ func extractChallengeReceiver(ctx *gin.Context, dh *draftsHandler) (*model.YgoCl
 		return nil, model.Draft{}, err
 	}
 
-	return tokenClaims, draft, nil
+	return tokenClaims, currentDraft, nil
 }
 
-// GetDrafts Endpoint used to get all the drafts for the current user.
-// @Summary  Get all the drafts for the current user.
-// @Description Get all the drafts for the current user.
+// GetDrafts Endpoint used to get all the running drafts for the current user.
+// @Summary  Get all the running drafts for the current user.
+// @Description Get all the running drafts for the current user.
 // @Tags Draft
 // @Security Bearer
 // @Produce json
@@ -252,14 +256,69 @@ func (dh *draftsHandler) GetDrafts(ctx *gin.Context) {
 		Drafts []model.Draft `json:"drafts"`
 	}
 
-	logrus.Debugf("API-Handler -> Call to GetDraftsWithStatus endoint...")
+	logrus.Debugf("API-Handler -> Call to GetDrafts endoint...")
 
-	_, ok := auth.GetClaims(ctx)
+	tokenClaims, ok := auth.GetClaims(ctx)
 	if !ok {
-		ctx.String(http.StatusUnauthorized, "unauthorized")
+		ctx.String(http.StatusUnauthorized, "Unauthorized.")
 		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
 		return
 	}
 
-	panic("Not implemented!")
+	runningDrafts, err := dh.DraftClient.GetDraftsWithStatus(tokenClaims.ID, model.DraftStatusRunning)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, &getDraftsResponse{
+		Drafts: runningDrafts,
+	})
+}
+
+// GetDraft Endpoint used to get a specific draft.
+// @Summary  Get a specific draft.
+// @Description Get a specific draft.
+// @Tags Draft
+// @Security Bearer
+// @Produce json
+// @Success 200 {object} api.GetDrafts.getDraftsResponse
+// @Failure 400 {string} string "Missing draft id."
+// @Failure 401 {string} string "Unauthorized."
+// @Failure 404 {string} string "Draft not found."
+// @Failure 404 {string} string "No access to draft."
+// @Failure 500 {string} string "Internal Server Error."
+// @Router /drafts [get]
+func (dh *draftsHandler) GetDraft(ctx *gin.Context) {
+	draftID, err := strconv.Atoi(ctx.Param(AcceptDraftChallengeParamID))
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "You need to provide a draft id.")
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read the target draft id: %w", err))
+		return
+	}
+
+	tokenClaims, ok := auth.GetClaims(ctx)
+	if !ok {
+		ctx.String(http.StatusUnauthorized, "Unauthorized.")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
+	}
+
+	currentDraft, err := dh.DraftClient.GetDraft(draftID, tokenClaims.ID)
+	if model.IsErrorCustom(err, model.ErrorDraftDoesNotExist) {
+		ctx.String(http.StatusNotFound, "There is no draft by the given id.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft with id [%d]: %w", draftID, err))
+		return
+	} else if model.IsErrorCustom(err, model.ErrorUserIsNotParticipatingInDraft) {
+		ctx.String(http.StatusNotFound, "Draft not found.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft with id [%d]: %w", draftID, err))
+		return
+	} else if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, &currentDraft)
 }

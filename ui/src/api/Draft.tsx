@@ -9,14 +9,17 @@ export interface DraftSettings {
     main_deck_draws: number,
     main_deck_size: number
     mode: DraftMode,
-    modeValue: number,
+    mode_value: number,
     sets: CardSet[]
 }
 
-export interface DraftChallenge {
+export interface Draft {
     id: number,
     challenger_id: number,
     receiver_id: number,
+    current_round_number: number,
+    maximum_round_number: number,
+    winner_user_id: number,
     challenge_date: Date,
     status: DraftChallengeStatus,
     settings: DraftSettings

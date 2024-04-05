@@ -117,14 +117,14 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Get all the drafts for the current user.",
+                "description": "Get a specific draft.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Draft"
                 ],
-                "summary": "Get all the drafts for the current user.",
+                "summary": "Get a specific draft.",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -133,7 +133,7 @@
                         }
                     },
                     "400": {
-                        "description": "Body data is not correct/valid",
+                        "description": "Missing draft id.",
                         "schema": {
                             "type": "string"
                         }
@@ -144,8 +144,8 @@
                             "type": "string"
                         }
                     },
-                    "403": {
-                        "description": "Thrown when anyone except the receiver tries to decline a challenge.",
+                    "404": {
+                        "description": "No access to draft.",
                         "schema": {
                             "type": "string"
                         }
@@ -1221,7 +1221,13 @@
                 "challenger_id": {
                     "type": "integer"
                 },
+                "current_round_number": {
+                    "type": "integer"
+                },
                 "id": {
+                    "type": "integer"
+                },
+                "maximum_round_number": {
                     "type": "integer"
                 },
                 "receiver_id": {
@@ -1232,6 +1238,9 @@
                 },
                 "status": {
                     "$ref": "#/definitions/model.DraftStatus"
+                },
+                "winner_user_id": {
+                    "type": "integer"
                 }
             }
         },

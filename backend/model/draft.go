@@ -30,6 +30,10 @@ var (
 		Code:        "EC_Challenge_Only_Receiver_Can_Decline",
 		InternalMsg: "only the receiving user can decline this challenge",
 	}
+	ErrorUserIsNotParticipatingInDraft = customerrors.WithCode{
+		Code:        "EC_User_Is_Not_Participating_In_Draft",
+		InternalMsg: "you are not part of this challenge and have no access to it",
+	}
 )
 
 // IsErrorCustom checks if the given error of a custom error.
@@ -81,12 +85,15 @@ const (
 
 // Draft contains the information for a draft.
 type Draft struct {
-	ID            int           `json:"id"`
-	ChallengerID  int           `json:"challenger_id"`
-	ReceiverID    int           `json:"receiver_id"`
-	Status        DraftStatus   `json:"status"`
-	Settings      DraftSettings `json:"settings"`
-	ChallengeDate time.Time     `json:"challenge_date"`
+	ID                 int           `json:"id"`
+	ChallengerID       int           `json:"challenger_id"`
+	ReceiverID         int           `json:"receiver_id"`
+	CurrentRoundNumber int           `json:"current_round_number"`
+	MaximumRoundNumber int           `json:"maximum_round_number"`
+	WinnerUserID       int           `json:"winner_user_id"`
+	Status             DraftStatus   `json:"status"`
+	Settings           DraftSettings `json:"settings"`
+	ChallengeDate      time.Time     `json:"challenge_date"`
 }
 
 // DraftSettings contains the configurable settings for a draft.
@@ -115,7 +122,7 @@ type DraftClient interface {
 	// GetDraftsWithStatus returns all drafts for the user with the given status.
 	GetDraftsWithStatus(userID int, status DraftStatus) ([]Draft, error)
 	// GetDraft returns the specific draft with the given id.
-	GetDraft(draftID int) (Draft, error)
+	GetDraft(draftID int, userID int) (Draft, error)
 
 	// SurrenderRunningDraft surrenders the given draft and automatically makes the enemy user the winner.
 	SurrenderRunningDraft(draftID int, surrenderingUserID int) error

@@ -3,7 +3,7 @@ import {useLocation} from "react-router-dom";
 import {Alert, Spinner} from "react-bootstrap";
 import PageSettings from "../local/PageSettings";
 import {usePrompt} from "../../api/hooks/usePromptBlocker";
-import {PostChallengeRequest, useChallengeUser} from "../../api/hooks/challenges/useChallengeUser";
+import {PostDraftChallengeRequest, useChallengeUser} from "../../api/hooks/drafts/useChallengeUser";
 import {enqueueSnackbar} from "notistack";
 import {DraftSettings} from "../../api/Draft";
 import {useNavigate} from "react-router";
@@ -36,7 +36,7 @@ function ChallengeDraftPage() {
     const challengeFriendMutation = useChallengeUser({onSuccess: onMutationSuccess, onError: onMutationError});
 
     function sendChallenge(settings: DraftSettings, state: ChallengeDraftState) {
-        const challengeFriendRequest: PostChallengeRequest = {
+        const challengeFriendRequest: PostDraftChallengeRequest = {
             friend_id: state.friendID,
             settings: settings
         }

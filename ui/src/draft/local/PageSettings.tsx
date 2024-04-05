@@ -32,11 +32,9 @@ function PageSettings(props: PageSettingsProps) {
         if (mainDraftSizeError === "" && mainDraftRoundError === "" && extraDraftRoundError === "" && extraDraftSizeError === "") {
             setValidated(true)
 
-            console.log(generalDraftCardSets)
-
             const draftSettings: DraftSettings = {
                 mode: "bestof",
-                modeValue: 5,
+                mode_value: 5,
                 main_deck_size: mainDraftSize,
                 main_deck_draws: mainDraftRound,
                 extra_deck_draws: extraDraftRound,

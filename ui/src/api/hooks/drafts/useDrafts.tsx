@@ -1,11 +1,11 @@
 import {UseQueryResult} from "react-query";
 import {useMagicMethodAxios} from "../cards/useCards";
-import {DraftChallenge} from "../../Draft";
+import {Draft} from "../../Draft";
 
 export interface GetDraftsResponse {
-    challenges: DraftChallenge[]
+    drafts: Draft[]
 }
 
 export function useDrafts(queryOptions: any = {}): UseQueryResult<GetDraftsResponse> {
-    return useMagicMethodAxios<GetDraftsResponse>(["drafts", "pending"], `drafts/challenges`, new Map<string, string>(), queryOptions)
+    return useMagicMethodAxios<GetDraftsResponse>(["drafts", "running"], `drafts`, new Map<string, string>(), queryOptions)
 }

@@ -126,14 +126,14 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get all the drafts for the current user.",
+                "description": "Get a specific draft.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Draft"
                 ],
-                "summary": "Get all the drafts for the current user.",
+                "summary": "Get a specific draft.",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -142,7 +142,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Body data is not correct/valid",
+                        "description": "Missing draft id.",
                         "schema": {
                             "type": "string"
                         }
@@ -153,8 +153,8 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
-                    "403": {
-                        "description": "Thrown when anyone except the receiver tries to decline a challenge.",
+                    "404": {
+                        "description": "No access to draft.",
                         "schema": {
                             "type": "string"
                         }
@@ -1230,7 +1230,13 @@ const docTemplate = `{
                 "challenger_id": {
                     "type": "integer"
                 },
+                "current_round_number": {
+                    "type": "integer"
+                },
                 "id": {
+                    "type": "integer"
+                },
+                "maximum_round_number": {
                     "type": "integer"
                 },
                 "receiver_id": {
@@ -1241,6 +1247,9 @@ const docTemplate = `{
                 },
                 "status": {
                     "$ref": "#/definitions/model.DraftStatus"
+                },
+                "winner_user_id": {
+                    "type": "integer"
                 }
             }
         },

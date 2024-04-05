@@ -66,7 +66,7 @@ func (d draftClient) UserHaveDraftWithStatus(user1ID int, user2ID int, status mo
 }
 
 func (d draftClient) AcceptDraftChallenge(draftID int, userID int) error {
-	draft, err := d.GetDraft(draftID)
+	draft, err := d.GetDraft(draftID, userID)
 	if err != nil {
 		return fmt.Errorf("failed to get draft: %w", err)
 	}
@@ -110,7 +110,7 @@ func (d draftClient) AcceptDraftChallenge(draftID int, userID int) error {
 }
 
 func (d draftClient) DeclineDraftChallenge(draftID int, userID int) error {
-	draft, err := d.GetDraft(draftID)
+	draft, err := d.GetDraft(draftID, userID)
 	if err != nil {
 		return fmt.Errorf("failed to get draft: %w", err)
 	}
@@ -161,27 +161,32 @@ func (d draftClient) GetDraftsWithStatus(userID int, status model.DraftStatus) (
 	return drafts, nil
 }
 
-func (d draftClient) GetDraft(draftID int) (model.Draft, error) {
+func (d draftClient) GetDraft(draftID int, userID int) (model.Draft, error) {
 	getDraftQuery, err := d.QueryTemplater.SelectDraft(draftID)
 	if err != nil {
 		return model.Draft{}, fmt.Errorf("failed to template [SelectDraft] query: %w", err)
 	}
 
-	var draft []model.Draft
-	err = d.Client.Select(getDraftQuery, &draft)
+	var drafts []model.Draft
+	err = d.Client.Select(getDraftQuery, &drafts)
 	if err != nil {
 		return model.Draft{}, fmt.Errorf("failed to select query [SelectDraft]: %w", err)
 	}
 
-	if draft == nil {
-		draft = []model.Draft{}
+	if drafts == nil {
+		drafts = []model.Draft{}
 	}
 
-	if len(draft) == 0 {
+	if len(drafts) == 0 {
 		return model.Draft{}, model.ErrorDraftDoesNotExist.WithParam(string(rune(draftID)))
 	}
 
-	return draft[0], nil
+	draft := drafts[0]
+	if draft.ReceiverID != userID && draft.ChallengerID != userID {
+		return model.Draft{}, model.ErrorUserIsNotParticipatingInDraft
+	}
+
+	return drafts[0], nil
 }
 
 func (d draftClient) SurrenderRunningDraft(draftID int, surrenderingUserID int) error {

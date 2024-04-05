@@ -1,11 +1,11 @@
 import {Modal, Spinner} from "react-bootstrap";
-import {DraftChallenge} from "../../api/Draft";
-import {useAcceptChallenge} from "../../api/hooks/challenges/useAcceptChallenge";
-import {useDeclineChallenge} from "../../api/hooks/challenges/useDeclineChallenge";
+import {Draft} from "../../api/Draft";
+import {useAcceptDraftChallenge} from "../../api/hooks/drafts/useAcceptDraftChallenge";
+import {useDeclineDraftChallenge} from "../../api/hooks/drafts/useDeclineDraftChallenge";
 import {enqueueSnackbar} from "notistack";
 
 export type DraftChallengeDetailModalProps = {
-    challenge: DraftChallenge
+    challenge: Draft
     isShowing: boolean
     setShow: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -28,11 +28,11 @@ function DraftChallengeDetailModal(props: DraftChallengeDetailModalProps) {
         })
     }
 
-    const acceptChallengeMutation = useAcceptChallenge({
+    const acceptChallengeMutation = useAcceptDraftChallenge({
         onSuccess: () => showSuccess("Challenge accepted."),
         onError: () => showError("Failed to accept challenge. Try again and/or contact the support.")
     });
-    const declineChallengeMutation = useDeclineChallenge({
+    const declineChallengeMutation = useDeclineDraftChallenge({
         onSuccess: () => showSuccess("Challenge declined."),
         onError: () => showError("Failed to decline challenge. Try again and/or contact the support.")
     });
@@ -42,7 +42,6 @@ function DraftChallengeDetailModal(props: DraftChallengeDetailModalProps) {
     }
 
     const settings = props.challenge.settings
-    console.log(settings)
     return <Modal show={props.isShowing}
                   onHide={handleClose}
                   size={"xl"}
@@ -57,7 +56,7 @@ function DraftChallengeDetailModal(props: DraftChallengeDetailModalProps) {
             <div className={"grid grid-cols-8"}>
                 <span className={"col-span-2"}>Mode:</span>
                 <span
-                    className={"col-span-6"}>{settings.mode == "bestof" ? `Best of ${settings.modeValue} Rounds` : `${settings.modeValue} Rounds`}</span>
+                    className={"col-span-6"}>{settings.mode === "bestof" ? `Best of ${settings.mode_value} Rounds` : `${settings.mode_value} Rounds`}</span>
                 <span className={"col-span-2"}>Main Deck Drafts:</span>
                 <span className={"col-span-6"}>{settings.main_deck_draws}</span>
                 <span className={"col-span-2"}>Main Deck Drafts Size:</span>
@@ -68,7 +67,7 @@ function DraftChallengeDetailModal(props: DraftChallengeDetailModalProps) {
                 <span className={"col-span-6"}>{settings.extra_deck_size}</span>
                 <span className={"col-span-2"}>Sets:</span>
                 <span className={"col-span-6"}>{settings.sets.map((value, index) => {
-                        return (index == 0 ? "" : ", ") + value.set_name
+                        return (index === 0 ? "" : ", ") + value.set_name
                     }
                 )}</span>
             </div>

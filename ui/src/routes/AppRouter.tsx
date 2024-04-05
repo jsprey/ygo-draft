@@ -14,6 +14,7 @@ import UserPage from "../users/UserPage";
 import AdminPage from "../users/AdminPage";
 import {Navigate} from "react-router";
 import ChallengeDraftPage from "../draft/challenge/ChallengeDraftPage";
+import DraftOverviewPage from "../draft/challenge/DraftOverviewPage";
 
 const AppRouter = () => {
     const {token} = useAuth();
@@ -31,6 +32,7 @@ const AppRouter = () => {
             <Route path={"/draftdeck"} element={withBackground(withNavbar(withContainer(<DeckDraftWizard/>, isDarkMode)))}/>
             <Route path={"/user"} element={withBackground(withNavbar(withContainer(<UserPage/>, isDarkMode)))}/>
             <Route path={"/challenge"} element={withBackground(withNavbar(withContainer(<ChallengeDraftPage/>, isDarkMode)))}/>
+            <Route path={"/draft/:id"} element={withBackground(withNavbar(withContainer(<DraftOverviewPage/>, isDarkMode)))}/>
         </Route>
     </>
 
