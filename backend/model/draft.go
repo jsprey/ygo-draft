@@ -6,18 +6,34 @@ import (
 )
 
 var (
-	ErrorChallengeDoesNotExist = customerrors.WithCode{
-		Code:        "EC_Challenge_Not_Exist",
-		InternalMsg: "the requested challenge with id %s does not exist",
+	ErrorDraftDoesNotExist = customerrors.WithCode{
+		Code:        "EC_Draft_Does_Not_Exist",
+		InternalMsg: "the requested draft with id %s does not exist",
 	}
 	ErrorUserAlreadyChallenged = customerrors.WithCode{
 		Code:        "EC_Challenge_User_Already_Challenged",
-		InternalMsg: "the user %s already has a pending challenge",
+		InternalMsg: "the receiving user already have a pending challenge from the challenger",
+	}
+	ErrorUserAlreadyRunningDraft = customerrors.WithCode{
+		Code:        "EC_Draft_Users_Already_In_Draft",
+		InternalMsg: "the users already have an unfinished draft",
+	}
+	ErrorDraftIsNotAChallenge = customerrors.WithCode{
+		Code:        "EC_Draft_Is_Not_A_Challenge",
+		InternalMsg: "the draft is not a challenge and can neither be accepted or declined",
+	}
+	ErrorOnlyReceivingPartyCanAcceptChallenge = customerrors.WithCode{
+		Code:        "EC_Challenge_Only_Receiver_Can_Accept",
+		InternalMsg: "only the receiving user can accept this challenge",
+	}
+	ErrorOnlyReceivingPartyCanDeclineChallenge = customerrors.WithCode{
+		Code:        "EC_Challenge_Only_Receiver_Can_Decline",
+		InternalMsg: "only the receiving user can decline this challenge",
 	}
 )
 
-// IsErrorChallengeDoesNotExist checks if the given error is of type ErrorUserDoesNotExist.
-func IsErrorChallengeDoesNotExist(err error) bool {
+// IsErrorCustom checks if the given error of a custom error.
+func IsErrorCustom(err error, targetError customerrors.WithCode) bool {
 	if err == nil {
 		return false
 	}
@@ -27,40 +43,23 @@ func IsErrorChallengeDoesNotExist(err error) bool {
 		return false
 	}
 
-	return customError.Code == ErrorChallengeDoesNotExist.Code
-}
-
-// IsErrorUserAlreadyChallenged checks if the given error is of type ErrorUserAlreadyChallenged.
-func IsErrorUserAlreadyChallenged(err error) bool {
-	if err == nil {
-		return false
-	}
-
-	customError, ok := err.(customerrors.WithCode)
-	if !ok {
-		return false
-	}
-
-	return customError.Code == ErrorUserAlreadyChallenged.Code
+	return customError.Code == targetError.Code
 }
 
 // DraftStatus determines the current state of the draft.
 type DraftStatus string
 
 const (
-	DraftStatusRunning  DraftStatus = "running"
+	// DraftStatusPending show that someone is currently challenging another player.
+	DraftStatusPending DraftStatus = "pending"
+	// DraftStatusDeclined show that the receiving party declined the challenge.
+	DraftStatusDeclined DraftStatus = "declined"
+	// DraftStatusRunning shows that someone is currently drafting another player.
+	DraftStatusRunning DraftStatus = "running"
+	// DraftStatusCanceled shows that someone canceled the draft preemptively.
 	DraftStatusCanceled DraftStatus = "canceled"
+	// DraftStatusFinished shows that the draft is finished.
 	DraftStatusFinished DraftStatus = "finished"
-)
-
-// DraftChallengeStatus determines the current state of the challenge.
-type DraftChallengeStatus string
-
-const (
-	DraftChallengeStatusAll      DraftChallengeStatus = "all"
-	DraftChallengeStatusPending  DraftChallengeStatus = "pending"
-	DraftChallengeStatusAccepted DraftChallengeStatus = "accepted"
-	DraftChallengeStatusDeclined DraftChallengeStatus = "declined"
 )
 
 // DraftRoundStatus determines the current state of the draft round.
@@ -80,6 +79,16 @@ const (
 	DraftGoalRounds DraftMode = "round"
 )
 
+// Draft contains the information for a draft.
+type Draft struct {
+	ID            int           `json:"id"`
+	ChallengerID  int           `json:"challenger_id"`
+	ReceiverID    int           `json:"receiver_id"`
+	Status        DraftStatus   `json:"status"`
+	Settings      DraftSettings `json:"settings"`
+	ChallengeDate time.Time     `json:"challenge_date"`
+}
+
 // DraftSettings contains the configurable settings for a draft.
 type DraftSettings struct {
 	MainDeckDraws  int       `json:"main_deck_draws"`
@@ -87,54 +96,49 @@ type DraftSettings struct {
 	ExtraDeckDraws int       `json:"extra_deck_draws"`
 	ExtraDeckSize  int       `json:"extra_deck_size"`
 	Mode           DraftMode `json:"mode"`
-	ModeValue      int       `json:"modeValue"`
+	ModeValue      int       `json:"mode_value"`
 	Sets           []CardSet `json:"sets"`
 }
 
-// DraftChallenge contains the necessary information about a challenge to a draft.
-type DraftChallenge struct {
-	ID            int                  `json:"id"`
-	ChallengerID  int                  `json:"challenger_id"`
-	ReceiverID    int                  `json:"receiver_id"`
-	ChallengeDate time.Time            `json:"challenge_date"`
-	Status        DraftChallengeStatus `json:"status"`
-	Settings      DraftSettings        `json:"settings"`
-}
-
-// DraftChallengeClient provides all necessary functions to control and manage the draft challenges.
-type DraftChallengeClient interface {
-	// GetChallenge Returns a specific challenges with the given id.
-	GetChallenge(challengeID int) (DraftChallenge, error)
-	// GetChallenges Returns all challenges from the given user.
-	GetChallenges(userID int, status DraftChallengeStatus) ([]DraftChallenge, error)
-	// IsChallenging returns true when a user has already a 'pending' challenge for another user.
-	IsChallenging(fromUser int, toUser int) (bool, error)
-	// ChallengeUser initiates a challenge between two users.
-	ChallengeUser(fromUser int, toUser int, settings DraftSettings) error
-	// AcceptChallenge accepts the given challenge for the receiving user.
-	AcceptChallenge(challengeID int) error
-	// DeclineChallenge declines the given challenge for the receiving user.
-	DeclineChallenge(challengeID int) error
-}
-
-// DraftChallengeQueryGenerator is responsible to generate queries related to the draft challenges process.
-type DraftChallengeQueryGenerator interface {
-	// SelectChallenge returns a select query to select a specific challenge.
-	SelectChallenge(challengeID int) (string, error)
-	// SelectOutgoingChallenges returns a select query to select the outgoing challenges of a specific user.
-	SelectOutgoingChallenges(challengerID int, status DraftChallengeStatus) (string, error)
-	// SelectReceivedChallenges returns a select query to select the received challenges of a specific user.
-	SelectReceivedChallenges(receiverID int, status DraftChallengeStatus) (string, error)
-	// InsertChallenge returns an insert query to create a new challenge.
-	InsertChallenge(challengerID int, receiverID int, settings DraftSettings) (string, error)
-	// UpdateChallenge returns an update query to update challenges.
-	UpdateChallenge(challengeID int, status DraftChallengeStatus) (string, error)
-}
-
-// DraftClient provides all necessary functions to control and manage the drafts between users.
+// DraftClient provides all necessary function to control and manage the drafts.
 type DraftClient interface {
+	// CreateDraftChallenge creates a new draft between the given users with the status model.DraftStatusPending.
+	CreateDraftChallenge(challengerID int, receiverID int, settings DraftSettings) error
+	// UserHaveDraftWithStatus shows if there is already a draft between two users with the given state.
+	UserHaveDraftWithStatus(user1ID int, user2ID int, status DraftStatus) (bool, error)
+
+	// AcceptDraftChallenge accepts a draft challenge and changes the status of the draft to model.DraftStatusRunning.
+	AcceptDraftChallenge(draftID int, userID int) error
+	// DeclineDraftChallenge declines a draft challenge and changes the status of the draft to model.DraftStatusDeclined.
+	DeclineDraftChallenge(draftID int, userID int) error
+
+	// GetDraftsWithStatus returns all drafts for the user with the given status.
+	GetDraftsWithStatus(userID int, status DraftStatus) ([]Draft, error)
+	// GetDraft returns the specific draft with the given id.
+	GetDraft(draftID int) (Draft, error)
+
+	// SurrenderRunningDraft surrenders the given draft and automatically makes the enemy user the winner.
+	SurrenderRunningDraft(draftID int, surrenderingUserID int) error
 }
 
-// DraftQueryGenerator is responsible to generate queries related to the draft and drafting process.
+// DraftQueryGenerator is responsible to generate queries related to the draft process.
 type DraftQueryGenerator interface {
+	// InsertDraft returns an insert query to create a new entry in the draft table.
+	InsertDraft(challengerID int, receiverID int, settings DraftSettings) (string, error)
+
+	// SelectDraft returns a select query to get a specific draft.
+	SelectDraft(draftID int) (string, error)
+	// SelectDraftsWithStatus returns a select query to get the drafts for the given user with a certain status.
+	SelectDraftsWithStatus(userID int, status DraftStatus) (string, error)
+	// SelectDraftsWithUsersAndStatus returns a select query to get all draft with a user and status filter.
+	SelectDraftsWithUsersAndStatus(userID int, user2ID int, status DraftStatus) (string, error)
+
+	// UpdateDraft returns an update query to update an entry in the draft table.
+	UpdateDraft(draftID int, status DraftStatus) (string, error)
+	// InsertDraftRound returns an insert query to create a new draft round.
+	InsertDraftRound(draftID int, roundNumber int, status DraftRoundStatus) (string, error)
+	// UpdateDraftRound returns an update query to update the draft round. When the winnerID is provided with 0, it will only update the status.
+	UpdateDraftRound(draftRoundID int, winnerID int, status DraftRoundStatus) (string, error)
+	// InsertDraftRoundDeck creates an insert query to create a new deck for a draft round.
+	InsertDraftRoundDeck(roundID int, userID int, deck []string) (string, error)
 }

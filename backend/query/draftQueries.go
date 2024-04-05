@@ -2,6 +2,8 @@ package query
 
 import (
 	_ "embed"
+	"encoding/json"
+	"fmt"
 	"strings"
 	"ygodraft/backend/model"
 )
@@ -10,6 +12,8 @@ func (sqt *sqlQueryTemplater) AddDraftQueries(templateMap *map[string]string) {
 	(*templateMap)["InsertDraft"] = templateContentInsertDraft
 	(*templateMap)["UpdateDraft"] = templateContentUpdateDraft
 	(*templateMap)["SelectDraft"] = templateContentSelectDraft
+	(*templateMap)["SelectDraftsWithStatus"] = templateContentSelectDraftWithStatus
+	(*templateMap)["SelectDraftsWithUsersAndStatus"] = templateContentSelectDraftsWithUsersAndStatus
 	(*templateMap)["InsertDraftRound"] = templateContentInsertDraftRound
 	(*templateMap)["UpdateDraftRound"] = templateContentQueryUpdateDraftRound
 	(*templateMap)["InsertDraftRoundDeck"] = templateContentInsertDraftRoundDeck
@@ -18,17 +22,24 @@ func (sqt *sqlQueryTemplater) AddDraftQueries(templateMap *map[string]string) {
 //go:embed templates/drafts/QueryInsertDraft.sql
 var templateContentInsertDraft string
 
-func (sqt *sqlQueryTemplater) InsertDraft(challengeID int, fromUserID int, toUserID int, status model.DraftStatus) (string, error) {
+func (sqt *sqlQueryTemplater) InsertDraft(challengerID int, receiverID int, settings model.DraftSettings) (string, error) {
+	settingsJson, err := json.Marshal(settings)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal settings: %w", err)
+	}
+
 	templateObject := struct {
-		ChallengeID int    `json:"challenge_id"`
-		FromUserID  int    `json:"from_user_id"`
-		ToUserID    int    `json:"to_user_id"`
-		Status      string `json:"status"`
+		ChallengerID       int    `json:"challenger_id"`
+		ReceiverID         int    `json:"receiver_id"`
+		MaximumRoundNumber int    `json:"maximum_round_number"`
+		Status             string `json:"status"`
+		Settings           string `json:"settings"`
 	}{
-		ChallengeID: challengeID,
-		FromUserID:  fromUserID,
-		ToUserID:    toUserID,
-		Status:      escape(string(status)),
+		ChallengerID:       challengerID,
+		ReceiverID:         receiverID,
+		MaximumRoundNumber: settings.ModeValue,
+		Status:             escape(string(model.DraftStatusPending)),
+		Settings:           escape(string(settingsJson)),
 	}
 
 	return sqt.Template("InsertDraft", &templateObject)
@@ -52,14 +63,46 @@ func (sqt *sqlQueryTemplater) UpdateDraft(draftID int, status model.DraftStatus)
 //go:embed templates/drafts/QuerySelectDraft.sql
 var templateContentSelectDraft string
 
-func (sqt *sqlQueryTemplater) SelectDraft(userID int) (string, error) {
+func (sqt *sqlQueryTemplater) SelectDraft(draftID int) (string, error) {
 	templateObject := struct {
-		UserID int `json:"user_id"`
+		DraftID int `json:"user_id"`
 	}{
-		UserID: userID,
+		DraftID: draftID,
 	}
 
 	return sqt.Template("SelectDraft", &templateObject)
+}
+
+//go:embed templates/drafts/QuerySelectDraftsWithStatus.sql
+var templateContentSelectDraftWithStatus string
+
+func (sqt *sqlQueryTemplater) SelectDraftsWithStatus(userID int, status model.DraftStatus) (string, error) {
+	templateObject := struct {
+		UserID int    `json:"user_id"`
+		Status string `json:"status"`
+	}{
+		UserID: userID,
+		Status: escape(string(status)),
+	}
+
+	return sqt.Template("SelectDraftsWithStatus", &templateObject)
+}
+
+//go:embed templates/drafts/QuerySelectDraftsWithUsersAndStatus.sql
+var templateContentSelectDraftsWithUsersAndStatus string
+
+func (sqt *sqlQueryTemplater) SelectDraftsWithUsersAndStatus(userID int, user2ID int, status model.DraftStatus) (string, error) {
+	templateObject := struct {
+		UserID  int    `json:"user_id"`
+		User2ID int    `json:"user_2_id"`
+		Status  string `json:"status"`
+	}{
+		UserID:  userID,
+		User2ID: user2ID,
+		Status:  escape(string(status)),
+	}
+
+	return sqt.Template("SelectDraftsWithUsersAndStatus", &templateObject)
 }
 
 //go:embed templates/drafts/rounds/QueryInsertDraftRound.sql

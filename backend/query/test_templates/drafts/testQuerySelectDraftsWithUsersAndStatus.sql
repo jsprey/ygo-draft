@@ -8,4 +8,5 @@ SELECT d.id,
        d.status,
        d.settings
 FROM drafts d
-WHERE d.id = {{.DraftID}};
+WHERE (d.status = 'running' AND d.challenger_id = 1 AND d.receiver_id = 2)
+   OR (d.status = 'running' AND d.receiver_id = 1 AND d.challenger_id = 2)

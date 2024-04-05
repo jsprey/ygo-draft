@@ -9,23 +9,8 @@ import (
 	"ygodraft/backend/model"
 )
 
-//go:embed queries/cards.sql
-var createTableCards string
-
-//go:embed queries/card_sets.sql
-var createTableCardSets string
-
-//go:embed queries/users.sql
-var createTableUsers string
-
-//go:embed queries/friends.sql
-var createTableFriends string
-
-//go:embed queries/draft_challenges.sql
-var createTableDraftChallenge string
-
-//go:embed queries/drafts.sql
-var createTablesDrafts string
+//go:embed queries/createTables.sql
+var createTablesQuery string
 
 // DatabaseSetup is responsible to setup the database including the creation of the database and the data tables.
 type DatabaseSetup struct {
@@ -38,26 +23,8 @@ func NewDatabaseSetup(client model.DatabaseClient, usermgtClient model.UsermgtCl
 }
 
 func (ds *DatabaseSetup) Setup() error {
-	logrus.Debug("Setup -> Database -> Creating `cards` table")
-	_, err := ds.Client.Exec(createTableCards)
-	if err != nil {
-		return fmt.Errorf("failed to exec: %w", err)
-	}
-
-	logrus.Debug("Setup -> Database -> Creating `card_sets` table")
-	_, err = ds.Client.Exec(createTableCardSets)
-	if err != nil {
-		return fmt.Errorf("failed to exec: %w", err)
-	}
-
-	logrus.Debug("Setup -> Database -> Creating `users` table")
-	_, err = ds.Client.Exec(createTableUsers)
-	if err != nil {
-		return fmt.Errorf("failed to exec: %w", err)
-	}
-
-	logrus.Debug("Setup -> Database -> Creating `friends` table")
-	_, err = ds.Client.Exec(createTableFriends)
+	logrus.Debug("Setup -> Database -> Creating tables")
+	_, err := ds.Client.Exec(createTablesQuery)
 	if err != nil {
 		return fmt.Errorf("failed to exec: %w", err)
 	}
@@ -65,18 +32,6 @@ func (ds *DatabaseSetup) Setup() error {
 	err = ds.setupUsermgt()
 	if err != nil {
 		return fmt.Errorf("failed to setup usermgt database stuff: %w", err)
-	}
-
-	logrus.Debug("Setup -> Database -> Creating `draft_challenges` table")
-	_, err = ds.Client.Exec(createTableDraftChallenge)
-	if err != nil {
-		return fmt.Errorf("failed to exec: %w", err)
-	}
-
-	logrus.Debug("Setup -> Database -> Creating `drafts` tables")
-	_, err = ds.Client.Exec(createTablesDrafts)
-	if err != nil {
-		return fmt.Errorf("failed to exec: %w", err)
 	}
 
 	return nil

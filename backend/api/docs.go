@@ -119,30 +119,42 @@ const docTemplate = `{
                 }
             }
         },
-        "/drafts/challenges": {
+        "/drafts": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve the challenges of the current user.",
+                "description": "Get all the drafts for the current user.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Draft"
                 ],
-                "summary": "Retrieve the challenges of the current user.",
+                "summary": "Get all the drafts for the current user.",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.GetChallenges.getChallengesResponse"
+                            "$ref": "#/definitions/api.GetDrafts.getDraftsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Body data is not correct/valid",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "401": {
                         "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Thrown when anyone except the receiver tries to decline a challenge.",
                         "schema": {
                             "type": "string"
                         }
@@ -179,7 +191,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api.ChallengeFriend.challengeFriendRequest"
+                            "$ref": "#/definitions/api.CreateDraftChallenge.createDraftChallengeRequest"
                         }
                     }
                 ],
@@ -193,8 +205,20 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "You are currently in a running draft against the receiving user and cannot challenge him, until you resolve the draft.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error.",
+                        "description": "Internal server error. Check server logs for more information.",
                         "schema": {
                             "type": "string"
                         }
@@ -202,7 +226,44 @@ const docTemplate = `{
                 }
             }
         },
-        "/drafts/challenges/{id}/accept": {
+        "/drafts/challenges": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve all draft challenges (outgoing + incoming) from the current user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft"
+                ],
+                "summary": "Retrieve all draft challenges (outgoing + incoming) from the current user.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetDraftChallenges.getDraftChallengesResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error. Check server logs for more information.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/drafts/{id}/accept": {
             "post": {
                 "security": [
                     {
@@ -231,7 +292,7 @@ const docTemplate = `{
                         "description": "No Content"
                     },
                     "400": {
-                        "description": "Body data is not correct/valid",
+                        "description": "The draft is not a challenge and can neither be accepted or declined.",
                         "schema": {
                             "type": "string"
                         }
@@ -243,13 +304,25 @@ const docTemplate = `{
                         }
                     },
                     "403": {
-                        "description": "Thrown when anyone except the receiver tries to accept a challenge.",
+                        "description": "Only the receiving party can accept the challenge.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "There is no draft by the given id.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "Only the receiving party can accept the challenge.",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error.",
+                        "description": "Internal server error. Check server logs for more information.",
                         "schema": {
                             "type": "string"
                         }
@@ -257,7 +330,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/drafts/challenges/{id}/decline": {
+        "/drafts/{id}/decline": {
             "post": {
                 "security": [
                     {
@@ -274,13 +347,6 @@ const docTemplate = `{
                 "summary": "Decline a draft challenge from another user.",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Contains the authorization token.",
-                        "name": "authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "type": "integer",
                         "description": "Contains the id of the challenge to be declined.",
                         "name": "id",
@@ -293,7 +359,7 @@ const docTemplate = `{
                         "description": "No Content"
                     },
                     "400": {
-                        "description": "Body data is not correct/valid",
+                        "description": "The draft is not a challenge and can neither be accepted or declined.",
                         "schema": {
                             "type": "string"
                         }
@@ -305,13 +371,19 @@ const docTemplate = `{
                         }
                     },
                     "403": {
-                        "description": "Thrown when anyone except the receiver tries to decline a challenge.",
+                        "description": "Only receiving party can decline the challenge.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "There is no draft by the given id.",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error.",
+                        "description": "Internal server error. Check server logs for more information.",
                         "schema": {
                             "type": "string"
                         }
@@ -902,7 +974,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "api.ChallengeFriend.challengeFriendRequest": {
+        "api.CreateDraftChallenge.createDraftChallengeRequest": {
             "type": "object",
             "properties": {
                 "friend_id": {
@@ -935,17 +1007,6 @@ const docTemplate = `{
                 }
             }
         },
-        "api.GetChallenges.getChallengesResponse": {
-            "type": "object",
-            "properties": {
-                "challenges": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.DraftChallenge"
-                    }
-                }
-            }
-        },
         "api.GetCurrentUser.getCurrentUserResponse": {
             "type": "object",
             "properties": {
@@ -960,6 +1021,28 @@ const docTemplate = `{
                 },
                 "is_admin": {
                     "type": "boolean"
+                }
+            }
+        },
+        "api.GetDraftChallenges.getDraftChallengesResponse": {
+            "type": "object",
+            "properties": {
+                "drafts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Draft"
+                    }
+                }
+            }
+        },
+        "api.GetDrafts.getDraftsResponse": {
+            "type": "object",
+            "properties": {
+                "drafts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Draft"
+                    }
                 }
             }
         },
@@ -1138,7 +1221,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DraftChallenge": {
+        "model.Draft": {
             "type": "object",
             "properties": {
                 "challenge_date": {
@@ -1157,24 +1240,9 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.DraftSettings"
                 },
                 "status": {
-                    "$ref": "#/definitions/model.DraftChallengeStatus"
+                    "$ref": "#/definitions/model.DraftStatus"
                 }
             }
-        },
-        "model.DraftChallengeStatus": {
-            "type": "string",
-            "enum": [
-                "all",
-                "pending",
-                "accepted",
-                "declined"
-            ],
-            "x-enum-varnames": [
-                "StatusAll",
-                "StatusPending",
-                "StatusAccepted",
-                "StatusDeclined"
-            ]
         },
         "model.DraftMode": {
             "type": "string",
@@ -1205,7 +1273,7 @@ const docTemplate = `{
                 "mode": {
                     "$ref": "#/definitions/model.DraftMode"
                 },
-                "modeValue": {
+                "mode_value": {
                     "type": "integer"
                 },
                 "sets": {
@@ -1215,6 +1283,23 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "model.DraftStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "declined",
+                "running",
+                "canceled",
+                "finished"
+            ],
+            "x-enum-varnames": [
+                "DraftStatusPending",
+                "DraftStatusDeclined",
+                "DraftStatusRunning",
+                "DraftStatusCanceled",
+                "DraftStatusFinished"
+            ]
         },
         "model.Friend": {
             "type": "object",

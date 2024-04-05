@@ -1,2 +1,2 @@
-INSERT INTO draft_rounds (draftID, roundNumber, status)
+INSERT INTO draft_rounds (draft_id, round_number, status)
 VALUES ({{.DraftID}}, {{.RoundNumber}}, {{.Status}});

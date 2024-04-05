@@ -1,2 +1,2 @@
-INSERT INTO drafts (challengeID, userID1, userID2, status)
-VALUES ({{.ChallengeID}}, {{.FromUserID}}, {{.ToUserID}}, {{.Status}});
+INSERT INTO drafts (challenger_id, receiver_id, current_round_number, maximum_round_number, status, settings)
+VALUES ({{.ChallengerID}}, {{.ReceiverID}}, 1, {{.MaximumRoundNumber}}, {{.Status}}, {{.Settings}});

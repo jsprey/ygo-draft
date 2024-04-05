@@ -1,4 +1,4 @@
 UPDATE draft_rounds
 SET status = 'finished',
-    winnerUserID = 5
+    winner_user_id = 5
 WHERE id = 4;

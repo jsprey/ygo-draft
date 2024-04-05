@@ -20,7 +20,7 @@ func SetupAPI(router *gin.RouterGroup, dbClient *postgresql.PostgresClient, auth
 
 	authHandler := newAuthenticationHandler(authClient, usermgtClient)
 	usermgtHandler := newUserManagementHandler(usermgtClient)
-	draftHandler, err := newDraftHandler(dbClient, usermgtClient)
+	draftHandler, err := newDraftsHandler(dbClient, usermgtClient)
 	if err != nil {
 		return fmt.Errorf("failed to create new draft handler: %w", err)
 	}
@@ -52,17 +52,18 @@ func setupUnprotectedAPI(router gin.IRoutes, client *ygo.YgoClientWithCache, han
 	router.GET("sets/:code/cards", cardRetriever.GetSetCards)
 }
 
-func setupAuthenticatedUserApi(router gin.IRoutes, draftHandler *draftHandler, usermgtHandler *userManagementHandler) {
+func setupAuthenticatedUserApi(router gin.IRoutes, draftHandler *draftsHandler, usermgtHandler *userManagementHandler) {
 	router.GET("user", usermgtHandler.GetCurrentUser)
 	router.GET("user/friends", usermgtHandler.GetFriends)
 	router.GET("user/friends/requests", usermgtHandler.GetFriendRequests)
 	router.POST("user/friends/requests/:id", usermgtHandler.PostFriendRequest)
 	router.POST("user/friends/requests", usermgtHandler.PostFriendRequestByEmail)
 
-	router.GET("drafts/challenges", draftHandler.GetChallenges)
-	router.POST("drafts/challenges", draftHandler.ChallengeFriend)
-	router.POST("drafts/challenges/:id/accept", draftHandler.AcceptChallenge)
-	router.POST("drafts/challenges/:id/decline", draftHandler.DeclineChallenge)
+	router.GET("drafts", draftHandler.GetDrafts)
+	router.POST("drafts", draftHandler.CreateDraftChallenge)
+	router.POST("drafts/:id/accept", draftHandler.AcceptDraftChallenge)
+	router.POST("drafts/:id/decline", draftHandler.DeclineChallenge)
+	router.GET("drafts/challenges", draftHandler.GetDraftChallenges)
 }
 
 func setupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, usermgtHandler *userManagementHandler) {

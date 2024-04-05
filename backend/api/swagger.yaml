@@ -1,5 +1,5 @@
 definitions:
-  api.ChallengeFriend.challengeFriendRequest:
+  api.CreateDraftChallenge.createDraftChallengeRequest:
     properties:
       friend_id:
         type: integer
@@ -20,13 +20,6 @@ definitions:
       number:
         type: integer
     type: object
-  api.GetChallenges.getChallengesResponse:
-    properties:
-      challenges:
-        items:
-          $ref: '#/definitions/model.DraftChallenge'
-        type: array
-    type: object
   api.GetCurrentUser.getCurrentUserResponse:
     properties:
       display_name:
@@ -37,6 +30,20 @@ definitions:
         type: integer
       is_admin:
         type: boolean
+    type: object
+  api.GetDraftChallenges.getDraftChallengesResponse:
+    properties:
+      drafts:
+        items:
+          $ref: '#/definitions/model.Draft'
+        type: array
+    type: object
+  api.GetDrafts.getDraftsResponse:
+    properties:
+      drafts:
+        items:
+          $ref: '#/definitions/model.Draft'
+        type: array
     type: object
   api.GetRandomCards.getRandomCardsResponse:
     properties:
@@ -151,7 +158,7 @@ definitions:
       set_rarity_code:
         type: string
     type: object
-  model.DraftChallenge:
+  model.Draft:
     properties:
       challenge_date:
         type: string
@@ -164,20 +171,8 @@ definitions:
       settings:
         $ref: '#/definitions/model.DraftSettings'
       status:
-        $ref: '#/definitions/model.DraftChallengeStatus'
+        $ref: '#/definitions/model.DraftStatus'
     type: object
-  model.DraftChallengeStatus:
-    enum:
-    - all
-    - pending
-    - accepted
-    - declined
-    type: string
-    x-enum-varnames:
-    - StatusAll
-    - StatusPending
-    - StatusAccepted
-    - StatusDeclined
   model.DraftMode:
     enum:
     - bestof
@@ -198,13 +193,27 @@ definitions:
         type: integer
       mode:
         $ref: '#/definitions/model.DraftMode'
-      modeValue:
+      mode_value:
         type: integer
       sets:
         items:
           $ref: '#/definitions/model.CardSet'
         type: array
     type: object
+  model.DraftStatus:
+    enum:
+    - pending
+    - declined
+    - running
+    - canceled
+    - finished
+    type: string
+    x-enum-varnames:
+    - DraftStatusPending
+    - DraftStatusDeclined
+    - DraftStatusRunning
+    - DraftStatusCanceled
+    - DraftStatusFinished
   model.Friend:
     properties:
       id:
@@ -311,112 +320,16 @@ paths:
       summary: Retrieve a certain amount of random card at once.
       tags:
       - Yu-Gi-Oh
-  /drafts/challenges:
+  /drafts:
     get:
-      description: Retrieve the challenges of the current user.
+      description: Get all the drafts for the current user.
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.GetChallenges.getChallengesResponse'
-        "401":
-          description: Unauthorized.
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error.
-          schema:
-            type: string
-      security:
-      - Bearer: []
-      summary: Retrieve the challenges of the current user.
-      tags:
-      - Draft
-    post:
-      consumes:
-      - application/json
-      description: Challenge a friend to a draft.
-      parameters:
-      - description: Contains the information for the receiving party.
-        in: body
-        name: receiver
-        required: true
-        schema:
-          $ref: '#/definitions/api.ChallengeFriend.challengeFriendRequest'
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Body data is not correct/valid
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error.
-          schema:
-            type: string
-      security:
-      - Bearer: []
-      summary: Challenge a friend to a draft.
-      tags:
-      - Draft
-  /drafts/challenges/{id}/accept:
-    post:
-      description: Accept a draft challenge from another user.
-      parameters:
-      - description: Contains the id of the challenge to be accepted.
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Body data is not correct/valid
-          schema:
-            type: string
-        "401":
-          description: Unauthorized.
-          schema:
-            type: string
-        "403":
-          description: Thrown when anyone except the receiver tries to accept a challenge.
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error.
-          schema:
-            type: string
-      security:
-      - Bearer: []
-      summary: Accept a draft challenge from another user.
-      tags:
-      - Draft
-  /drafts/challenges/{id}/decline:
-    post:
-      description: Decline a draft challenge from another user.
-      parameters:
-      - description: Contains the authorization token.
-        in: header
-        name: authorization
-        required: true
-        type: string
-      - description: Contains the id of the challenge to be declined.
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
+            $ref: '#/definitions/api.GetDrafts.getDraftsResponse'
         "400":
           description: Body data is not correct/valid
           schema:
@@ -435,7 +348,154 @@ paths:
             type: string
       security:
       - Bearer: []
+      summary: Get all the drafts for the current user.
+      tags:
+      - Draft
+    post:
+      consumes:
+      - application/json
+      description: Challenge a friend to a draft.
+      parameters:
+      - description: Contains the information for the receiving party.
+        in: body
+        name: receiver
+        required: true
+        schema:
+          $ref: '#/definitions/api.CreateDraftChallenge.createDraftChallengeRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Body data is not correct/valid
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "409":
+          description: You are currently in a running draft against the receiving
+            user and cannot challenge him, until you resolve the draft.
+          schema:
+            type: string
+        "500":
+          description: Internal server error. Check server logs for more information.
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Challenge a friend to a draft.
+      tags:
+      - Draft
+  /drafts/{id}/accept:
+    post:
+      description: Accept a draft challenge from another user.
+      parameters:
+      - description: Contains the id of the challenge to be accepted.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: The draft is not a challenge and can neither be accepted or
+            declined.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "403":
+          description: Only the receiving party can accept the challenge.
+          schema:
+            type: string
+        "404":
+          description: There is no draft by the given id.
+          schema:
+            type: string
+        "409":
+          description: Only the receiving party can accept the challenge.
+          schema:
+            type: string
+        "500":
+          description: Internal server error. Check server logs for more information.
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Accept a draft challenge from another user.
+      tags:
+      - Draft
+  /drafts/{id}/decline:
+    post:
+      description: Decline a draft challenge from another user.
+      parameters:
+      - description: Contains the id of the challenge to be declined.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: The draft is not a challenge and can neither be accepted or
+            declined.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "403":
+          description: Only receiving party can decline the challenge.
+          schema:
+            type: string
+        "404":
+          description: There is no draft by the given id.
+          schema:
+            type: string
+        "500":
+          description: Internal server error. Check server logs for more information.
+          schema:
+            type: string
+      security:
+      - Bearer: []
       summary: Decline a draft challenge from another user.
+      tags:
+      - Draft
+  /drafts/challenges:
+    get:
+      description: Retrieve all draft challenges (outgoing + incoming) from the current
+        user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetDraftChallenges.getDraftChallengesResponse'
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "500":
+          description: Internal server error. Check server logs for more information.
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Retrieve all draft challenges (outgoing + incoming) from the current
+        user.
       tags:
       - Draft
   /login:

@@ -1,4 +1,4 @@
 UPDATE draft_rounds
 SET status = {{.Status}}{{if .WinnerUserID}},
-    winnerUserID = {{.WinnerUserID}}{{end}}
+    winner_user_id = {{.WinnerUserID}}{{end}}
 WHERE id = {{.RoundID}};
