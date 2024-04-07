@@ -3,6 +3,8 @@ import {Draft} from "../../api/Draft";
 import {useAcceptDraftChallenge} from "../../api/hooks/drafts/useAcceptDraftChallenge";
 import {useDeclineDraftChallenge} from "../../api/hooks/drafts/useDeclineDraftChallenge";
 import {enqueueSnackbar} from "notistack";
+import DraftSettingsDetails from "./DraftSettingsDetails";
+import React from "react";
 
 export type DraftChallengeDetailModalProps = {
     challenge: Draft
@@ -53,26 +55,7 @@ function DraftChallengeDetailModal(props: DraftChallengeDetailModalProps) {
         </Modal.Header>
         <Modal.Body className={"bg-ygo-light dark:bg-ygo-dark border dark:text-white"}>
             <div className={"fw-bold"}>Settings</div>
-            <div className={"grid grid-cols-8"}>
-                <span className={"col-span-2"}>Mode:</span>
-                <span
-                    className={"col-span-6"}>{settings.mode === "bestof" ? `Best of ${settings.mode_value} Rounds` : `${settings.mode_value} Rounds`}</span>
-                <span className={"col-span-2"}>Main Deck Drafts:</span>
-                <span className={"col-span-6"}>{settings.main_deck_draws}</span>
-                <span className={"col-span-2"}>Main Deck Drafts Size:</span>
-                <span className={"col-span-6"}>{settings.main_deck_size}</span>
-                <span className={"col-span-2"}>Extra Deck Drafts:</span>
-                <span className={"col-span-6"}>{settings.extra_deck_draws}</span>
-                <span className={"col-span-2"}>Extra Deck Drafts Size:</span>
-                <span className={"col-span-6"}>{settings.extra_deck_size}</span>
-                <span className={"col-span-2"}>Sets:</span>
-                <span className={"col-span-6"}>{settings.sets.map((value, index) => {
-                        return (index === 0 ? "" : ", ") + value.set_name
-                    }
-                )}</span>
-            </div>
-
-
+            <DraftSettingsDetails settings={settings}/>
         </Modal.Body>
         <Modal.Footer className={"bg-ygo-light dark:bg-ygo-dark border dark:text-white"}>
             <button disabled={declineChallengeMutation.isLoading || acceptChallengeMutation.isLoading} className={"btn btn-success"} onClick={() => {

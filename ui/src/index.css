@@ -6,7 +6,13 @@
   src: url("https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Manrope:wght@200;300;400;500;600;700;800&display=swap") format('ttf');
 }
 
+@font-face {
+  font-family: 'Best Friends';
+  src: local('Best Friends'), url(./fonts/BestFriends.woff) format('woff');
+}
+
 @tailwind utilities;
+
 
 body {
   margin: 0;

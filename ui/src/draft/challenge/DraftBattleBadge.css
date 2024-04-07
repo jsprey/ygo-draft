@@ -1,0 +1,11 @@
+.strokeLeft {
+    -webkit-text-stroke: 3px #f97417;
+}
+
+.strokeRight {
+    -webkit-text-stroke: 3px #15b9a7;
+}
+
+.strokeBlack {
+    -webkit-text-stroke: 1px black;
+}

@@ -48,6 +48,7 @@ function getCardAsImage(data: Card, onlyImage: boolean | undefined): JSX.Element
                       className={"rounded-3"}
                       src={`${PUBLIC_URL}/images/cards/` + data.id + "/small.png"}
                       alt="new"
+                      draggable={false}
         />
     }
 

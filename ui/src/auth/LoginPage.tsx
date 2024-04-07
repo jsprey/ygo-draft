@@ -42,7 +42,7 @@ function LoginPage() {
                     <div className={"flex justify-center items-center"}>
                         <img
                             alt=""
-                            src="/ui/public/logo.png"
+                            src="/logo.png"
                             width="96"
                             height="96"
                             className="d-inline-block align-top"

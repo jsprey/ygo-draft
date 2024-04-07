@@ -667,6 +667,37 @@ paths:
       summary: Retrieve the friends of a user.
       tags:
       - User Management
+  /user/friends/{id}:
+    post:
+      description: Retrieve information about a friend.
+      parameters:
+      - description: Contains the id of the target friend.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Cannot post a request to yourself.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Retrieve information about a friend.
+      tags:
+      - User Management
   /user/friends/requests:
     get:
       consumes:

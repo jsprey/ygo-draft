@@ -4,12 +4,20 @@ import "./YgoBackground.css"
 import {useRandomCards} from "../api/hooks/cards/useCards";
 import {CardFilter} from "../api/CardFilter";
 import {Alert, Spinner} from "react-bootstrap";
-import React from "react";
+import React, {useEffect, useState} from "react";
 
 function YgoBackground() {
+    const [allowedToFetch, setAllowedToFetch] = useState<boolean>(true)
     const {data, isLoading, error} = useRandomCards("login", 180, {} as CardFilter, {
-        refetchOnWindowFocus: false
+        refetchOnWindowFocus: allowedToFetch,
+        enabled: allowedToFetch
     })
+
+    useEffect(() => {
+        if (data) {
+            setAllowedToFetch(false)
+        }
+    }, [data]);
 
     let content
     if (isLoading) {
@@ -24,7 +32,7 @@ function YgoBackground() {
         let cardsViewBody = data.cards.map((card: Card) =>
             <span key={myInt++}><SingleCardViewer className={"card"} card={card} onlyImage={true} readonly={true}/></span>
         );
-        content = <div className={"blur-sm loginBackgroundContainer mySpecialBackground flex flex-wrap gap-3 bg-black -z-50"}>
+        content = <div className={"blur-sm loginBackgroundContainer mySpecialBackground p-3 grid gap-3 bg-black -z-50 select-none"}>
             {cardsViewBody}
         </div>
     }

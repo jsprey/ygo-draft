@@ -41,7 +41,6 @@ function FriendListEntry(props: FriendListEntryProps) {
         const receivedChallenges: Draft[] = draftChallenges.data.drafts.filter(value => value.challenger_id === props.friend.id)
         const sendChallenges: Draft[] = draftChallenges.data.drafts.filter(value => value.receiver_id === props.friend.id)
         const currentlyRunningDrafts: Draft[] = runningDrafts.data.drafts.filter(value => value.receiver_id === props.friend.id || value.challenger_id === props.friend.id)
-        console.log(currentlyRunningDrafts)
 
         if (currentlyRunningDrafts.length === 1) {
             // there is a running draft

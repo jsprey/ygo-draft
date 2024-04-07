@@ -21,6 +21,7 @@ const InvalidGivenUserErrorMessage = "Bad request. You need to provide a valid u
 const BadRequestCannotReferenceYourself = "Bad request. You need to provide another user. Not you own."
 const GetUsersPageParameter = "page"
 const GetUsersPageSizeParameter = "page_size"
+const GetFriendIDParameter = "id"
 
 type userManagementHandler struct {
 	usermgtClient model.UsermgtClient
@@ -45,7 +46,7 @@ func newUserManagementHandler(usermgtClient model.UsermgtClient) *userManagement
 // @Failure 401 {string} string "Unauthorized."
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /users [get]
-func (ah *userManagementHandler) GetUsers(ctx *gin.Context) {
+func (umh *userManagementHandler) GetUsers(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> GetCurrentUser -> Call to GetUsers endoint...")
 
 	pageParameter, err := GetQueryParameterInt(ctx, GetUsersPageParameter)
@@ -62,7 +63,7 @@ func (ah *userManagementHandler) GetUsers(ctx *gin.Context) {
 		return
 	}
 
-	usersCount, err := ah.usermgtClient.CountUsers()
+	usersCount, err := umh.usermgtClient.CountUsers()
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -76,7 +77,7 @@ func (ah *userManagementHandler) GetUsers(ctx *gin.Context) {
 		return
 	}
 
-	userList, err := ah.usermgtClient.GetUsers(pageParameter, pageSizeParameter)
+	userList, err := umh.usermgtClient.GetUsers(pageParameter, pageSizeParameter)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -108,7 +109,7 @@ func (ah *userManagementHandler) GetUsers(ctx *gin.Context) {
 // @Failure 404 {string} string "User does not exist."
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /users [delete]
-func (ah *userManagementHandler) DeleteUser(ctx *gin.Context) {
+func (umh *userManagementHandler) DeleteUser(ctx *gin.Context) {
 	type deleteUserRequest struct {
 		Email string `json:"email"`
 	}
@@ -125,7 +126,7 @@ func (ah *userManagementHandler) DeleteUser(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> DeleteUser -> Delete request for user [%s]...", asteriskEmail(deleteRequest.Email))
 
 	// check user exists in database
-	user, err := ah.usermgtClient.GetUser(deleteRequest.Email)
+	user, err := umh.usermgtClient.GetUser(deleteRequest.Email)
 	if model.IsErrorUserDoesNotExist(err) {
 		ctx.String(http.StatusNotFound, "user does not exist")
 		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get suer: %w", err))
@@ -136,7 +137,7 @@ func (ah *userManagementHandler) DeleteUser(ctx *gin.Context) {
 		return
 	}
 
-	err = ah.usermgtClient.DeleteUser(user.ID, user.Email)
+	err = umh.usermgtClient.DeleteUser(user.ID, user.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -162,7 +163,7 @@ func (ah *userManagementHandler) DeleteUser(ctx *gin.Context) {
 // @Failure 409 {string} string "User already exists."
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /users [post]
-func (ah *userManagementHandler) PostUsers(ctx *gin.Context) {
+func (umh *userManagementHandler) PostUsers(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> PostUsers -> Call to PostUsers endoint...")
 
 	// read request data
@@ -219,7 +220,7 @@ func (ah *userManagementHandler) PostUsers(ctx *gin.Context) {
 	}
 
 	// check user exists in database
-	user, err := ah.usermgtClient.GetUser(userRegistrationRequest.Email)
+	user, err := umh.usermgtClient.GetUser(userRegistrationRequest.Email)
 	if err != nil && !model.IsErrorUserDoesNotExist(err) {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -245,7 +246,7 @@ func (ah *userManagementHandler) PostUsers(ctx *gin.Context) {
 		DisplayName:  userRegistrationRequest.DisplayName,
 		IsAdmin:      userRegistrationRequest.IsAdmin,
 	}
-	err = ah.usermgtClient.CreateUser(newUser)
+	err = umh.usermgtClient.CreateUser(newUser)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -270,7 +271,7 @@ func (ah *userManagementHandler) PostUsers(ctx *gin.Context) {
 // @Failure 409 {string} string "User already exists."
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /user [get]
-func (ah *userManagementHandler) GetCurrentUser(ctx *gin.Context) {
+func (umh *userManagementHandler) GetCurrentUser(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> GetCurrentUser -> Call to GetCurrentUser endoint...")
 
 	tokenClaims, ok := auth.GetClaims(ctx)
@@ -280,7 +281,7 @@ func (ah *userManagementHandler) GetCurrentUser(ctx *gin.Context) {
 		return
 	}
 
-	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
+	user, err := umh.usermgtClient.GetUser(tokenClaims.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -318,7 +319,7 @@ func asteriskEmail(email string) string {
 // @Failure 401 {string} string "Unauthorized."
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /user/friends [get]
-func (ah *userManagementHandler) GetFriends(ctx *gin.Context) {
+func (umh *userManagementHandler) GetFriends(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> GetCurrentUser -> Call to GetFriends endoint...")
 
 	tokenClaims, ok := auth.GetClaims(ctx)
@@ -328,14 +329,14 @@ func (ah *userManagementHandler) GetFriends(ctx *gin.Context) {
 		return
 	}
 
-	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
+	user, err := umh.usermgtClient.GetUser(tokenClaims.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
-	friendList, err := ah.usermgtClient.GetFriends(user.ID)
+	friendList, err := umh.usermgtClient.GetFriends(user.ID)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -356,7 +357,7 @@ func (ah *userManagementHandler) GetFriends(ctx *gin.Context) {
 // @Failure 401 {string} string "Unauthorized."
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /user/friends/requests [get]
-func (ah *userManagementHandler) GetFriendRequests(ctx *gin.Context) {
+func (umh *userManagementHandler) GetFriendRequests(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> GetCurrentUser -> Call to GetFriendRequests endoint...")
 
 	tokenClaims, ok := auth.GetClaims(ctx)
@@ -366,14 +367,14 @@ func (ah *userManagementHandler) GetFriendRequests(ctx *gin.Context) {
 		return
 	}
 
-	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
+	user, err := umh.usermgtClient.GetUser(tokenClaims.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
-	friendRequests, err := ah.usermgtClient.GetFriendRequests(user.ID)
+	friendRequests, err := umh.usermgtClient.GetFriendRequests(user.ID)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -396,13 +397,13 @@ func (ah *userManagementHandler) GetFriendRequests(ctx *gin.Context) {
 // @Failure 401 {string} string "Unauthorized."
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /user/friends/requests/{targetUser} [post]
-func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
+func (umh *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> GetCurrentUser -> Call to PostFriendRequest endoint...")
 
 	targetUserID, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "you need to provide a valid user id")
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("failed to read the target user id: %w", err))
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read the target user id: %w", err))
 		return
 	}
 
@@ -413,14 +414,14 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 		return
 	}
 
-	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
+	user, err := umh.usermgtClient.GetUser(tokenClaims.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
-	targetUser, err := ah.usermgtClient.GetUserByID(targetUserID)
+	targetUser, err := umh.usermgtClient.GetUserByID(targetUserID)
 	if err != nil && model.IsErrorUserDoesNotExist(err) {
 		ctx.String(http.StatusBadRequest, InvalidGivenUserErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -437,7 +438,7 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 		return
 	}
 
-	friendRequests, err := ah.usermgtClient.GetFriendRequests(user.ID)
+	friendRequests, err := umh.usermgtClient.GetFriendRequests(user.ID)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -446,7 +447,7 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 
 	for _, friendRequest := range friendRequests {
 		if friendRequest.ID == targetUser.ID {
-			err = ah.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusFriends)
+			err = umh.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusFriends)
 			if err != nil {
 				ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 				_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -459,7 +460,7 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 	}
 
 	// not invited -> send invite to friend
-	err = ah.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusInvited)
+	err = umh.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusInvited)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -483,7 +484,7 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 // @Failure 401 {string} string "Unauthorized."
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /user/friends/requests [post]
-func (ah *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
+func (umh *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
 	type postFriendRequestViaEmailRequest struct {
 		FriendEmail string `json:"friend_email"`
 	}
@@ -493,6 +494,7 @@ func (ah *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
 	var bodyData postFriendRequestViaEmailRequest
 	err := GetRequestData(ctx, &bodyData)
 	if err != nil {
+		ctx.String(http.StatusBadRequest, "You need to provide a valid body.")
 		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to get request data: %w", err))
 		return
 	}
@@ -504,14 +506,14 @@ func (ah *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
 		return
 	}
 
-	user, err := ah.usermgtClient.GetUser(tokenClaims.Email)
+	user, err := umh.usermgtClient.GetUser(tokenClaims.Email)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
-	targetUser, err := ah.usermgtClient.GetUser(bodyData.FriendEmail)
+	targetUser, err := umh.usermgtClient.GetUser(bodyData.FriendEmail)
 	if err != nil && model.IsErrorUserDoesNotExist(err) {
 		logrus.Debug("The user to add does not seem to exist -> skip...")
 		ctx.Status(http.StatusOK)
@@ -524,11 +526,11 @@ func (ah *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
 
 	if user.Email == targetUser.Email {
 		ctx.String(http.StatusBadRequest, BadRequestCannotReferenceYourself)
-		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		_ = ctx.AbortWithError(http.StatusBadRequest, customerrors.GenericError(err))
 		return
 	}
 
-	err = ah.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusInvited)
+	err = umh.usermgtClient.SetRelationshipStatus(user.ID, targetUser.ID, model.FriendStatusInvited)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
@@ -536,4 +538,66 @@ func (ah *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusOK)
+}
+
+// GetFriend Endpoint used to retrieve information about a friend.
+// @Summary Retrieve information about a friend.
+// @Description Retrieve information about a friend.
+// @Tags User Management
+// @Security Bearer
+// @Produce json
+// @Param id path int true "Contains the id of the target friend."
+// @Success 201
+// @Failure 400 {string} string "Cannot post a request to yourself."
+// @Failure 401 {string} string "Unauthorized."
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /user/friends/{id} [post]
+func (umh *userManagementHandler) GetFriend(ctx *gin.Context) {
+	type getFriendResponse struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	}
+
+	logrus.Debugf("API-Handler -> Usermgt -> Call to GetFriend endoint...")
+
+	friendID, err := strconv.Atoi(ctx.Param(GetFriendIDParameter))
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "you need to provide a valid user id")
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read the target user id: %w", err))
+		return
+	}
+
+	tokenClaims, ok := auth.GetClaims(ctx)
+	if !ok {
+		ctx.String(http.StatusUnauthorized, "unauthorized")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
+	}
+
+	friendList, err := umh.usermgtClient.GetFriends(tokenClaims.ID)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	var targetFriend *model.Friend
+	for _, friend := range friendList {
+		if friend.ID == friendID {
+			targetFriend = &friend
+		}
+	}
+
+	if targetFriend == nil {
+		ctx.String(http.StatusBadRequest, "The user with the provided id is not a friend of yours.")
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("request contains a friend id of a user that is not a friend"))
+		return
+	}
+
+	response := getFriendResponse{
+		ID:   targetFriend.ID,
+		Name: targetFriend.Name,
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
