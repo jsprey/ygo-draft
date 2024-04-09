@@ -57,6 +57,42 @@ func Test_newSqlQueryTemplater_UpdateDraft(t *testing.T) {
 	})
 }
 
+//go:embed test_templates/drafts/rounds/testQuerySelectDraftRounds.sql
+var testQuerySelectDraftRounds string
+
+func Test_newSqlQueryTemplater_SelectDraftRounds(t *testing.T) {
+	t.Run("correctly escape my things", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.SelectDraftRounds(4)
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQuerySelectDraftRounds, myString)
+	})
+}
+
+//go:embed test_templates/drafts/rounds/testQuerySelectDraftRound.sql
+var testQuerySelectDraftRound string
+
+func Test_newSqlQueryTemplater_SelectDraftRound(t *testing.T) {
+	t.Run("correctly escape my things", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.SelectDraftRound(4)
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQuerySelectDraftRound, myString)
+	})
+}
+
 //go:embed test_templates/drafts/rounds/testQueryInsertDraftRound.sql
 var testQueryInsertDraftRound string
 
@@ -90,28 +126,6 @@ func Test_newSqlQueryTemplater_UpdateDraftRound(t *testing.T) {
 		// then
 		require.NoError(t, err)
 		assert.Equal(t, testQueryUpdateDraftRound, myString)
-	})
-}
-
-//go:embed test_templates/drafts/deck/testQueryInsertDraftRoundDeck.sql
-var testQueryInsertDraftRoundDeck string
-
-func Test_newSqlQueryTemplater_InsertDraftRoundDeck(t *testing.T) {
-	t.Run("correctly escape my things", func(t *testing.T) {
-		// given
-		templater, err := query.NewSqlQueryTemplater()
-		require.NoError(t, err)
-
-		deck := []string{
-			"123", "132", "141",
-		}
-
-		// when
-		myString, err := templater.InsertDraftRoundDeck(4, 5, deck)
-
-		// then
-		require.NoError(t, err)
-		assert.Equal(t, testQueryInsertDraftRoundDeck, myString)
 	})
 }
 
@@ -166,5 +180,45 @@ func Test_sqlQueryTemplater_SelectDraftsWithUsersAndStatus(t *testing.T) {
 		// then
 		require.NoError(t, err)
 		assert.Equal(t, testQuerySelectDraftsWithUsersAndStatus, myString)
+	})
+}
+
+//go:embed test_templates/drafts/deck/testQuerySelectDraftRoundDeck.sql
+var testQuerySelectDraftRoundDeck string
+
+func Test_newSqlQueryTemplater_SelectDraftRoundDeck(t *testing.T) {
+	t.Run("correctly escape my things", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		// when
+		myString, err := templater.SelectDraftRoundDeck(5, 4)
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQuerySelectDraftRoundDeck, myString)
+	})
+}
+
+//go:embed test_templates/drafts/deck/testQueryInsertDraftRoundDeck.sql
+var testQueryInsertDraftRoundDeck string
+
+func Test_newSqlQueryTemplater_InsertDraftRoundDeck(t *testing.T) {
+	t.Run("correctly escape my things", func(t *testing.T) {
+		// given
+		templater, err := query.NewSqlQueryTemplater()
+		require.NoError(t, err)
+
+		deck := []string{
+			"123", "132", "141",
+		}
+
+		// when
+		myString, err := templater.InsertDraftRoundDeck(4, 5, deck)
+
+		// then
+		require.NoError(t, err)
+		assert.Equal(t, testQueryInsertDraftRoundDeck, myString)
 	})
 }

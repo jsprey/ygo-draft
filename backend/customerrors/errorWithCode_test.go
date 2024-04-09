@@ -22,7 +22,7 @@ func TestWithCode_Error(t *testing.T) {
 	t.Run("", func(t *testing.T) {
 		// given
 		myErr := customerrors.WithCode{
-			Params:       []string{"TEST"},
+			Params:       []any{"TEST"},
 			InternalMsg:  "failed to test %s",
 			WrappedError: assert.AnError,
 		}
@@ -95,6 +95,20 @@ func TestWithCode_WithParam(t *testing.T) {
 		require.Len(t, myErr.Params, 0)
 		require.Len(t, myErrWithParam.Params, 1)
 		assert.Equal(t, "message", myErrWithParam.Params[0])
+	})
+	t.Run("test saving params for the error", func(t *testing.T) {
+		// given
+		myErr := customerrors.WithCode{InternalMsg: "this is my %s second %s test"}
+
+		// when
+		myErrWithParam := myErr.WithParam("message", "super")
+
+		// then
+		require.Len(t, myErr.Params, 0)
+		require.Len(t, myErrWithParam.Params, 2)
+		assert.Equal(t, "message", myErrWithParam.Params[0])
+		assert.Equal(t, "super", myErrWithParam.Params[1])
+		assert.Equal(t, "this is my message second super test", myErrWithParam.Error())
 	})
 }
 

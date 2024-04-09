@@ -64,9 +64,12 @@ func setupAuthenticatedUserApi(router gin.IRoutes, draftHandler *draftsHandler, 
 	router.GET("drafts", draftHandler.GetDrafts)
 	router.POST("drafts", draftHandler.CreateDraftChallenge)
 	router.GET("drafts/:id", draftHandler.GetDraft)
+	router.GET("drafts/:id/rounds", draftHandler.GetDraftRounds)
 	router.POST("drafts/:id/accept", draftHandler.AcceptDraftChallenge)
 	router.POST("drafts/:id/decline", draftHandler.DeclineChallenge)
 	router.GET("drafts/challenges", draftHandler.GetDraftChallenges)
+
+	router.GET("rounds/:id/decks", draftHandler.GetDraftRoundDecks)
 }
 
 func setupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, usermgtHandler *userManagementHandler) {

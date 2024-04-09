@@ -1,7 +1,7 @@
 import {CardSet} from "./Sets";
 
 export type DraftMode = "bestof" | "rounds";
-export type DraftChallengeStatus = "pending" | "accepted" | "declined";
+export type DraftStatus = "pending" | "running" | "declined" | "canceled" | "finished";
 
 export interface DraftSettings {
     extra_deck_draws: number,
@@ -21,6 +21,6 @@ export interface Draft {
     maximum_round_number: number,
     winner_user_id: number,
     challenge_date: Date,
-    status: DraftChallengeStatus,
+    status: DraftStatus,
     settings: DraftSettings
 }

@@ -38,6 +38,24 @@ definitions:
           $ref: '#/definitions/model.Draft'
         type: array
     type: object
+  api.GetDraftRoundDecks.getDraftRoundDecksResponse:
+    properties:
+      enemy_deck:
+        items:
+          type: string
+        type: array
+      user_deck:
+        items:
+          type: string
+        type: array
+    type: object
+  api.GetDraftRounds.getDraftRoundsResponse:
+    properties:
+      rounds:
+        items:
+          $ref: '#/definitions/model.DraftRound'
+        type: array
+    type: object
   api.GetDrafts.getDraftsResponse:
     properties:
       drafts:
@@ -187,6 +205,29 @@ definitions:
     x-enum-varnames:
     - DraftModeBestOf
     - DraftGoalRounds
+  model.DraftRound:
+    properties:
+      draft_id:
+        type: integer
+      id:
+        type: integer
+      round_number:
+        type: integer
+      status:
+        $ref: '#/definitions/model.DraftRoundStatus'
+      winner_user_id:
+        type: integer
+    type: object
+  model.DraftRoundStatus:
+    enum:
+    - preparation
+    - fighting
+    - finished
+    type: string
+    x-enum-varnames:
+    - DraftRoundStatusPreparation
+    - DraftRoundStatusFighting
+    - DraftRoundStatusFinished
   model.DraftSettings:
     properties:
       extra_deck_draws:
@@ -328,7 +369,7 @@ paths:
       - Yu-Gi-Oh
   /drafts:
     get:
-      description: Get a specific draft.
+      description: Get all the running drafts for the current user.
       produces:
       - application/json
       responses:
@@ -337,15 +378,15 @@ paths:
           schema:
             $ref: '#/definitions/api.GetDrafts.getDraftsResponse'
         "400":
-          description: Missing draft id.
+          description: Body data is not correct/valid
           schema:
             type: string
         "401":
           description: Unauthorized.
           schema:
             type: string
-        "404":
-          description: No access to draft.
+        "403":
+          description: Thrown when anyone except the receiver tries to decline a challenge.
           schema:
             type: string
         "500":
@@ -354,7 +395,7 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: Get a specific draft.
+      summary: Get all the running drafts for the current user.
       tags:
       - Draft
     post:
@@ -479,6 +520,43 @@ paths:
       summary: Decline a draft challenge from another user.
       tags:
       - Draft
+  /drafts/{id}/rounds:
+    get:
+      description: Get all the draft rounds of a given draft.
+      parameters:
+      - description: Contains the id of the draft to acquire the rounds from.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetDraftRounds.getDraftRoundsResponse'
+        "400":
+          description: Missing draft id.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "404":
+          description: No access to draft.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error.
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get all the draft rounds of a given draft.
+      tags:
+      - Draft
   /drafts/challenges:
     get:
       description: Retrieve all draft challenges (outgoing + incoming) from the current
@@ -530,6 +608,43 @@ paths:
         be used for authentication against the backend server.
       tags:
       - Authentication
+  /rounds/{id}/decks:
+    get:
+      description: Get both decks for the draft rounds.
+      parameters:
+      - description: Contains the id of the draft round.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetDraftRoundDecks.getDraftRoundDecksResponse'
+        "400":
+          description: Missing round id.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "404":
+          description: No access to draft.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error.
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get both decks for the draft rounds.
+      tags:
+      - Draft
   /sets:
     get:
       description: Retrieve all sets.
@@ -682,7 +797,7 @@ paths:
         "201":
           description: Created
         "400":
-          description: Cannot post a request to yourself.
+          description: User with given ID is not in your friend list.
           schema:
             type: string
         "401":
@@ -690,7 +805,7 @@ paths:
           schema:
             type: string
         "500":
-          description: Internal Server Error
+          description: Internal Server Error.
           schema:
             type: string
       security:

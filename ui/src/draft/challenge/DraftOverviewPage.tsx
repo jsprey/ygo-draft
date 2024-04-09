@@ -33,10 +33,9 @@ function DraftOverviewPage() {
         content = <Alert variant={"danger"}>Failed to load current draft!</Alert>
     } else if (userRequest.isError) {
         content = <Alert variant={"danger"}>Failed to load current user!</Alert>
-    } else if (friendRequest.isError) {
+    }  else if (friendRequest.isError) {
         content = <Alert variant={"danger"}>Failed to load enemy user!</Alert>
     } else if (draftRequest.data && userRequest.data && friendRequest.data) {
-
         content = <div className={"flex dark:text-white pb-2 pt-2"}>
             <div className={"w-100"}>
                 <DraftHeader draft={draftRequest.data} player={userRequest.data} enemy={friendRequest.data}/>

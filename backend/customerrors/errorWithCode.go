@@ -9,7 +9,7 @@ var errGenericInternal = WithCode{Code: CodeGenericInternalError, InternalMsg: "
 // WithCode is an error which contains an error code.
 type WithCode struct {
 	Code         string
-	Params       []string
+	Params       []any
 	InternalMsg  string
 	WrappedError error
 }
@@ -27,7 +27,7 @@ func (w WithCode) Is(target error) bool {
 func (w WithCode) Error() string {
 	internalMessage := w.InternalMsg
 	if w.Params != nil {
-		internalMessage = fmt.Sprintf(w.InternalMsg, w.Params)
+		internalMessage = fmt.Sprintf(w.InternalMsg, w.Params...)
 	}
 
 	if w.WrappedError != nil {
@@ -48,7 +48,7 @@ func (w WithCode) Wrap(err error) WithCode {
 }
 
 // WithParam is used to return the error with params attached.
-func (w WithCode) WithParam(params ...string) WithCode {
+func (w WithCode) WithParam(params ...any) WithCode {
 	newError := w
 	newError.Params = params
 	return newError

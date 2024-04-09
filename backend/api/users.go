@@ -548,9 +548,10 @@ func (umh *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
 // @Produce json
 // @Param id path int true "Contains the id of the target friend."
 // @Success 201
-// @Failure 400 {string} string "Cannot post a request to yourself."
+// @Failure 400 {string} string "Invalid user ID provided."
+// @Failure 400 {string} string "User with given ID is not in your friend list."
 // @Failure 401 {string} string "Unauthorized."
-// @Failure 500 {string} string "Internal Server Error"
+// @Failure 500 {string} string "Internal Server Error."
 // @Router /user/friends/{id} [post]
 func (umh *userManagementHandler) GetFriend(ctx *gin.Context) {
 	type getFriendResponse struct {

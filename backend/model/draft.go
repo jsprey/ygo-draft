@@ -34,6 +34,14 @@ var (
 		Code:        "EC_User_Is_Not_Participating_In_Draft",
 		InternalMsg: "you are not part of this challenge and have no access to it",
 	}
+	ErrorDraftRoundDoesNotExist = customerrors.WithCode{
+		Code:        "EC_Draft_Round_Does_Not_Exist",
+		InternalMsg: "the requested draft round with id %s does not exist",
+	}
+	ErrorDraftRoundDeckDoesNotExist = customerrors.WithCode{
+		Code:        "EC_Draft_Round_deck_Does_Not_Exist",
+		InternalMsg: "the requested draft round deck with round id %d and user id %d does not exist",
+	}
 )
 
 // IsErrorCustom checks if the given error of a custom error.
@@ -96,6 +104,15 @@ type Draft struct {
 	ChallengeDate      time.Time     `json:"challenge_date"`
 }
 
+// DraftRound contains the information for a draft round.
+type DraftRound struct {
+	ID           int              `json:"id"`
+	DraftID      int              `json:"draft_id"`
+	RoundNumber  int              `json:"round_number"`
+	Status       DraftRoundStatus `json:"status"`
+	WinnerUserID int              `json:"winner_user_id"`
+}
+
 // DraftSettings contains the configurable settings for a draft.
 type DraftSettings struct {
 	MainDeckDraws  int       `json:"main_deck_draws"`
@@ -123,6 +140,13 @@ type DraftClient interface {
 	GetDraftsWithStatus(userID int, status DraftStatus) ([]Draft, error)
 	// GetDraft returns the specific draft with the given id.
 	GetDraft(draftID int, userID int) (Draft, error)
+	// GetDraftRounds returns the specific draft rounds of a draft.
+	GetDraftRounds(draftID int) ([]DraftRound, error)
+	// GetDraftRound returns the specific draft round of a draft.
+	GetDraftRound(roundID int, userID int) (DraftRound, error)
+
+	// GetDraftRoundDeck returns the deck registered for the user of a specific draft round.
+	GetDraftRoundDeck(roundID int, userID int) ([]string, error)
 
 	// SurrenderRunningDraft surrenders the given draft and automatically makes the enemy user the winner.
 	SurrenderRunningDraft(draftID int, surrenderingUserID int) error
@@ -142,10 +166,18 @@ type DraftQueryGenerator interface {
 
 	// UpdateDraft returns an update query to update an entry in the draft table.
 	UpdateDraft(draftID int, status DraftStatus) (string, error)
+
+	// SelectDraftRounds returns a select query to get all draft rounds for a specific draft.
+	SelectDraftRounds(draftID int) (string, error)
+	// SelectDraftRound returns a select query to get a specific draft round.
+	SelectDraftRound(roundID int) (string, error)
 	// InsertDraftRound returns an insert query to create a new draft round.
 	InsertDraftRound(draftID int, roundNumber int, status DraftRoundStatus) (string, error)
 	// UpdateDraftRound returns an update query to update the draft round. When the winnerID is provided with 0, it will only update the status.
 	UpdateDraftRound(draftRoundID int, winnerID int, status DraftRoundStatus) (string, error)
+
+	// SelectDraftRoundDeck creates a select query to retrieve the deck for a user+round.
+	SelectDraftRoundDeck(roundID int, userID int) (string, error)
 	// InsertDraftRoundDeck creates an insert query to create a new deck for a draft round.
 	InsertDraftRoundDeck(roundID int, userID int, deck []string) (string, error)
 }

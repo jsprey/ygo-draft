@@ -22,21 +22,21 @@ var simpleErrorWithCode = customerrors.WithCode{
 
 var embeddingError = customerrors.WithCode{
 	Code:         customerrors.CodeCardDoesNotExist,
-	Params:       []string{"115"},
+	Params:       []any{"115"},
 	InternalMsg:  "embedding error",
 	WrappedError: nil,
 }
 
 var errorWithParams = customerrors.WithCode{
 	Code:         customerrors.CodeCardDoesNotExist,
-	Params:       []string{"115"},
+	Params:       []any{"115"},
 	InternalMsg:  "test error '%s'",
 	WrappedError: nil,
 }
 
 var internalWithParams = customerrors.WithCode{
 	Code:         customerrors.CodeCardDoesNotExist,
-	Params:       []string{"115"},
+	Params:       []any{"115"},
 	InternalMsg:  "internal error with params '%s'",
 	WrappedError: nil,
 }

@@ -126,14 +126,14 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get a specific draft.",
+                "description": "Get all the running drafts for the current user.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Draft"
                 ],
-                "summary": "Get a specific draft.",
+                "summary": "Get all the running drafts for the current user.",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -142,7 +142,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Missing draft id.",
+                        "description": "Body data is not correct/valid",
                         "schema": {
                             "type": "string"
                         }
@@ -153,8 +153,8 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
-                    "404": {
-                        "description": "No access to draft.",
+                    "403": {
+                        "description": "Thrown when anyone except the receiver tries to decline a challenge.",
                         "schema": {
                             "type": "string"
                         }
@@ -391,6 +391,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/drafts/{id}/rounds": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all the draft rounds of a given draft.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft"
+                ],
+                "summary": "Get all the draft rounds of a given draft.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Contains the id of the draft to acquire the rounds from.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetDraftRounds.getDraftRoundsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing draft id.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "No access to draft.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "The user provides his credentials and receives a valid JWT that can be used for authentication against the backend server.",
@@ -424,6 +482,64 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/rounds/{id}/decks": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get both decks for the draft rounds.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft"
+                ],
+                "summary": "Get both decks for the draft rounds.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Contains the id of the draft round.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetDraftRoundDecks.getDraftRoundDecksResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing round id.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "No access to draft.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
@@ -823,7 +939,7 @@ const docTemplate = `{
                         "description": "Created"
                     },
                     "400": {
-                        "description": "Cannot post a request to yourself.",
+                        "description": "User with given ID is not in your friend list.",
                         "schema": {
                             "type": "string"
                         }
@@ -835,7 +951,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal Server Error.",
                         "schema": {
                             "type": "string"
                         }
@@ -1084,6 +1200,34 @@ const docTemplate = `{
                 }
             }
         },
+        "api.GetDraftRoundDecks.getDraftRoundDecksResponse": {
+            "type": "object",
+            "properties": {
+                "enemy_deck": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user_deck": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "api.GetDraftRounds.getDraftRoundsResponse": {
+            "type": "object",
+            "properties": {
+                "rounds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DraftRound"
+                    }
+                }
+            }
+        },
         "api.GetDrafts.getDraftsResponse": {
             "type": "object",
             "properties": {
@@ -1311,6 +1455,39 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "DraftModeBestOf",
                 "DraftGoalRounds"
+            ]
+        },
+        "model.DraftRound": {
+            "type": "object",
+            "properties": {
+                "draft_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "round_number": {
+                    "type": "integer"
+                },
+                "status": {
+                    "$ref": "#/definitions/model.DraftRoundStatus"
+                },
+                "winner_user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.DraftRoundStatus": {
+            "type": "string",
+            "enum": [
+                "preparation",
+                "fighting",
+                "finished"
+            ],
+            "x-enum-varnames": [
+                "DraftRoundStatusPreparation",
+                "DraftRoundStatusFighting",
+                "DraftRoundStatusFinished"
             ]
         },
         "model.DraftSettings": {

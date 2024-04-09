@@ -1,2 +1,2 @@
-INSERT INTO draft_rounds (draft_id, round_number, status)
-VALUES ({{.DraftID}}, {{.RoundNumber}}, {{.Status}});
+INSERT INTO draft_rounds (draft_id, round_number, status, winner_user_id)
+VALUES ({{.DraftID}}, {{.RoundNumber}}, {{.Status}}, -1);

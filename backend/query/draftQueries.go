@@ -14,8 +14,13 @@ func (sqt *sqlQueryTemplater) AddDraftQueries(templateMap *map[string]string) {
 	(*templateMap)["SelectDraft"] = templateContentSelectDraft
 	(*templateMap)["SelectDraftsWithStatus"] = templateContentSelectDraftWithStatus
 	(*templateMap)["SelectDraftsWithUsersAndStatus"] = templateContentSelectDraftsWithUsersAndStatus
+
+	(*templateMap)["SelectDraftRounds"] = templateContentSelectDraftRounds
+	(*templateMap)["SelectDraftRound"] = templateContentSelectDraftRound
 	(*templateMap)["InsertDraftRound"] = templateContentInsertDraftRound
 	(*templateMap)["UpdateDraftRound"] = templateContentQueryUpdateDraftRound
+
+	(*templateMap)["SelectDraftRoundDeck"] = templateContentSelectDraftRoundDeck
 	(*templateMap)["InsertDraftRoundDeck"] = templateContentInsertDraftRoundDeck
 }
 
@@ -105,6 +110,32 @@ func (sqt *sqlQueryTemplater) SelectDraftsWithUsersAndStatus(userID int, user2ID
 	return sqt.Template("SelectDraftsWithUsersAndStatus", &templateObject)
 }
 
+//go:embed templates/drafts/rounds/QuerySelectDraftRounds.sql
+var templateContentSelectDraftRounds string
+
+func (sqt *sqlQueryTemplater) SelectDraftRounds(draftID int) (string, error) {
+	templateObject := struct {
+		DraftID int `json:"draft_id"`
+	}{
+		DraftID: draftID,
+	}
+
+	return sqt.Template("SelectDraftRounds", &templateObject)
+}
+
+//go:embed templates/drafts/rounds/QuerySelectDraftRound.sql
+var templateContentSelectDraftRound string
+
+func (sqt *sqlQueryTemplater) SelectDraftRound(roundID int) (string, error) {
+	templateObject := struct {
+		RoundID int `json:"round_id"`
+	}{
+		RoundID: roundID,
+	}
+
+	return sqt.Template("SelectDraftRound", &templateObject)
+}
+
 //go:embed templates/drafts/rounds/QueryInsertDraftRound.sql
 var templateContentInsertDraftRound string
 
@@ -137,6 +168,21 @@ func (sqt *sqlQueryTemplater) UpdateDraftRound(draftRoundID int, winnerID int, s
 	}
 
 	return sqt.Template("UpdateDraftRound", &templateObject)
+}
+
+//go:embed templates/drafts/deck/QuerySelectDraftRoundDeck.sql
+var templateContentSelectDraftRoundDeck string
+
+func (sqt *sqlQueryTemplater) SelectDraftRoundDeck(roundID int, userID int) (string, error) {
+	templateObject := struct {
+		RoundID int `json:"round_id"`
+		UserID  int `json:"user_id"`
+	}{
+		RoundID: roundID,
+		UserID:  userID,
+	}
+
+	return sqt.Template("SelectDraftRoundDeck", &templateObject)
 }
 
 //go:embed templates/drafts/deck/QueryInsertDraftRoundDeck.sql

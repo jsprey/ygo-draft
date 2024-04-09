@@ -12,7 +12,7 @@ import (
 	"ygodraft/backend/model"
 )
 
-const AcceptDraftChallengeParamID = "id"
+const IDParameter = "id"
 
 type draftsHandler struct {
 	DraftClient   model.DraftClient
@@ -29,6 +29,52 @@ func newDraftsHandler(dbClient model.DatabaseClient, usermgtClient model.Usermgt
 		UsermgtClient: usermgtClient,
 		DraftClient:   draftClient,
 	}, nil
+}
+
+// GetDraft Endpoint used to get a specific draft.
+// @Summary  Get a specific draft.
+// @Description Get a specific draft.
+// @Tags Draft
+// @Security Bearer
+// @Produce json
+// @Success 200 {object} api.GetDrafts.getDraftsResponse
+// @Failure 400 {string} string "Missing draft id."
+// @Failure 401 {string} string "Unauthorized."
+// @Failure 404 {string} string "Draft not found."
+// @Failure 404 {string} string "No access to draft."
+// @Failure 500 {string} string "Internal Server Error."
+// @Router /drafts [get]
+func (dh *draftsHandler) GetDraft(ctx *gin.Context) {
+	draftID, err := strconv.Atoi(ctx.Param(IDParameter))
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "You need to provide a draft id.")
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read the target draft id: %w", err))
+		return
+	}
+
+	tokenClaims, ok := auth.GetClaims(ctx)
+	if !ok {
+		ctx.String(http.StatusUnauthorized, "Unauthorized.")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
+	}
+
+	currentDraft, err := dh.DraftClient.GetDraft(draftID, tokenClaims.ID)
+	if model.IsErrorCustom(err, model.ErrorDraftDoesNotExist) {
+		ctx.String(http.StatusNotFound, "There is no draft by the given id.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft with id [%d]: %w", draftID, err))
+		return
+	} else if model.IsErrorCustom(err, model.ErrorUserIsNotParticipatingInDraft) {
+		ctx.String(http.StatusNotFound, "Draft not found.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft with id [%d]: %w", draftID, err))
+		return
+	} else if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, &currentDraft)
 }
 
 // GetDraftChallenges Endpoint used to retrieve all challenges (outgoing + incoming) from the current user.
@@ -207,7 +253,7 @@ func (dh *draftsHandler) DeclineChallenge(ctx *gin.Context) {
 }
 
 func extractChallengeReceiver(ctx *gin.Context, dh *draftsHandler) (*model.YgoClaims, model.Draft, error) {
-	draftID, err := strconv.Atoi(ctx.Param(AcceptDraftChallengeParamID))
+	draftID, err := strconv.Atoi(ctx.Param(IDParameter))
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "You need to provide a draft id.")
 		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read the target user id: %w", err))
@@ -277,21 +323,28 @@ func (dh *draftsHandler) GetDrafts(ctx *gin.Context) {
 	})
 }
 
-// GetDraft Endpoint used to get a specific draft.
-// @Summary  Get a specific draft.
-// @Description Get a specific draft.
+// GetDraftRounds Endpoint used to get all the draft rounds of a given draft.
+// @Summary  Get all the draft rounds of a given draft.
+// @Description Get all the draft rounds of a given draft.
 // @Tags Draft
 // @Security Bearer
 // @Produce json
-// @Success 200 {object} api.GetDrafts.getDraftsResponse
+// @Param id path int true "Contains the id of the draft to acquire the rounds from."
+// @Success 200 {object} api.GetDraftRounds.getDraftRoundsResponse
 // @Failure 400 {string} string "Missing draft id."
 // @Failure 401 {string} string "Unauthorized."
 // @Failure 404 {string} string "Draft not found."
 // @Failure 404 {string} string "No access to draft."
 // @Failure 500 {string} string "Internal Server Error."
-// @Router /drafts [get]
-func (dh *draftsHandler) GetDraft(ctx *gin.Context) {
-	draftID, err := strconv.Atoi(ctx.Param(AcceptDraftChallengeParamID))
+// @Router /drafts/{id}/rounds [get]
+func (dh *draftsHandler) GetDraftRounds(ctx *gin.Context) {
+	type getDraftRoundsResponse struct {
+		Rounds []model.DraftRound `json:"rounds"`
+	}
+
+	logrus.Debugf("API-Handler -> Call to GetDraftRounds endoint...")
+
+	draftID, err := strconv.Atoi(ctx.Param(IDParameter))
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "You need to provide a draft id.")
 		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read the target draft id: %w", err))
@@ -305,7 +358,8 @@ func (dh *draftsHandler) GetDraft(ctx *gin.Context) {
 		return
 	}
 
-	currentDraft, err := dh.DraftClient.GetDraft(draftID, tokenClaims.ID)
+	// check access to draft
+	_, err = dh.DraftClient.GetDraft(draftID, tokenClaims.ID)
 	if model.IsErrorCustom(err, model.ErrorDraftDoesNotExist) {
 		ctx.String(http.StatusNotFound, "There is no draft by the given id.")
 		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft with id [%d]: %w", draftID, err))
@@ -320,5 +374,112 @@ func (dh *draftsHandler) GetDraft(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, &currentDraft)
+	draftRounds, err := dh.DraftClient.GetDraftRounds(draftID)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, getDraftRoundsResponse{Rounds: draftRounds})
+}
+
+// GetDraftRoundDecks Endpoint used to get both decks for the draft rounds.
+// @Summary  Get both decks for the draft rounds.
+// @Description Get both decks for the draft rounds.
+// @Tags Draft
+// @Security Bearer
+// @Produce json
+// @Param id path int true "Contains the id of the draft round."
+// @Success 200 {object} api.GetDraftRoundDecks.getDraftRoundDecksResponse
+// @Failure 400 {string} string "Missing round id."
+// @Failure 401 {string} string "Unauthorized."
+// @Failure 404 {string} string "Round not found."
+// @Failure 404 {string} string "No access to draft."
+// @Failure 500 {string} string "Internal Server Error."
+// @Router /rounds/{id}/decks [get]
+func (dh *draftsHandler) GetDraftRoundDecks(ctx *gin.Context) {
+	type getDraftRoundDecksResponse struct {
+		UserDeck  []string `json:"user_deck"`
+		EnemyDeck []string `json:"enemy_deck"`
+	}
+
+	logrus.Debugf("API-Handler -> Call to GetDraftRoundDecks endoint...")
+
+	roundID, err := strconv.Atoi(ctx.Param(IDParameter))
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "You need to provide a round id.")
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read the target round id: %w", err))
+		return
+	}
+
+	tokenClaims, ok := auth.GetClaims(ctx)
+	if !ok {
+		ctx.String(http.StatusUnauthorized, "Unauthorized.")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
+	}
+
+	draftRound, err := dh.DraftClient.GetDraftRound(roundID, tokenClaims.ID)
+	if model.IsErrorCustom(err, model.ErrorDraftDoesNotExist) {
+		ctx.String(http.StatusNotFound, "There is no draft associated with the provided round id.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft round with id [%d]: %w", roundID, err))
+		return
+	} else if model.IsErrorCustom(err, model.ErrorDraftRoundDoesNotExist) {
+		ctx.String(http.StatusNotFound, "There is no draft round by the given id.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft round with id [%d]: %w", roundID, err))
+		return
+	} else if model.IsErrorCustom(err, model.ErrorUserIsNotParticipatingInDraft) {
+		ctx.String(http.StatusNotFound, "Draft not found.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft round with id [%d]: %w", roundID, err))
+		return
+	} else if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	currentDraft, err := dh.DraftClient.GetDraft(draftRound.DraftID, tokenClaims.ID)
+	if model.IsErrorCustom(err, model.ErrorDraftDoesNotExist) {
+		ctx.String(http.StatusNotFound, "There is no draft associated with the provided round id.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft round with id [%d]: %w", roundID, err))
+		return
+	} else if model.IsErrorCustom(err, model.ErrorUserIsNotParticipatingInDraft) {
+		ctx.String(http.StatusNotFound, "Draft not found.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft round with id [%d]: %w", roundID, err))
+		return
+	} else if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	userDeck, err := dh.DraftClient.GetDraftRoundDeck(draftRound.DraftID, tokenClaims.ID)
+	if model.IsErrorCustom(err, model.ErrorDraftRoundDeckDoesNotExist) {
+		userDeck = []string{}
+	} else if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	enemyUserID := currentDraft.ReceiverID
+	if currentDraft.ReceiverID == tokenClaims.ID {
+		enemyUserID = currentDraft.ChallengerID
+	}
+	enemyDeck, err := dh.DraftClient.GetDraftRoundDeck(draftRound.DraftID, enemyUserID)
+	if model.IsErrorCustom(err, model.ErrorDraftRoundDeckDoesNotExist) {
+		enemyDeck = []string{}
+	} else if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	response := &getDraftRoundDecksResponse{}
+	response.UserDeck = userDeck
+	response.EnemyDeck = enemyDeck
+
+	ctx.JSON(http.StatusOK, response)
+
 }

@@ -17,9 +17,9 @@ function DraftBattleBadge(props: DraftBattleBadgeProps) {
     let leftBannerMarginRight = `calc(50% * ${-diagonalFactor / 2})`
     let rightBannerMarginLeft = `calc(50% * ${-diagonalFactor / 2})`
 
-    let leftBannerCN = classNames("rounded-tl rounded-bl flex-grow-1", "bg-gradient-to-r", "from-teal-500 from-0%", "via-teal-400 via-60%", "to-teal-100 to-90%")
-    let rightBannerCN = classNames("rounded-tr rounded-br flex-grow-1", "bg-gradient-to-r", "from-orange-100 from-0%", "via-orange-400 via-40%", "to-orange-500 to-100%")
-    let vsTextCN = classNames("flex drop-shadow font-comic text-7xl text-white align-self-center align-items-center justify-content-center select-none")
+    let leftBannerCN = classNames("rounded-tl rounded-bl flex-grow-1", "bg-gradient-to-r", "from-blue-500 from-0%", "via-blue-400 via-60%", "to-blue-100 to-90%")
+    let rightBannerCN = classNames("rounded-tr rounded-br flex-grow-1", "bg-gradient-to-r", "from-red-100 from-0%", "via-red-400 via-40%", "to-red-500 to-100%")
+    let vsTextCN = classNames("flex drop-shadow font-comic text-6xl text-white align-self-center align-items-center justify-content-center select-none")
     let nameTextCN = classNames("flex align-self-center", "font-comic", "text-5xl tracking-wider select-none", "text-white strokeBlack", "truncate")
 
     return <div className={"w-100"} style={{height: height}}>

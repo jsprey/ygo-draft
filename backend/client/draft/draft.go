@@ -2,6 +2,7 @@ package draft
 
 import (
 	"fmt"
+	"strings"
 	"ygodraft/backend/model"
 	"ygodraft/backend/query"
 )
@@ -189,9 +190,79 @@ func (d draftClient) GetDraft(draftID int, userID int) (model.Draft, error) {
 	return drafts[0], nil
 }
 
+func (d draftClient) GetDraftRounds(draftID int) ([]model.DraftRound, error) {
+	draftRoundsQuery, err := d.QueryTemplater.SelectDraftRounds(draftID)
+	if err != nil {
+		return []model.DraftRound{}, fmt.Errorf("failed to template [SelectDraftRounds]: %w", err)
+	}
+
+	var draftRounds []model.DraftRound
+	err = d.Client.Select(draftRoundsQuery, &draftRounds)
+	if err != nil {
+		return []model.DraftRound{}, fmt.Errorf("failed to select query [SelectDraftRounds]: %w", err)
+	}
+
+	if draftRounds == nil {
+		draftRounds = []model.DraftRound{}
+	}
+
+	return draftRounds, nil
+}
+
 func (d draftClient) SurrenderRunningDraft(draftID int, surrenderingUserID int) error {
 	//TODO implement me
 	panic("implement me")
+}
+
+func (d draftClient) GetDraftRound(roundID int, userID int) (model.DraftRound, error) {
+	roundQuery, err := d.QueryTemplater.SelectDraftRound(roundID)
+	if err != nil {
+		return model.DraftRound{}, fmt.Errorf("failed to template query [SelectDraftRound]: %w", err)
+	}
+
+	var draftRounds []model.DraftRound
+	err = d.Client.Select(roundQuery, &draftRounds)
+	if err != nil {
+		return model.DraftRound{}, fmt.Errorf("failed to template query [SelectDraftRound]: %w", err)
+	}
+
+	if draftRounds == nil || len(draftRounds) == 0 {
+		return model.DraftRound{}, model.ErrorDraftRoundDoesNotExist.WithParam(fmt.Sprintf("%d", roundID))
+	}
+
+	// check users access to the draft
+	draftRound := draftRounds[0]
+	_, err = d.GetDraft(draftRound.DraftID, userID)
+	if err != nil {
+		return model.DraftRound{}, fmt.Errorf("failed to get draft: %w", err)
+	}
+
+	return draftRound, nil
+}
+
+func (d draftClient) GetDraftRoundDeck(roundID int, userID int) ([]string, error) {
+	_, err := d.GetDraftRound(roundID, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get draft round: %w", err)
+	}
+
+	deckQuery, err := d.QueryTemplater.SelectDraftRoundDeck(roundID, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to template query [SelectDraftRoundDeck]: %w", err)
+	}
+
+	var deckList []string
+	err = d.Client.Select(deckQuery, &deckList)
+	if err != nil {
+		return nil, fmt.Errorf("failed to selectl query [SelectDraftRoundDeck]: %w", err)
+	}
+
+	if deckList == nil || len(deckList) == 0 {
+		return []string{}, model.ErrorDraftRoundDeckDoesNotExist.WithParam(roundID, userID)
+	}
+
+	var deckListRaw = deckList[0]
+	return strings.Split(deckListRaw, ","), nil
 }
 
 func NewDraftClient(dbClient model.DatabaseClient) (*draftClient, error) {

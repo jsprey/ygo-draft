@@ -1,2 +1,2 @@
-INSERT INTO drafts (challenger_id, receiver_id, current_round_number, maximum_round_number, status, settings)
-VALUES (4, 5, 1, 10, 'pending', '{"main_deck_draws":4,"main_deck_size":5,"extra_deck_draws":6,"extra_deck_size":7,"mode":"rounds","mode_value":10,"sets":[{"set_name":"Test-Set","set_code":"CCSR-3","set_rarity":"RR","set_rarity_code":"CC"}]}');
+INSERT INTO drafts (challenger_id, receiver_id, current_round_number, maximum_round_number, winner_user_id, status, settings)
+VALUES (4, 5, 1, 10, -1, 'pending', '{"main_deck_draws":4,"main_deck_size":5,"extra_deck_draws":6,"extra_deck_size":7,"mode":"rounds","mode_value":10,"sets":[{"set_name":"Test-Set","set_code":"CCSR-3","set_rarity":"RR","set_rarity_code":"CC"}]}');
