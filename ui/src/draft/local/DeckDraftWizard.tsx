@@ -7,6 +7,7 @@ import {Deck} from "../../api/CardModel";
 import PageOverview from "./PageOverview";
 import {ExtraDeckFilter, MainDeckFilter} from "../../api/CardFilter";
 import {DraftSettings} from "../../api/Draft";
+import {ExportDeck} from "../../deck/DeckRandomGeneratorPage";
 
 export enum LocalDraftStages {
     Settings = 1,
@@ -29,19 +30,33 @@ function DeckDraftWizard() {
     let stageBody
     switch (currentStage) {
         case LocalDraftStages.DraftMain:
-            stageBody = <PageDraftDeck isMainDraft={true} filter={mainDeckFilter} deck={deck} setDeck={setDeck} draftSize={draftSettings.main_deck_size}
-                                       maxRounds={draftSettings.main_deck_draws} setCurrentStage={setCurrentStage}/>
+            stageBody = <PageDraftDeck isMainDraft={true}
+                                       filter={mainDeckFilter}
+                                       deck={deck}
+                                       setDeck={setDeck}
+                                       draftSize={draftSettings.main_deck_size}
+                                       maxRounds={draftSettings.main_deck_draws}
+                                       onNextClick={() => setCurrentStage(LocalDraftStages.DraftExtra)}
+                                       onAbort={() => setCurrentStage(LocalDraftStages.Settings)}/>
             break
         case LocalDraftStages.DraftExtra:
-            stageBody = <PageDraftDeck isMainDraft={false} filter={extraDeckFilter} deck={deck} setDeck={setDeck} draftSize={draftSettings.extra_deck_size}
-                                       maxRounds={draftSettings.extra_deck_draws} setCurrentStage={setCurrentStage}/>
+            stageBody = <PageDraftDeck isMainDraft={false}
+                                       filter={extraDeckFilter}
+                                       deck={deck}
+                                       setDeck={setDeck}
+                                       draftSize={draftSettings.extra_deck_size}
+                                       maxRounds={draftSettings.extra_deck_draws}
+                                       onNextClick={() => setCurrentStage(LocalDraftStages.DeckOverview)}
+                                       onAbort={() => setCurrentStage(LocalDraftStages.Settings)}/>
             break
         case LocalDraftStages.DeckOverview:
-            stageBody = <PageOverview deck={deck}/>
+            stageBody = <PageOverview deck={deck} submitName={"Export"} onSubmit={ExportDeck}/>
             break
         default:
         case LocalDraftStages.Settings:
-            stageBody = <PageSettings submitButtonName={"Next"} onSettingsSubmit={(settings: DraftSettings) => {
+            stageBody = <PageSettings submitButtonName={"Next"}
+                                      local={true}
+                                      onSettingsSubmit={(settings: DraftSettings) => {
                 setDraftSettings(settings)
                 setCurrentStage(LocalDraftStages.DraftMain)
             }}/>
@@ -60,11 +75,14 @@ function DeckDraftWizard() {
 function getCurrentStageHeader(currentStage: LocalDraftStages): JSX.Element {
     return <Stepper>
         <StepperStep stepNr={1} stepName={"Settings"} stepDescription={"Control the draft process"}
-                     isDone={currentStage > LocalDraftStages.Settings} isActive={currentStage === LocalDraftStages.Settings}/>
+                     isDone={currentStage > LocalDraftStages.Settings}
+                     isActive={currentStage === LocalDraftStages.Settings}/>
         <StepperStep stepNr={2} stepName={"Draft: Main"} stepDescription={"Draft cards for your main deck"}
-                     isDone={currentStage > LocalDraftStages.DraftMain} isActive={currentStage === LocalDraftStages.DraftMain}/>
+                     isDone={currentStage > LocalDraftStages.DraftMain}
+                     isActive={currentStage === LocalDraftStages.DraftMain}/>
         <StepperStep stepNr={3} stepName={"Draft: Extra"} stepDescription={"Draft cards for your extra deck"}
-                     isDone={currentStage > LocalDraftStages.DraftExtra} isActive={currentStage === LocalDraftStages.DraftExtra}/>
+                     isDone={currentStage > LocalDraftStages.DraftExtra}
+                     isActive={currentStage === LocalDraftStages.DraftExtra}/>
         <StepperStep stepNr={4} stepName={"Deck Overview"} stepDescription={"Look at your finished deck"}
                      isDone={currentStage > LocalDraftStages.DeckOverview}
                      isActive={currentStage === LocalDraftStages.DeckOverview}/>

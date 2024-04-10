@@ -46,6 +46,7 @@ func setupUnprotectedAPI(router gin.IRoutes, client *ygo.YgoClientWithCache, han
 	cardRetriever := newYgoRetrieveHandler(client)
 
 	router.GET("cards", cardRetriever.GetCards)
+	router.GET("cards/bulk", cardRetriever.GetBulkCards)
 	router.GET("cards/:id", cardRetriever.GetCard)
 	router.GET("cards/random", cardRetriever.GetRandomCards)
 	router.GET("sets", cardRetriever.GetSets)
@@ -70,6 +71,8 @@ func setupAuthenticatedUserApi(router gin.IRoutes, draftHandler *draftsHandler, 
 	router.GET("drafts/challenges", draftHandler.GetDraftChallenges)
 
 	router.GET("rounds/:id/decks", draftHandler.GetDraftRoundDecks)
+	router.POST("rounds/:id/decks", draftHandler.PostDraftRoundDecks)
+	router.POST("rounds/:id", draftHandler.PostRoundWinner)
 }
 
 func setupAuthenticatedAdminApi(router gin.IRoutes, _ *ygo.YgoClientWithCache, usermgtHandler *userManagementHandler) {

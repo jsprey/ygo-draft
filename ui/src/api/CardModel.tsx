@@ -91,3 +91,11 @@ export function ToYdkFileString(deck: Deck): string {
 
     return deckYdkFileString
 }
+
+export function ToStringList(deck: Deck): string[] {
+    let deckList: string[] = []
+    for (let i = 0; i < deck.cards.length; i++) {
+        deckList.push(""+deck.cards[i].id)
+    }
+    return deckList
+}

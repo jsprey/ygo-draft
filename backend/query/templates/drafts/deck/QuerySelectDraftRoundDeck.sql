@@ -3,4 +3,4 @@ SELECT d.id,
        d.round_id,
        d.deck
 FROM ygodraft.public.draft_deck d
-WHERE d.id = {{.UserID}} AND d.round_id = {{.RoundID}};
+WHERE d.user_id = {{.UserID}} AND d.round_id = {{.RoundID}};

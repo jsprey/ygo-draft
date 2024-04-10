@@ -53,13 +53,17 @@ func (sqt *sqlQueryTemplater) InsertDraft(challengerID int, receiverID int, sett
 //go:embed templates/drafts/QueryUpdateDraft.sql
 var templateContentUpdateDraft string
 
-func (sqt *sqlQueryTemplater) UpdateDraft(draftID int, status model.DraftStatus) (string, error) {
+func (sqt *sqlQueryTemplater) UpdateDraft(draftID int, currentRoundNumber int, winnerID int, status model.DraftStatus) (string, error) {
 	templateObject := struct {
-		DraftID int    `json:"draft_id"`
-		Status  string `json:"status"`
+		DraftID            int    `json:"draft_id"`
+		CurrentRoundNumber int    `json:"current_round_number"`
+		WinnerID           int    `json:"winner_id"`
+		Status             string `json:"status"`
 	}{
-		DraftID: draftID,
-		Status:  escape(string(status)),
+		DraftID:            draftID,
+		CurrentRoundNumber: currentRoundNumber,
+		WinnerID:           winnerID,
+		Status:             escape(string(status)),
 	}
 
 	return sqt.Template("UpdateDraft", &templateObject)

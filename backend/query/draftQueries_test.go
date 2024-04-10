@@ -49,7 +49,7 @@ func Test_newSqlQueryTemplater_UpdateDraft(t *testing.T) {
 		require.NoError(t, err)
 
 		// when
-		myString, err := templater.UpdateDraft(4, model.DraftStatusRunning)
+		myString, err := templater.UpdateDraft(4, 7, 5, model.DraftStatusRunning)
 
 		// then
 		require.NoError(t, err)

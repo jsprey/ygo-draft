@@ -454,7 +454,7 @@ func (dh *draftsHandler) GetDraftRoundDecks(ctx *gin.Context) {
 		return
 	}
 
-	userDeck, err := dh.DraftClient.GetDraftRoundDeck(draftRound.DraftID, tokenClaims.ID)
+	userDeck, err := dh.DraftClient.GetDraftRoundDeck(draftRound.ID, tokenClaims.ID)
 	if model.IsErrorCustom(err, model.ErrorDraftRoundDeckDoesNotExist) {
 		userDeck = []string{}
 	} else if err != nil {
@@ -467,7 +467,7 @@ func (dh *draftsHandler) GetDraftRoundDecks(ctx *gin.Context) {
 	if currentDraft.ReceiverID == tokenClaims.ID {
 		enemyUserID = currentDraft.ChallengerID
 	}
-	enemyDeck, err := dh.DraftClient.GetDraftRoundDeck(draftRound.DraftID, enemyUserID)
+	enemyDeck, err := dh.DraftClient.GetDraftRoundDeck(draftRound.ID, enemyUserID)
 	if model.IsErrorCustom(err, model.ErrorDraftRoundDeckDoesNotExist) {
 		enemyDeck = []string{}
 	} else if err != nil {
@@ -482,4 +482,132 @@ func (dh *draftsHandler) GetDraftRoundDecks(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 
+}
+
+// PostDraftRoundDecks Endpoint used to submit a deck for a deck round.
+// @Summary  Submit a deck for a deck round.
+// @Description Submit a deck for a deck round.
+// @Tags Draft
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param request body api.PostDraftRoundDecks.postDraftRoundDeckRequest true "Contains the id of the draft round."
+// @Param id path int true "Contains the id of the draft round."
+// @Success 200 {object} api.GetDraftRoundDecks.getDraftRoundDecksResponse
+// @Failure 400 {string} string "Missing round id."
+// @Failure 401 {string} string "Unauthorized."
+// @Failure 404 {string} string "Round not found."
+// @Failure 404 {string} string "No access to draft."
+// @Failure 500 {string} string "Internal Server Error."
+// @Router /rounds/{id}/decks [post]
+func (dh *draftsHandler) PostDraftRoundDecks(ctx *gin.Context) {
+	type postDraftRoundDeckRequest struct {
+		Deck []string `json:"deck"`
+	}
+
+	logrus.Debugf("API-Handler -> Call to PostDraftRoundDecks endoint...")
+
+	roundID, err := strconv.Atoi(ctx.Param(IDParameter))
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "You need to provide a round id.")
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read the target round id: %w", err))
+		return
+	}
+
+	requestData := &postDraftRoundDeckRequest{}
+	err = GetRequestData(ctx, requestData)
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "your provided request data is not valid")
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read request body: %w", err))
+		return
+	}
+
+	tokenClaims, ok := auth.GetClaims(ctx)
+	if !ok {
+		ctx.String(http.StatusUnauthorized, "unauthorized")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
+	}
+
+	userDeck, err := dh.DraftClient.GetDraftRoundDeck(roundID, tokenClaims.ID)
+	if err != nil && !model.IsErrorCustom(err, model.ErrorDraftRoundDeckDoesNotExist) {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	if len(userDeck) > 0 {
+		ctx.String(http.StatusConflict, "A deck was already submitted!")
+		_ = ctx.AbortWithError(http.StatusConflict, customerrors.GenericError(err))
+		return
+	}
+
+	err = dh.DraftClient.SubmitDraftDeck(roundID, tokenClaims.ID, requestData.Deck)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
+}
+
+// PostRoundWinner Endpoint used to set the winner of a draft round.
+// @Summary  Set the winner of a draft round.
+// @Description Set the winner of a draft round.
+// @Tags Draft
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param request body api.PostRoundWinner.postRoundWinnerRequest true "Contains the id of the draft round."
+// @Param id path int true "Contains the id of the draft round."
+// @Success 204
+// @Failure 400 {string} string "Missing round id."
+// @Failure 401 {string} string "Unauthorized."
+// @Failure 404 {string} string "Round not found."
+// @Failure 404 {string} string "No access to draft."
+// @Failure 500 {string} string "Internal Server Error."
+// @Router /rounds/{id} [post]
+func (dh *draftsHandler) PostRoundWinner(ctx *gin.Context) {
+	type postRoundWinnerRequest struct {
+		Winner int `json:"winner"`
+	}
+
+	logrus.Debugf("API-Handler -> Call to PostRoundWinner endoint...")
+
+	roundID, err := strconv.Atoi(ctx.Param(IDParameter))
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "You need to provide a round id.")
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read the target round id: %w", err))
+		return
+	}
+
+	requestData := &postRoundWinnerRequest{}
+	err = GetRequestData(ctx, requestData)
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "your provided request data is not valid")
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read request body: %w", err))
+		return
+	}
+
+	err = dh.DraftClient.SetWinnerForDraftRound(roundID, requestData.Winner)
+	if model.IsErrorCustom(err, model.ErrorDraftDoesNotExist) {
+		ctx.String(http.StatusNotFound, "There is no draft associated with the provided round id.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft round with id [%d]: %w", roundID, err))
+		return
+	} else if model.IsErrorCustom(err, model.ErrorDraftRoundDoesNotExist) {
+		ctx.String(http.StatusNotFound, "There is no draft round by the given id.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft round with id [%d]: %w", roundID, err))
+		return
+	} else if model.IsErrorCustom(err, model.ErrorUserIsNotParticipatingInDraft) {
+		ctx.String(http.StatusNotFound, "Draft not found.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft round with id [%d]: %w", roundID, err))
+		return
+	} else if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
 }

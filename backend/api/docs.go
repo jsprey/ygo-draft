@@ -38,6 +38,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/cards/bulk": {
+            "get": {
+                "description": "Endpoint used to retrieve a specific amount of cards.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Yu-Gi-Oh"
+                ],
+                "summary": "Endpoint used to retrieve a specific amount of cards.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetBulkCards.getBulkCardsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/cards/random": {
             "get": {
                 "description": "Retrieve a certain amount of random card at once. Calling the endpoint without any parameters returns\na only one random card.",
@@ -486,6 +509,73 @@ const docTemplate = `{
                 }
             }
         },
+        "/rounds/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Set the winner of a draft round.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft"
+                ],
+                "summary": "Set the winner of a draft round.",
+                "parameters": [
+                    {
+                        "description": "Contains the id of the draft round.",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.PostRoundWinner.postRoundWinnerRequest"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Contains the id of the draft round.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Missing round id.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "No access to draft.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/rounds/{id}/decks": {
             "get": {
                 "security": [
@@ -502,6 +592,74 @@ const docTemplate = `{
                 ],
                 "summary": "Get both decks for the draft rounds.",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Contains the id of the draft round.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetDraftRoundDecks.getDraftRoundDecksResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing round id.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "No access to draft.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Submit a deck for a deck round.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft"
+                ],
+                "summary": "Submit a deck for a deck round.",
+                "parameters": [
+                    {
+                        "description": "Contains the id of the draft round.",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.PostDraftRoundDecks.postDraftRoundDeckRequest"
+                        }
+                    },
                     {
                         "type": "integer",
                         "description": "Contains the id of the draft round.",
@@ -1158,6 +1316,17 @@ const docTemplate = `{
                 }
             }
         },
+        "api.GetBulkCards.getBulkCardsResponse": {
+            "type": "object",
+            "properties": {
+                "cards": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Card"
+                    }
+                }
+            }
+        },
         "api.GetCards.getCardResponse": {
             "type": "object",
             "properties": {
@@ -1316,6 +1485,25 @@ const docTemplate = `{
             "properties": {
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "api.PostDraftRoundDecks.postDraftRoundDeckRequest": {
+            "type": "object",
+            "properties": {
+                "deck": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "api.PostRoundWinner.postRoundWinnerRequest": {
+            "type": "object",
+            "properties": {
+                "winner": {
+                    "type": "integer"
                 }
             }
         },

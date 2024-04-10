@@ -113,6 +113,14 @@ type DraftRound struct {
 	WinnerUserID int              `json:"winner_user_id"`
 }
 
+// DraftRoundDeck contains the information for a draft round deck entry.
+type DraftRoundDeck struct {
+	ID      int    `json:"id"`
+	UserID  int    `json:"user_id"`
+	RoundID int    `json:"round_id"`
+	Deck    string `json:"deck"`
+}
+
 // DraftSettings contains the configurable settings for a draft.
 type DraftSettings struct {
 	MainDeckDraws  int       `json:"main_deck_draws"`
@@ -147,6 +155,10 @@ type DraftClient interface {
 
 	// GetDraftRoundDeck returns the deck registered for the user of a specific draft round.
 	GetDraftRoundDeck(roundID int, userID int) ([]string, error)
+	// SubmitDraftDeck submits a deck for the given user for the specific round id.
+	SubmitDraftDeck(roundID int, userID int, deck []string) error
+	// SetWinnerForDraftRound sets the winner for the draft round.
+	SetWinnerForDraftRound(roundID int, winnerUser int) error
 
 	// SurrenderRunningDraft surrenders the given draft and automatically makes the enemy user the winner.
 	SurrenderRunningDraft(draftID int, surrenderingUserID int) error
@@ -165,7 +177,7 @@ type DraftQueryGenerator interface {
 	SelectDraftsWithUsersAndStatus(userID int, user2ID int, status DraftStatus) (string, error)
 
 	// UpdateDraft returns an update query to update an entry in the draft table.
-	UpdateDraft(draftID int, status DraftStatus) (string, error)
+	UpdateDraft(draftID int, currentRoundNumber int, winnerID int, status DraftStatus) (string, error)
 
 	// SelectDraftRounds returns a select query to get all draft rounds for a specific draft.
 	SelectDraftRounds(draftID int) (string, error)

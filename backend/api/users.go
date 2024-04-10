@@ -583,9 +583,9 @@ func (umh *userManagementHandler) GetFriend(ctx *gin.Context) {
 	}
 
 	var targetFriend *model.Friend
-	for _, friend := range friendList {
+	for i, friend := range friendList {
 		if friend.ID == friendID {
-			targetFriend = &friend
+			targetFriend = &friendList[i]
 		}
 	}
 

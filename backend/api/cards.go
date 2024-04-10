@@ -13,6 +13,7 @@ import (
 )
 
 const GetCardQueryParamID = "id"
+const GetCardsBulkQueryParamCardsIDs = "cards"
 const GetRandomCardsQueryParamSize = "size"
 const GetRandomCardsQueryParamSets = "sets"
 const GetRandomCardsQueryParamTypes = "types"
@@ -34,22 +35,65 @@ func newYgoRetrieveHandler(client model.YgoClient) *ygoRetrieveHandler {
 // @Failure 500
 // @Router /cards [get]
 func (crh *ygoRetrieveHandler) GetCards(ctx *gin.Context) {
+	type getCardResponse struct {
+		CardIds []int `json:"card_ids"`
+		Number  int   `json:"number"`
+	}
+
 	cards, err := crh.YGOClient.GetAllCards()
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
 		return
 	}
 
-	type getCardResponse struct {
-		CardIds []int `json:"card_ids"`
-		Number  int   `json:"number"`
-	}
 	response := getCardResponse{
 		Number:  len(*cards),
 		CardIds: make([]int, len(*cards)),
 	}
+
 	for i, card := range *cards {
 		response.CardIds[i] = card.ID
+	}
+
+	ctx.JSONP(http.StatusOK, response)
+}
+
+// GetBulkCards Endpoint used to retrieve a specific amount of cards.
+// @Summary Endpoint used to retrieve a specific amount of cards.
+// @Description Endpoint used to retrieve a specific amount of cards.
+// @Tags Yu-Gi-Oh
+// @Produce json
+// @Success 200 {object} api.GetBulkCards.getBulkCardsResponse
+// @Failure 500
+// @Router /cards/bulk [get]
+func (crh *ygoRetrieveHandler) GetBulkCards(ctx *gin.Context) {
+	type getBulkCardsResponse struct {
+		Cards []model.Card `json:"cards"`
+	}
+
+	var cardIDs []string
+	cardIDParam, ok := ctx.Request.URL.Query()[GetCardsBulkQueryParamCardsIDs]
+	if !ok {
+		ctx.String(http.StatusBadRequest, "Bad Request.")
+		_ = ctx.AbortWithError(http.StatusBadRequest, customerrors.GenericError(fmt.Errorf("bad request, need get parameter")))
+		return
+	} else if ok {
+		cardIDs = strings.Split(cardIDParam[0], ",")
+	}
+
+	response := &getBulkCardsResponse{}
+	for _, cardIDRaw := range cardIDs {
+		cardID, err := strconv.Atoi(cardIDRaw)
+		if err != nil {
+			continue
+		}
+
+		currentCard, err := crh.YGOClient.GetCard(cardID)
+		if err != nil {
+			continue
+		}
+
+		response.Cards = append(response.Cards, *currentCard)
 	}
 
 	ctx.JSONP(http.StatusOK, response)

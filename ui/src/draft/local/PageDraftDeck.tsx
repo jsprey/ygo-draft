@@ -15,7 +15,8 @@ export type PageDraftDeckProps = {
     isMainDraft: boolean
     deck: Deck
     setDeck: React.Dispatch<React.SetStateAction<Deck>>
-    setCurrentStage: React.Dispatch<React.SetStateAction<LocalDraftStages>>
+    onNextClick: () => void
+    onAbort: () => void
     draftSize: number
     maxRounds: number
     filter: CardFilter
@@ -56,7 +57,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
         setDrafted(false)
         setCurrentDraftRound(1)
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
-        props.setCurrentStage(LocalDraftStages.Settings)
+        props.onAbort()
         setShowAbortDialog(false)
     }
 
@@ -66,7 +67,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
         setCurrentDraftRound(1)
         setFinished(false)
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
-        props.setCurrentStage(props.isMainDraft ? LocalDraftStages.DraftExtra : LocalDraftStages.DeckOverview)
+        props.onNextClick()
     }
 
     let body

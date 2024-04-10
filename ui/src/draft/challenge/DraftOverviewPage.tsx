@@ -21,7 +21,9 @@ function DraftOverviewPage() {
             return -1;
         }
 
-        return draftRequest.data.challenger_id === userRequest.data.id ? draftRequest.data.receiver_id : draftRequest.data.challenger_id;
+        const value = draftRequest.data.challenger_id === userRequest.data.id ? draftRequest.data.receiver_id : draftRequest.data.challenger_id;
+        console.log(`FriendID: ${value}`)
+        return value
     }
 
     const friendRequest = useFriend(getFriendID(), {enabled: draftRequest.isSuccess && userRequest.isSuccess})

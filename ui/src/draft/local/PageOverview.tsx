@@ -1,11 +1,12 @@
 import React from "react";
 import {Deck} from "../../api/CardModel";
 import DeckViewer from "../../deck/DeckViewer";
-import {ExportDeck} from "../../deck/DeckRandomGeneratorPage";
 import {Button} from "react-bootstrap";
 
 export type PageOverviewProps = {
     deck: Deck
+    onSubmit: (deck:Deck) => void
+    submitName: string
 }
 
 function PageOverview(props: PageOverviewProps) {
@@ -14,8 +15,8 @@ function PageOverview(props: PageOverviewProps) {
         <div className={"flex place-content-end"}>
             <Button className={"ml-4 object-center"}
                     variant="primary"
-                    onClick={() => ExportDeck(props.deck)}>
-                Export
+                    onClick={() => props.onSubmit(props.deck)}>
+                {props.submitName}
             </Button>
         </div>
     </>

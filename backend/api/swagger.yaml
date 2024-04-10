@@ -11,6 +11,13 @@ definitions:
       email:
         type: string
     type: object
+  api.GetBulkCards.getBulkCardsResponse:
+    properties:
+      cards:
+        items:
+          $ref: '#/definitions/model.Card'
+        type: array
+    type: object
   api.GetCards.getCardResponse:
     properties:
       card_ids:
@@ -113,6 +120,18 @@ definitions:
     properties:
       token:
         type: string
+    type: object
+  api.PostDraftRoundDecks.postDraftRoundDeckRequest:
+    properties:
+      deck:
+        items:
+          type: string
+        type: array
+    type: object
+  api.PostRoundWinner.postRoundWinnerRequest:
+    properties:
+      winner:
+        type: integer
     type: object
   api.PostUsers.postUsersRequest:
     properties:
@@ -331,6 +350,21 @@ paths:
         "500":
           description: Internal Server Error
       summary: Endpoint used to retrieve a specific card.
+      tags:
+      - Yu-Gi-Oh
+  /cards/bulk:
+    get:
+      description: Endpoint used to retrieve a specific amount of cards.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetBulkCards.getBulkCardsResponse'
+        "500":
+          description: Internal Server Error
+      summary: Endpoint used to retrieve a specific amount of cards.
       tags:
       - Yu-Gi-Oh
   /cards/random:
@@ -608,6 +642,49 @@ paths:
         be used for authentication against the backend server.
       tags:
       - Authentication
+  /rounds/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Set the winner of a draft round.
+      parameters:
+      - description: Contains the id of the draft round.
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.PostRoundWinner.postRoundWinnerRequest'
+      - description: Contains the id of the draft round.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Missing round id.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "404":
+          description: No access to draft.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error.
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Set the winner of a draft round.
+      tags:
+      - Draft
   /rounds/{id}/decks:
     get:
       description: Get both decks for the draft rounds.
@@ -643,6 +720,50 @@ paths:
       security:
       - Bearer: []
       summary: Get both decks for the draft rounds.
+      tags:
+      - Draft
+    post:
+      consumes:
+      - application/json
+      description: Submit a deck for a deck round.
+      parameters:
+      - description: Contains the id of the draft round.
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.PostDraftRoundDecks.postDraftRoundDeckRequest'
+      - description: Contains the id of the draft round.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetDraftRoundDecks.getDraftRoundDecksResponse'
+        "400":
+          description: Missing round id.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "404":
+          description: No access to draft.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error.
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Submit a deck for a deck round.
       tags:
       - Draft
   /sets:
