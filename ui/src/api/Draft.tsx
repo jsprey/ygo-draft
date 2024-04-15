@@ -1,7 +1,7 @@
 import {CardSet} from "./Sets";
 
-export type DraftMode = "bestof" | "rounds";
-export type DraftStatus = "pending" | "running" | "declined" | "canceled" | "finished";
+export type DraftMode = "bestof" | "rounds" | undefined;
+export type DraftStatus = "pending" | "running" | "declined" | "surrender" | "finished";
 
 export interface DraftSettings {
     extra_deck_draws: number,

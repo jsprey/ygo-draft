@@ -212,7 +212,7 @@ func Test_draftClient_CreateDraftChallenge(t *testing.T) {
 			MainDeckSize:   2,
 			ExtraDeckDraws: 3,
 			ExtraDeckSize:  4,
-			Mode:           model.DraftGoalRounds,
+			Mode:           model.DraftModeRounds,
 			ModeValue:      10,
 			Sets:           []model.CardSet{{SetName: "Test Set", SetCode: "TS", SetRarity: "S", SetRarityCode: "SS"}},
 		}
@@ -252,7 +252,7 @@ func Test_draftClient_CreateDraftChallenge(t *testing.T) {
 			MainDeckSize:   2,
 			ExtraDeckDraws: 3,
 			ExtraDeckSize:  4,
-			Mode:           model.DraftGoalRounds,
+			Mode:           model.DraftModeRounds,
 			ModeValue:      10,
 			Sets:           []model.CardSet{{SetName: "Test Set", SetCode: "TS", SetRarity: "S", SetRarityCode: "SS"}},
 		}
@@ -278,7 +278,7 @@ func Test_draftClient_CreateDraftChallenge(t *testing.T) {
 			MainDeckSize:   2,
 			ExtraDeckDraws: 3,
 			ExtraDeckSize:  4,
-			Mode:           model.DraftGoalRounds,
+			Mode:           model.DraftModeRounds,
 			ModeValue:      10,
 			Sets:           []model.CardSet{{SetName: "Test Set", SetCode: "TS", SetRarity: "S", SetRarityCode: "SS"}},
 		}
@@ -319,7 +319,7 @@ func Test_draftClient_CreateDraftChallenge(t *testing.T) {
 			MainDeckSize:   2,
 			ExtraDeckDraws: 3,
 			ExtraDeckSize:  4,
-			Mode:           model.DraftGoalRounds,
+			Mode:           model.DraftModeRounds,
 			ModeValue:      10,
 			Sets:           []model.CardSet{{SetName: "Test Set", SetCode: "TS", SetRarity: "S", SetRarityCode: "SS"}},
 		}
@@ -346,7 +346,7 @@ func Test_draftClient_CreateDraftChallenge(t *testing.T) {
 			MainDeckSize:   2,
 			ExtraDeckDraws: 3,
 			ExtraDeckSize:  4,
-			Mode:           model.DraftGoalRounds,
+			Mode:           model.DraftModeRounds,
 			ModeValue:      10,
 			Sets:           []model.CardSet{{SetName: "Test Set", SetCode: "TS", SetRarity: "S", SetRarityCode: "SS"}},
 		}
@@ -373,7 +373,7 @@ func Test_draftClient_CreateDraftChallenge(t *testing.T) {
 			MainDeckSize:   2,
 			ExtraDeckDraws: 3,
 			ExtraDeckSize:  4,
-			Mode:           model.DraftGoalRounds,
+			Mode:           model.DraftModeRounds,
 			ModeValue:      10,
 			Sets:           []model.CardSet{{SetName: "Test Set", SetCode: "TS", SetRarity: "S", SetRarityCode: "SS"}},
 		}
@@ -537,7 +537,7 @@ func Test_draftClient_GetDraft(t *testing.T) {
 		require.NoError(t, err)
 
 		// when
-		_, err = client.GetDraft(0)
+		_, err = client.GetDraft(0, 0)
 
 		// then
 		require.ErrorIs(t, err, assert.AnError)
@@ -552,7 +552,7 @@ func Test_draftClient_GetDraft(t *testing.T) {
 		require.NoError(t, err)
 
 		// when
-		_, err = client.GetDraft(1)
+		_, err = client.GetDraft(1, 1)
 
 		// then
 		require.ErrorIs(t, err, model.ErrorDraftDoesNotExist.WithParam(string(rune(1))))
@@ -580,7 +580,7 @@ func Test_draftClient_GetDraft(t *testing.T) {
 		require.NoError(t, err)
 
 		// when
-		draft, err := client.GetDraft(1)
+		draft, err := client.GetDraft(1, 1)
 
 		// then
 		require.NoError(t, err)

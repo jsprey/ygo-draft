@@ -1,11 +1,12 @@
 import React, {useState} from "react";
 import {Alert, Col, Form, Placeholder, Row} from "react-bootstrap";
-import HelpTooltip from "../../core/HelpTooltip";
 import {CardSet, SetList, sortSets} from "../../api/Sets";
 import {useSets} from "../../api/hooks/cards/useSets";
 import CardSelectedSetList, {CardSetReceiver} from "./CardSelectedSetList";
 import SvgIconButton, {SvgIconButtonProps} from "../../core/SvgIconButton";
 import SetDetailModal from "./SetDetailModal";
+import YgoIcon from "../../core/YgoIcon";
+import classNames from "classnames";
 
 export type CardSetSelectorProps = {
     tooltip: string
@@ -14,17 +15,19 @@ export type CardSetSelectorProps = {
     setSelectedSets: React.Dispatch<React.SetStateAction<CardSet[]>>
 }
 
-const IconEye = <SvgIconButton size={25}>
+const IconEye = <SvgIconButton size={25}
+                               classNames={classNames("fill-blue-600 dark:fill-blue-400", "hover:fill-blue-500 hover:dark:fill-blue-300", "active:hover:fill-blue-400 active:hover:dark:fill-blue-200")}>
     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
     <path
         d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
 </SvgIconButton>
 const IconArrowRight = <SvgIconButton size={25}
-                                      classNames={"fill-green-600 hover:fill-green-500 active:fill-green-400"}>
+                                      classNames={classNames("fill-green-600 dark:fill-green-400", "hover:fill-green-500 hover:dark:fill-green-300", "active:hover:fill-green-400 active:hover:dark:fill-green-200")}>
     <path
         d="M0 14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12zm4.5-6.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5a.5.5 0 0 1 0-1z"/>
 </SvgIconButton>
-const IconArrowLeft = <SvgIconButton size={25} classNames={"fill-red-600 hover:fill-red-500 active:fill-red-400"}>
+const IconArrowLeft = <SvgIconButton size={25}
+                                     classNames={classNames("fill-red-600 dark:fill-red-400", "hover:fill-red-500 hover:dark:fill-red-300", "active:hover:fill-red-400 active:hover:dark:fill-red-200")}>
     <path
         d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1z"/>
 </SvgIconButton>
@@ -33,6 +36,7 @@ function CardSetSelector(props: CardSetSelectorProps) {
     const {data, isLoading, error} = useSets()
 
     const [isShowingSetCardsView, setIsShowingSetCardsView] = useState(false);
+    const [expandedTooltip, setExpandedTooltip] = useState(false);
     const [currentDetailSet, setCurrentDetailSet] = useState("");
     const showSetCardsModal = (currentSet: string) => {
         setCurrentDetailSet(currentSet)
@@ -92,12 +96,30 @@ function CardSetSelector(props: CardSetSelectorProps) {
         props.setSelectedSets(sortSets(newSelectedCardSets))
     })
 
+    const CollapsedIcon = <YgoIcon icon={"help-outline"}
+                                   size={18}
+                                   onClick={(event) => {
+                                       setExpandedTooltip(true)
+                                       event.preventDefault()
+                                   }}
+                                   classNames={classNames("fill-neutral-900 dark:fill-neutral-50", "hover:fill-blue-500 hover:dark:fill-blue-200", "active:hover:fill-blue-600 active:hover:dark:fill-blue-300")}/>
+    const ExpandIcon = <YgoIcon icon={"help-fill"}
+                                size={18}
+                                onClick={(event) => {
+                                    setExpandedTooltip(false)
+                                    event.preventDefault()
+                                }}
+                                classNames={classNames("fill-blue-600 dark:fill-blue-400", "hover:fill-blue-500 hover:dark:fill-blue-300", "active:hover:fill-blue-400 active:hover:dark:fill-blue-200")}/>
     return <>
         <Row className={props.rowClass}><Form.Group as={Col}>
-            <Form.Label className={"flex"}>
-                <div className={"self-center mr-1 dark:text-white"}>Select Packs for your drafting phases</div>
-                <HelpTooltip size={20}
-                             message={props.tooltip}/>
+            <Form.Label className={"w-100"}>
+                <div className={"flex"}>
+                    <div className={"self-center mr-2 fw-bold dark:text-white"}>Card Sets</div>
+                    {expandedTooltip ? ExpandIcon : CollapsedIcon}
+                </div>
+                {expandedTooltip ? <div>
+                    <Alert className={"mb-0 mt-1"}>{props.tooltip}</Alert>
+                </div> : <></>}
             </Form.Label>
 
             <div>

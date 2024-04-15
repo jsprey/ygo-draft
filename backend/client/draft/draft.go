@@ -2,6 +2,7 @@ package draft
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"ygodraft/backend/model"
 	"ygodraft/backend/query"
@@ -210,8 +211,51 @@ func (d draftClient) GetDraftRounds(draftID int) ([]model.DraftRound, error) {
 }
 
 func (d draftClient) SurrenderRunningDraft(draftID int, surrenderingUserID int) error {
-	//TODO implement me
-	panic("implement me")
+	currentDraft, err := d.GetDraft(draftID, surrenderingUserID)
+	if err != nil {
+		return fmt.Errorf("failed to get draft: %w", err)
+	}
+
+	if currentDraft.Status != model.DraftStatusRunning {
+		return model.ErrorDraftIsNotRunning
+	}
+
+	winnerUserID := currentDraft.ChallengerID
+	if surrenderingUserID == currentDraft.ChallengerID {
+		winnerUserID = currentDraft.ReceiverID
+	}
+
+	// get draft round and finish it
+	rounds, err := d.GetDraftRounds(currentDraft.ID)
+	if err != nil {
+		return fmt.Errorf("failed to get draft rounds: %w", err)
+	}
+
+	for _, round := range rounds {
+		if round.Status != model.DraftRoundStatusFinished {
+			changeRoundStatus, err := d.QueryTemplater.UpdateDraftRound(round.ID, winnerUserID, model.DraftRoundStatusFinished)
+			if err != nil {
+				return fmt.Errorf("failed to template [UpdateDraftRound] query: %w", err)
+			}
+
+			_, err = d.Client.Exec(changeRoundStatus)
+			if err != nil {
+				return fmt.Errorf("failed to exec [UpdateDraftRound] query: %w", err)
+			}
+		}
+	}
+
+	draftUpdateQuery, err := d.QueryTemplater.UpdateDraft(currentDraft.ID, currentDraft.CurrentRoundNumber, winnerUserID, model.DraftStatusSurrender)
+	if err != nil {
+		return fmt.Errorf("failed to template query [UpdateDraft]: %w", err)
+	}
+
+	_, err = d.Client.Exec(draftUpdateQuery)
+	if err != nil {
+		return fmt.Errorf("failed to exec [UpdateDraft] query: %w", err)
+	}
+
+	return nil
 }
 
 func (d draftClient) GetDraftRound(roundID int, userID int) (model.DraftRound, error) {
@@ -335,26 +379,72 @@ func (d draftClient) SetWinnerForDraftRound(roundID int, winnerUser int) error {
 		return fmt.Errorf("failed to get draft: %w", err)
 	}
 
-	// create next round
-	insertDraftRoundQuery, err := d.QueryTemplater.InsertDraftRound(draftRound.DraftID, currentDraft.CurrentRoundNumber+1, model.DraftRoundStatusPreparation)
+	// get all rounds of draft
+	rounds, err := d.GetDraftRounds(currentDraft.ID)
 	if err != nil {
-		return fmt.Errorf("failed to template [InsertDraftRound] query: %w", err)
+		return fmt.Errorf("failed to get draft rounds: %w", err)
 	}
 
-	_, err = d.Client.Exec(insertDraftRoundQuery)
-	if err != nil {
-		return fmt.Errorf("failed to exec [InsertDraftRound] query: %w", err)
+	counterChallenger := 0
+	counterReceiver := 0
+	for _, round := range rounds {
+		if round.WinnerUserID == currentDraft.ChallengerID {
+			counterChallenger += 1
+		}
+		if round.WinnerUserID == currentDraft.ReceiverID {
+			counterReceiver += 1
+		}
 	}
 
-	// update current round in draft
-	draftUpdateQuery, err := d.QueryTemplater.UpdateDraft(currentDraft.ID, currentDraft.CurrentRoundNumber+1, currentDraft.WinnerUserID, currentDraft.Status)
-	if err != nil {
-		return fmt.Errorf("failed to template query [UpdateDraft]: %w", err)
+	// check draft over
+	finishedDraft := false
+	if currentDraft.Settings.Mode == model.DraftModeRounds {
+		finishedDraft = currentDraft.CurrentRoundNumber >= currentDraft.MaximumRoundNumber
+	} else if currentDraft.Settings.Mode == model.DraftModeBestOf {
+		expectedWins := int(math.Ceil(float64(currentDraft.Settings.ModeValue) / 2.0))
+		finishedDraft = (counterChallenger >= expectedWins) || (counterReceiver >= expectedWins)
 	}
 
-	_, err = d.Client.Exec(draftUpdateQuery)
-	if err != nil {
-		return fmt.Errorf("failed to exec [UpdateDraft] query: %w", err)
+	if finishedDraft {
+		draftWinnerID := currentDraft.ChallengerID
+		if counterReceiver == counterChallenger {
+			draftWinnerID = model.DraftDrawFlag
+		}
+		if counterReceiver > counterChallenger {
+			draftWinnerID = currentDraft.ReceiverID
+		}
+
+		draftUpdateQuery, err := d.QueryTemplater.UpdateDraft(currentDraft.ID, currentDraft.CurrentRoundNumber, draftWinnerID, model.DraftStatusFinished)
+		if err != nil {
+			return fmt.Errorf("failed to template query [UpdateDraft]: %w", err)
+		}
+
+		_, err = d.Client.Exec(draftUpdateQuery)
+		if err != nil {
+			return fmt.Errorf("failed to exec [UpdateDraft] query: %w", err)
+		}
+	} else {
+		// create next round
+		insertDraftRoundQuery, err := d.QueryTemplater.InsertDraftRound(draftRound.DraftID, currentDraft.CurrentRoundNumber+1, model.DraftRoundStatusPreparation)
+		if err != nil {
+			return fmt.Errorf("failed to template [InsertDraftRound] query: %w", err)
+		}
+
+		_, err = d.Client.Exec(insertDraftRoundQuery)
+		if err != nil {
+			return fmt.Errorf("failed to exec [InsertDraftRound] query: %w", err)
+		}
+
+		// update current round in draft
+		draftUpdateQuery, err := d.QueryTemplater.UpdateDraft(currentDraft.ID, currentDraft.CurrentRoundNumber+1, currentDraft.WinnerUserID, currentDraft.Status)
+		if err != nil {
+			return fmt.Errorf("failed to template query [UpdateDraft]: %w", err)
+		}
+
+		_, err = d.Client.Exec(draftUpdateQuery)
+		if err != nil {
+			return fmt.Errorf("failed to exec [UpdateDraft] query: %w", err)
+		}
 	}
 
 	return nil

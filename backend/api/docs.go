@@ -472,6 +472,73 @@ const docTemplate = `{
                 }
             }
         },
+        "/drafts/{id}/surrender": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Surrender a draft.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft"
+                ],
+                "summary": "Surrender a draft.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Contains the id of the draft round.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "The draft is not a challenge and can neither be accepted or declined.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Only the receiving party can accept the challenge.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "There is no draft by the given id.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "Only the receiving party can accept the challenge.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error. Check server logs for more information.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "The user provides his credentials and receives a valid JWT that can be used for authentication against the backend server.",
@@ -1638,11 +1705,11 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "bestof",
-                "round"
+                "rounds"
             ],
             "x-enum-varnames": [
                 "DraftModeBestOf",
-                "DraftGoalRounds"
+                "DraftModeRounds"
             ]
         },
         "model.DraftRound": {
@@ -1713,14 +1780,14 @@ const docTemplate = `{
                 "pending",
                 "declined",
                 "running",
-                "canceled",
+                "surrender",
                 "finished"
             ],
             "x-enum-varnames": [
                 "DraftStatusPending",
                 "DraftStatusDeclined",
                 "DraftStatusRunning",
-                "DraftStatusCanceled",
+                "DraftStatusSurrender",
                 "DraftStatusFinished"
             ]
         },

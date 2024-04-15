@@ -31,7 +31,7 @@ function UserManagement() {
             variant: 'success'
         })
         setToBeDeletedUserEmail("")
-        queryClient.invalidateQueries({queryKey: "users"})
+        queryClient.refetchQueries({queryKey: "users"})
     }
     const deleteUserMutation = useDeleteUser({
         onSuccess: onMutationSuccess,

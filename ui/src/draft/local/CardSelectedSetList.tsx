@@ -1,22 +1,8 @@
 import React, {useState} from "react";
 import {CardSet} from "../../api/Sets";
-import {FormControl} from "react-bootstrap";
 import SvgIconButton, {SvgIconButtonProps} from "../../core/SvgIconButton";
-
-const IconSelectAll = <SvgIconButton size={25}
-                                     classNames={"fill-red-600 stroke-green-600 hover:stroke-green-500 active:stroke-green-400"}>
-    <path
-        d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"/>
-    <path
-        d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"/>
-</SvgIconButton>
-const IconRemoveAll = <SvgIconButton size={25}
-                                     classNames={"stroke-red-600 hover:stroke-red-500 active:stroke-red-400"}>
-    <path
-        d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-    <path
-        d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-</SvgIconButton>
+import classNames from "classnames";
+import YgoIcon from "../../core/YgoIcon";
 
 export type CardSetReceiver = (cardSet: CardSet) => void;
 export type CardAllSetReceiver = () => void;
@@ -36,14 +22,14 @@ function CardSelectedSetList(props: CardSetListProps) {
     const filteredSets = props.cardSets.filter((currentSet) => {
         if (filter === "") return true;
 
-        return filter !== "" && !currentSet.set_name.toLowerCase().includes(filter.toLowerCase())
+        return filter !== "" && currentSet.set_name.toLowerCase().includes(filter.toLowerCase())
     })
 
-    let listItems = filteredSets.map(currentSet => {
+    let listItems = filteredSets.map((currentSet:CardSet, index:number) => {
         let svgIcons: JSX.Element[] = []
-        let index = 0
+        let actionIndex = 0
         props.actionList?.forEach((cardSetReceiver, key) => {
-            let svgElement = <SvgIconButton key={index++} size={key.props.size}
+            let svgElement = <SvgIconButton key={actionIndex++} size={key.props.size}
                                             classNames={key.props.classNames}
                                             rootClassNames={key.props.rootClassNames}
                                             onClick={() => {
@@ -56,7 +42,7 @@ function CardSelectedSetList(props: CardSetListProps) {
             svgIcons.push(svgElement)
         })
 
-        return <div key={currentSet.set_name} className={"select-none flex justify-content-between  dark:text-white"}>
+        return <div key={currentSet.set_name} className={classNames("select-none flex justify-content-between p-2 dark:text-white", index % 2 === 0 ? "bg-blue-100 dark:bg-gray-700" : "bg-blue-50 dark:bg-gray-600")}>
             {currentSet.set_name}
             <div className={"flex gap-1 ml-5"}>
                 {svgIcons}
@@ -64,25 +50,31 @@ function CardSelectedSetList(props: CardSetListProps) {
         </div>
     })
 
-    let allActionIcon = <div className={"border-1 rounded-2 p-1 ml-1"} onClick={() => props.allAction()}>
-        {props.isTargetList ? IconRemoveAll : IconSelectAll}
-    </div>
 
-    return <div className={props.rootClassName}>
-        <div className={"m-0 text-center dark:text-white"}>{props.title}</div>
-        <div className={"flex justify-content-center m-2"}>
-            <FormControl
+    const iconCN = classNames("p-1", "border-bottom border-end border-top", props.isTargetList ? "stroke-red-600 hover:stroke-red-500 active:stroke-red-400 dark:stroke-red-300 dark:hover:stroke-red-400 dark:active:stroke-red-500" : "stroke-green-600 hover:stroke-green-500 active:stroke-green-400 dark:stroke-green-300 dark:hover:stroke-green-400 dark:active:stroke-green-500")
+    const AllActionIcon = <YgoIcon icon={props.isTargetList ? "double-arrow-left" : "double-arrow-right"}
+                                   size={30}
+                                   onClick={(event) => {
+                                       props.allAction()
+                                       event.preventDefault()
+                                   }}
+                                   classNames={iconCN}/>
+
+    return <div className={classNames(props.rootClassName)}>
+        <div className={"rounded-tl rounded-tr flex-grow-1 border-start border-end border-top focus:no-border p-2 dark:text-white bg-gray-300 dark:bg-gray-700 "}>{props.title}</div>
+        <div className={"flex justify-content-center"}>
+            <input
                 autoFocus
-                className="flex-fill"
+                className="flex-fill flex-grow-1 border-bottom border-start border-top focus:no-border pl-2 dark:text-white bg-gray-200 dark:bg-gray-600"
                 placeholder="Type to filter..."
                 onChange={(e) => {
                     setFilter(e.target.value)
                 }}/>
-            {allActionIcon}
+            {AllActionIcon}
         </div>
 
-        <div className={"bg-opacity-10 bg-secondary"}>
-            <div className={"overflow-y-auto h-56 grid p-3 grid-cols-1 gap-2 auto-rows-min"}>
+        <div className={"bg-opacity-10 bg-secondary border-start border-bottom border-end"}>
+            <div className={"overflow-y-auto h-56 grid grid-cols-1 auto-rows-min"}>
                 {listItems}
             </div>
         </div>

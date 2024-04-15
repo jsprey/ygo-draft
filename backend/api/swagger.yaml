@@ -219,11 +219,11 @@ definitions:
   model.DraftMode:
     enum:
     - bestof
-    - round
+    - rounds
     type: string
     x-enum-varnames:
     - DraftModeBestOf
-    - DraftGoalRounds
+    - DraftModeRounds
   model.DraftRound:
     properties:
       draft_id:
@@ -271,14 +271,14 @@ definitions:
     - pending
     - declined
     - running
-    - canceled
+    - surrender
     - finished
     type: string
     x-enum-varnames:
     - DraftStatusPending
     - DraftStatusDeclined
     - DraftStatusRunning
-    - DraftStatusCanceled
+    - DraftStatusSurrender
     - DraftStatusFinished
   model.Friend:
     properties:
@@ -589,6 +589,50 @@ paths:
       security:
       - Bearer: []
       summary: Get all the draft rounds of a given draft.
+      tags:
+      - Draft
+  /drafts/{id}/surrender:
+    post:
+      description: Surrender a draft.
+      parameters:
+      - description: Contains the id of the draft round.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: The draft is not a challenge and can neither be accepted or
+            declined.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "403":
+          description: Only the receiving party can accept the challenge.
+          schema:
+            type: string
+        "404":
+          description: There is no draft by the given id.
+          schema:
+            type: string
+        "409":
+          description: Only the receiving party can accept the challenge.
+          schema:
+            type: string
+        "500":
+          description: Internal server error. Check server logs for more information.
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Surrender a draft.
       tags:
       - Draft
   /drafts/challenges:

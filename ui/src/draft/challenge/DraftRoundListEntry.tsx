@@ -5,7 +5,7 @@ import {useDraftRoundDecks} from "../../api/hooks/drafts/useDraftRoundDecks";
 import {Alert, Spinner} from "react-bootstrap";
 import {useNavigate} from "react-router";
 import SvgIconButton from "../../core/SvgIconButton";
-import {SubmitWinnerRequest, useSubmitWinner} from "../../api/hooks/drafts/useSUbmitWInner";
+import {SubmitWinnerRequest, useSubmitWinner} from "../../api/hooks/drafts/useSubmitWinner";
 import {ShowSuccessfulSnack} from "./DraftMyDeckPage";
 import {Draft} from "../../api/Draft";
 import {useCurrentUser} from "../../api/hooks/users/useUser";
@@ -30,15 +30,14 @@ function DraftRoundListEntry(props: DraftRoundListEntryProps) {
     const winnerMutation = useSubmitWinner({
         onSuccess: () => {
             ShowSuccessfulSnack("You won, congratulation!")
-            queryClient.invalidateQueries({queryKey: ["draft", round.draft_id, "rounds"]})
+            queryClient.refetchQueries({queryKey: ["draft", round.draft_id, "rounds"]})
+            queryClient.refetchQueries({queryKey: ["draft", round.draft_id]})
         },
         onError: () => ShowSuccessfulSnack("Keep up, you will get your revenge!")
     })
     const roundDecksQuery = useDraftRoundDecks("" + round.id)
 
     function createPlayerElement() {
-        const playerCN = classNames("m-2")
-
         if (roundDecksQuery.isLoading || currentUser.isLoading) {
             return <Spinner animation={"border"}/>
         }
@@ -47,12 +46,28 @@ function DraftRoundListEntry(props: DraftRoundListEntryProps) {
             return <Alert variant={"danger"}>Failed to load data!</Alert>
         }
 
+        const playerCN = classNames("m-2")
         let isDeckEmpty = roundDecksQuery.data.user_deck.length === 0
-        return <div className={playerCN}>
-            <span className={"btn btn-primary"} onClick={() => navigate(`/draft/${round.draft_id}/${round.id}`)}>
-                {isDeckEmpty ? "Draft Deck" :
-                    <div className={"flex justiy-content-between"}>{IconEye}Inspect Deck</div>}
+
+        let playerActions: JSX.Element
+        if (isDeckEmpty && props.draft.status === "surrender") {
+            playerActions = <></>
+        } else if (isDeckEmpty) {
+            playerActions =
+                <span className={"btn btn-primary"} onClick={() => navigate(`/draft/${round.draft_id}/${round.id}`)}>
+                Draft Deck
             </span>
+        } else {
+            playerActions =
+                <span className={"btn btn-primary"} onClick={() => navigate(`/draft/${round.draft_id}/${round.id}`)}>
+                <div className={"flex justiy-content-between"}>
+                {IconEye}Inspect Deck
+            </div>
+            </span>
+        }
+
+        return <div className={playerCN}>
+            {playerActions}
         </div>
     }
 
@@ -71,9 +86,9 @@ function DraftRoundListEntry(props: DraftRoundListEntryProps) {
 
         let content = <></>
         if (round.status == "preparation" && !isDeckEmpty) {
-            content = <div className={"text-green-700 text-uppercase text-2xl"}>Ready</div>
+            content = <div className={"text-green-700 dark:text-green-300 text-uppercase text-2xl"}>Ready</div>
         } else if (round.status == "preparation" && isDeckEmpty) {
-            content = <div className={"text-yellow-700 text-uppercase text-2xl"}>Drafting</div>
+            content = <div className={"text-yellow-700 dark:text-yellow-300 text-uppercase text-2xl"}>Drafting</div>
         } else if (round.status == "fighting") {
             content = <>In Duel</>
         } else if (round.status == "finished") {
@@ -97,11 +112,13 @@ function DraftRoundListEntry(props: DraftRoundListEntryProps) {
             </div>
         } else if (round.status === "finished") {
             if (round.winner_user_id == currentUser.data?.id) {
-                return <div className={"mr-2 flex text-uppercase text-xl fw-bold text-green-800 align-items-center justify-content-end"}>
+                return <div
+                    className={"mr-2 flex text-uppercase text-xl fw-bold text-green-800 dark:text-green-400 align-items-center justify-content-end"}>
                     Win
                 </div>
             } else {
-                return <div className={"mr-2 flex text-uppercase text-xl fw-bold text-red-800 align-items-center justify-content-end"}>
+                return <div
+                    className={"mr-2 flex text-uppercase text-xl fw-bold text-red-800 dark:text-red-400 align-items-center justify-content-end"}>
                     Lose
                 </div>
             }
@@ -120,11 +137,13 @@ function DraftRoundListEntry(props: DraftRoundListEntryProps) {
             </div>
         } else if (round.status === "finished") {
             if (round.winner_user_id != currentUser.data?.id) {
-                return <div className={"ml-2 flex text-uppercase text-xl fw-bold text-green-800 align-items-center justify-content-start"}>
+                return <div
+                    className={"ml-2 flex text-uppercase text-xl fw-bold text-green-800 dark:text-green-400 align-items-center justify-content-start"}>
                     Win
                 </div>
             } else {
-                return <div className={"ml-2 flex text-uppercase text-xl fw-bold text-red-800 align-items-center justify-content-start"}>
+                return <div
+                    className={"ml-2 flex text-uppercase text-xl fw-bold text-red-800 dark:text-red-400 align-items-center justify-content-start"}>
                     Lose
                 </div>
             }
@@ -156,7 +175,7 @@ function DraftRoundListEntry(props: DraftRoundListEntryProps) {
     }
 
     const containerCN = classNames("grid-cols-5 grid", "w-100 p-0", "rounded", "bg-gray-200 dark:bg-gray-600", "border")
-    return <div className={containerCN} key={`draft_overview_round_${round.id}`}>
+    return <div className={containerCN}>
         <div className={"flex align-items-center"}>{createPlayerElement()}</div>
         {getLeftPlayerStatus()}
         <div

@@ -34,7 +34,7 @@ function AddNewUserWidget() {
             autoHideDuration: 6000,
             variant: 'success'
         })
-        queryClient.invalidateQueries({queryKey: "users"})
+        queryClient.refetchQueries({queryKey: "users"})
     }
     const addUserMutation = useAddUser({onSuccess: onMutationSuccess, onError: onMutationError});
 

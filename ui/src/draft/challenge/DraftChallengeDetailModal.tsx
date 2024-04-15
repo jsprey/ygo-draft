@@ -5,6 +5,7 @@ import {useDeclineDraftChallenge} from "../../api/hooks/drafts/useDeclineDraftCh
 import {enqueueSnackbar} from "notistack";
 import DraftSettingsDetails from "./DraftSettingsDetails";
 import React from "react";
+import {useQueryClient} from "react-query";
 
 export type DraftChallengeDetailModalProps = {
     challenge: Draft
@@ -14,6 +15,7 @@ export type DraftChallengeDetailModalProps = {
 
 function DraftChallengeDetailModal(props: DraftChallengeDetailModalProps) {
     const handleClose = () => props.setShow(false);
+    const queryClient = useQueryClient();
 
     function showSuccess(message: string) {
         enqueueSnackbar(message, {
@@ -31,11 +33,19 @@ function DraftChallengeDetailModal(props: DraftChallengeDetailModalProps) {
     }
 
     const acceptChallengeMutation = useAcceptDraftChallenge({
-        onSuccess: () => showSuccess("Challenge accepted."),
+        onSuccess: () => {
+            showSuccess("Challenge accepted.")
+            queryClient.refetchQueries({queryKey: ["drafts", "challenges"]})
+            queryClient.refetchQueries({queryKey: ["drafts", "running"]})
+        },
         onError: () => showError("Failed to accept challenge. Try again and/or contact the support.")
     });
     const declineChallengeMutation = useDeclineDraftChallenge({
-        onSuccess: () => showSuccess("Challenge declined."),
+        onSuccess: () => {
+            showSuccess("Challenge declined.")
+            queryClient.refetchQueries({queryKey: ["drafts", "challenges"]})
+            queryClient.refetchQueries({queryKey: ["drafts", "running"]})
+        },
         onError: () => showError("Failed to decline challenge. Try again and/or contact the support.")
     });
 

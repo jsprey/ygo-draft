@@ -22,6 +22,10 @@ var (
 		Code:        "EC_Draft_Is_Not_A_Challenge",
 		InternalMsg: "the draft is not a challenge and can neither be accepted or declined",
 	}
+	ErrorDraftIsNotRunning = customerrors.WithCode{
+		Code:        "EC_Draft_Is_Not_Running",
+		InternalMsg: "the draft is not running",
+	}
 	ErrorOnlyReceivingPartyCanAcceptChallenge = customerrors.WithCode{
 		Code:        "EC_Challenge_Only_Receiver_Can_Accept",
 		InternalMsg: "only the receiving user can accept this challenge",
@@ -68,8 +72,8 @@ const (
 	DraftStatusDeclined DraftStatus = "declined"
 	// DraftStatusRunning shows that someone is currently drafting another player.
 	DraftStatusRunning DraftStatus = "running"
-	// DraftStatusCanceled shows that someone canceled the draft preemptively.
-	DraftStatusCanceled DraftStatus = "canceled"
+	// DraftStatusSurrender shows that someone canceled the draft preemptively.
+	DraftStatusSurrender DraftStatus = "surrender"
 	// DraftStatusFinished shows that the draft is finished.
 	DraftStatusFinished DraftStatus = "finished"
 )
@@ -88,8 +92,11 @@ type DraftMode string
 
 const (
 	DraftModeBestOf DraftMode = "bestof"
-	DraftGoalRounds DraftMode = "round"
+	DraftModeRounds DraftMode = "rounds"
 )
+
+// DraftDrawFlag indicates that the draft ended in a draw.
+const DraftDrawFlag int = -100
 
 // Draft contains the information for a draft.
 type Draft struct {

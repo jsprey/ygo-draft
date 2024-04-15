@@ -20,7 +20,9 @@ function DraftRoundList(props: DraftRoundListProps) {
         const rounds = draftRoundsRequest.data.rounds
 
         const roundsElements = rounds.map(round => {
-            return <DraftRoundListEntry draft={props.draft} round={round}/>
+            return <div key={`draft_overview_round_${round.id}`}>
+                <DraftRoundListEntry draft={props.draft} round={round}/>
+            </div>
         })
 
         content = <div className={"dark:text-white mt-2"}>

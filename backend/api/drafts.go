@@ -188,7 +188,7 @@ func (dh *draftsHandler) CreateDraftChallenge(ctx *gin.Context) {
 func (dh *draftsHandler) AcceptDraftChallenge(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> Call to AcceptDraftChallenge endoint...")
 
-	claims, currentDraft, err := extractChallengeReceiver(ctx, dh)
+	claims, currentDraft, err := extractRequestingParty(ctx, dh)
 	if err != nil {
 		return
 	}
@@ -229,7 +229,7 @@ func (dh *draftsHandler) AcceptDraftChallenge(ctx *gin.Context) {
 func (dh *draftsHandler) DeclineChallenge(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> Call to DeclineChallenge endoint...")
 
-	claims, currentDraft, err := extractChallengeReceiver(ctx, dh)
+	claims, currentDraft, err := extractRequestingParty(ctx, dh)
 	if err != nil {
 		return
 	}
@@ -252,7 +252,60 @@ func (dh *draftsHandler) DeclineChallenge(ctx *gin.Context) {
 	ctx.Status(http.StatusNoContent)
 }
 
-func extractChallengeReceiver(ctx *gin.Context, dh *draftsHandler) (*model.YgoClaims, model.Draft, error) {
+// PostSurrenderDraft Endpoint used to surrender a certain draft.
+// @Summary  Surrender a draft.
+// @Description Surrender a draft.
+// @Tags Draft
+// @Security Bearer
+// @Produce json
+// @Param id path int true "Contains the id of the draft round."
+// @Success 204
+// @Failure 400 {string} string "You need to provide a draft id."
+// @Failure 400 {string} string "The draft is not a challenge and can neither be accepted or declined."
+// @Failure 401 {string} string "Unauthorized."
+// @Failure 403 {string} string "Only the receiving party can accept the challenge."
+// @Failure 404 {string} string "There is no draft by the given id."
+// @Failure 409 {string} string "Only the receiving party can accept the challenge."
+// @Failure 500 {string} string "Internal server error. Check server logs for more information."
+// @Router /drafts/{id}/surrender [post]
+func (dh *draftsHandler) PostSurrenderDraft(ctx *gin.Context) {
+	logrus.Debugf("API-Handler -> Call to PostSurrenderDraft endoint...")
+
+	draftID, err := strconv.Atoi(ctx.Param(IDParameter))
+	if err != nil {
+		ctx.String(http.StatusBadRequest, "You need to provide a draft id.")
+		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to read the target user id: %w", err))
+		return
+	}
+
+	tokenClaims, ok := auth.GetClaims(ctx)
+	if !ok {
+		ctx.String(http.StatusUnauthorized, "Unauthorized.")
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+		return
+	}
+
+	err = dh.DraftClient.SurrenderRunningDraft(draftID, tokenClaims.ID)
+	if model.IsErrorCustom(err, model.ErrorDraftDoesNotExist) {
+		ctx.String(http.StatusNotFound, "There is no draft by the given id.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft with id [%d]: %w", draftID, err))
+		return
+	} else if model.IsErrorCustom(err, model.ErrorUserIsNotParticipatingInDraft) {
+		ctx.String(http.StatusNotFound, "You are not part of this draft, and, thus, cannot surrender.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft with id [%d]: %w", draftID, err))
+		return
+	} else if model.IsErrorCustom(err, model.ErrorDraftIsNotRunning) {
+		ctx.String(http.StatusNotFound, "The provided draft is not running, and, thus, cannot be surrendered.")
+		_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("failed to get draft with id [%d]: %w", draftID, err))
+		return
+	} else if err != nil {
+		ctx.String(http.StatusInternalServerError, InternalServerErrorMessage)
+		_ = ctx.AbortWithError(http.StatusInternalServerError, customerrors.GenericError(err))
+		return
+	}
+}
+
+func extractRequestingParty(ctx *gin.Context, dh *draftsHandler) (*model.YgoClaims, model.Draft, error) {
 	draftID, err := strconv.Atoi(ctx.Param(IDParameter))
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "You need to provide a draft id.")

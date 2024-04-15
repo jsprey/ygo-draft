@@ -5,7 +5,6 @@ import DeckViewer from "../../deck/DeckViewer";
 import {Alert, Button, Modal, Spinner} from "react-bootstrap";
 import MultiCardDraftArea from "./MultiCardDraftArea";
 import {YgoQueryClient} from "../../index";
-import {LocalDraftStages} from "./DeckDraftWizard";
 import {usePrompt} from "../../api/hooks/usePromptBlocker";
 import {CardFilter} from "../../api/CardFilter";
 
@@ -33,6 +32,15 @@ function PageDraftDeck(props: PageDraftDeckProps) {
         staleTime: Infinity
     })
 
+    let handleNextClick = function (): void {
+        setDraftDeck({cards:[]} as Deck)
+        setDrafted(false)
+        setCurrentDraftRound(1)
+        setFinished(false)
+        YgoQueryClient.removeQueries(["random", componentRandomQueryID])
+        props.onNextClick()
+    }
+
     let draftCard = function (draftedCard: Card): void {
         setDraftDeck({cards:[]} as Deck)
         setDrafted(false)
@@ -43,6 +51,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
 
         if (newRound > props.maxRounds) {
             setFinished(true)
+            handleNextClick()
         }
 
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
@@ -59,15 +68,6 @@ function PageDraftDeck(props: PageDraftDeckProps) {
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
         props.onAbort()
         setShowAbortDialog(false)
-    }
-
-    let handleNextClick = function (): void {
-        setDraftDeck({cards:[]} as Deck)
-        setDrafted(false)
-        setCurrentDraftRound(1)
-        setFinished(false)
-        YgoQueryClient.removeQueries(["random", componentRandomQueryID])
-        props.onNextClick()
     }
 
     let body

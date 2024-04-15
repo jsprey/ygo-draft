@@ -33,11 +33,14 @@ function FriendListEntry(props: FriendListEntryProps) {
         actions = <div className={"flex align-content-center"}>
             <Spinner animation={"grow"} size={"sm"}/>
         </div>
-    } else if (draftChallenges.error) {
+    }
+    else if (draftChallenges.error) {
         actions = <Alert variant={"danger"} className={"mb-0"}>Failed to load challenges!</Alert>
-    } else if (runningDrafts.error) {
+    }
+    else if (runningDrafts.error) {
         actions = <Alert variant={"danger"} className={"mb-0"}>Failed to load drafts!</Alert>
-    } else if (draftChallenges.data && runningDrafts.data) {
+    }
+    else if (draftChallenges.data && runningDrafts.data) {
         const receivedChallenges: Draft[] = draftChallenges.data.drafts.filter(value => value.challenger_id === props.friend.id)
         const sendChallenges: Draft[] = draftChallenges.data.drafts.filter(value => value.receiver_id === props.friend.id)
         const currentlyRunningDrafts: Draft[] = runningDrafts.data.drafts.filter(value => value.receiver_id === props.friend.id || value.challenger_id === props.friend.id)
@@ -72,12 +75,10 @@ function FriendListEntry(props: FriendListEntryProps) {
                 <span className={"btn btn-primary"}>Challenge</span>
             </Nav.Link>
         }
-
     }
 
     const cNames = classNames("flex justify-content-between p-2 border-start border-end", props.highlightBackground ? "bg-blue-100 dark:bg-gray-700" : "bg-blue-50 dark:bg-gray-600", props.borderBottom ? "border-bottom" : "")
-    return <div key={props.friend.id}
-                className={cNames}>
+    return <div className={cNames}>
         <div className={"align-self-center dark:text-white"}>
             <b>
                 {props.friend.name}

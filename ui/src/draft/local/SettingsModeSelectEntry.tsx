@@ -1,22 +1,17 @@
 import React, {useState} from "react";
 import {Alert, Col, Form} from "react-bootstrap";
-import YgoIcon from "../../core/YgoIcon";
 import classNames from "classnames";
+import YgoIcon from "../../core/YgoIcon";
+import {DraftMode} from "../../api/Draft";
 
-export type SettingsEntryProps = {
-    value: number
-    setValue: React.Dispatch<React.SetStateAction<number>>
-    error: string
-    setError: React.Dispatch<React.SetStateAction<string>>
-    title: string
-    tooltip: string
-    min: number
-    max: number
+type SettingsModeSelectEntryProps = {
+    value: DraftMode
+    setValue: React.Dispatch<React.SetStateAction<DraftMode>>
     className?: string
     md: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-}
+};
 
-function SettingsEntry(props: SettingsEntryProps) {
+function SettingsModeSelectEntry(props: SettingsModeSelectEntryProps) {
     const [expanded, setExpanded] = useState<boolean>(false)
 
     const CollapsedIcon = <YgoIcon icon={"help-outline"}
@@ -33,42 +28,39 @@ function SettingsEntry(props: SettingsEntryProps) {
                                     event.preventDefault()
                                 }}
                                 classNames={classNames("fill-blue-600 dark:fill-blue-400", "hover:fill-blue-500 hover:dark:fill-blue-300", "active:hover:fill-blue-400 active:hover:dark:fill-blue-200")}/>
-    
+
+    const modeButtonsCN = classNames("p-2 border-top border-bottom dark:text-white")
+    const modeButtonsSelectedCN = classNames("bg-blue-600 text-white")
     return <Form.Group as={Col} md={props.md} className={classNames(props.className ? props.className : "")}>
         <Form.Label className={"w-100"}>
             <div className={"flex"}>
-                <div className={"self-center fw-bold mr-2 dark:text-white"}>{props.title}</div>
+                <div className={"self-center fw-bold mr-2 dark:text-white"}>Draft Mode</div>
                 {expanded ? ExpandIcon : CollapsedIcon}
             </div>
             {expanded ? <div>
-                <Alert className={"mb-0 mt-1"}>{props.tooltip}</Alert>
+                <Alert className={"mb-0 mt-1"}>Defines the mode for the draft:<br/>
+                    <span className={"fw-bold"}>Rounds</span> - Play a fixed amount of rounds.<br/>
+                    <span className={"fw-bold"}>BestOf</span> - Play a game until one player wins at leat half of the
+                    rounds.</Alert>
             </div> : <></>}
         </Form.Label>
-        <Form.Control
-            required
-            value={props.value}
-            type="number"
-            onChange={event => {
-                if (isNaN(parseInt(event.target.value))) {
-                    props.setValue(0)
-                    props.setError(`Value needs to be between [${props.min} - ${props.max}].`)
-                } else {
-                    const setValue = parseInt(event.target.value)
-                    if (setValue < props.min || setValue > props.max) {
-                        props.setValue(parseInt(event.target.value))
-                        props.setError(`Value needs to be between [${props.min} - ${props.max}].`)
-                    } else {
-                        props.setValue(parseInt(event.target.value))
-                        props.setError("")
-                    }
-                }
+        <div>
+            <button className={classNames("border-start border-end rounded-tl rounded-bl", modeButtonsCN, props.value === "rounds" ? modeButtonsSelectedCN : "")} onClick={event => {
+                props.setValue("rounds")
+                event.preventDefault()
             }
+            }>
+                Rounds
+            </button>
+            <button className={classNames("border-end rounded-tr rounded-br", modeButtonsCN, props.value === "bestof" ? modeButtonsSelectedCN : "")} onClick={event => {
+                props.setValue("bestof")
+                event.preventDefault()
             }
-            isInvalid={props.error !== ""}
-        />
-        {props.error !== "" ? <div className={"text-red-600 dark:text-red-400"}>{props.error}</div> : <></>}
+            }>
+                BestOf
+            </button>
+        </div>
     </Form.Group>
 }
 
-
-export default SettingsEntry
+export default SettingsModeSelectEntry

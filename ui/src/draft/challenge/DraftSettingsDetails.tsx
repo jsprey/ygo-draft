@@ -29,11 +29,15 @@ function DraftSettingsDetails(props: DraftSettingsDetailsProps) {
             <span className={textCN}>{settings.extra_deck_draws}</span>
             <span className={labelCN}>Extra Deck Drafts Size:</span>
             <span className={textCN}>{settings.extra_deck_size}</span>
-            <span className={labelCN}>Sets:</span>
-            <span className={textCN}>{settings.sets.map((value, index) => {
-                    return (index === 0 ? "" : ", ") + value.set_name
-                }
-            )}</span>
+        </div>
+        <div className={"p-2 mb-0 mt-2 font-bold bg-gray-400 dark:bg-gray-700 dark:text-white"}>
+            Sets
+        </div>
+        <div style={{maxHeight: "15rem"}}
+             className={classNames(textCN, "overflow-y-auto p-2 mb-1 bg-gray-200 dark:bg-gray-600 dark:text-white")}>
+            {props.settings.sets.map(value => {
+                return <li key={`draft-settings-details-set-${value.set_code}`}>{value.set_name}</li>
+            })}
         </div>
     </div>
 }

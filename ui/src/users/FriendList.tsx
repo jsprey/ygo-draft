@@ -19,7 +19,10 @@ function FriendList() {
         let friendsEntries: JSX.Element[] = [];
         let isHighlightedBackground = true
         data.forEach((friend, index) => {
-            let entry = <FriendListEntry friend={friend} highlightBackground={isHighlightedBackground} borderBottom={index === data.length - 1}/>
+            let entry = <div key={`friend-list-entry-${friend.id}`}>
+                <FriendListEntry friend={friend} highlightBackground={isHighlightedBackground}
+                                 borderBottom={index === data.length - 1}/>
+            </div>
             isHighlightedBackground = !isHighlightedBackground
             friendsEntries.push(entry)
 

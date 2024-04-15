@@ -22,8 +22,8 @@ function FriendRequestList() {
             autoHideDuration: 6000,
             variant: 'success'
         })
-        queryClient.invalidateQueries({queryKey: "friends"})
-        queryClient.invalidateQueries({queryKey: "friendRequests"})
+        queryClient.refetchQueries({queryKey: "friends"})
+        queryClient.refetchQueries({queryKey: "friendRequests"})
     }
     const sendFriendRequestMutation = useFriendsAcceptRequest({
         onSuccess: onMutationSuccess,
