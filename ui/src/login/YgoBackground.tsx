@@ -3,8 +3,9 @@ import SingleCardViewer from "../deck/SingleCardViewer";
 import "./YgoBackground.css"
 import {useRandomCards} from "../api/hooks/cards/useCards";
 import {CardFilter} from "../api/CardFilter";
-import {Alert, Spinner} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
+import Alert from "../core/Alert";
+import Spinner from "../core/Spinner";
 
 function YgoBackground() {
     const [allowedToFetch, setAllowedToFetch] = useState<boolean>(true)
@@ -21,11 +22,9 @@ function YgoBackground() {
 
     let content
     if (isLoading) {
-        content = <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-        </Spinner>
+        content = <Spinner/>
     } else if (error) {
-        content = <Alert variant={"danger"}>Failed to load background images!</Alert>
+        content = <Alert variant={'danger'}>Failed to load background images!</Alert>
     } else if (data) {
         let myInt = 50000
 

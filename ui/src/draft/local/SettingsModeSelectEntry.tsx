@@ -1,8 +1,8 @@
 import React, {useState} from "react";
-import {Alert, Col, Form} from "react-bootstrap";
 import classNames from "classnames";
 import YgoIcon from "../../core/YgoIcon";
 import {DraftMode} from "../../api/Draft";
+import Alert from "../../core/Alert";
 
 type SettingsModeSelectEntryProps = {
     value: DraftMode
@@ -20,39 +20,39 @@ function SettingsModeSelectEntry(props: SettingsModeSelectEntryProps) {
                                        setExpanded(true)
                                        event.preventDefault()
                                    }}
-                                   classNames={classNames("fill-neutral-900 dark:fill-neutral-50", "hover:fill-blue-500 hover:dark:fill-blue-200", "active:hover:fill-blue-600 active:hover:dark:fill-blue-300")}/>
+                                   classNames={classNames("fill-dark dark:fill-light", "hover:fill-primary", "active:hover:fill-primary-hover")}/>
     const ExpandIcon = <YgoIcon icon={"help-fill"}
                                 size={18}
                                 onClick={(event) => {
                                     setExpanded(false)
                                     event.preventDefault()
                                 }}
-                                classNames={classNames("fill-blue-600 dark:fill-blue-400", "hover:fill-blue-500 hover:dark:fill-blue-300", "active:hover:fill-blue-400 active:hover:dark:fill-blue-200")}/>
+                                classNames={classNames("fill-primary", "hover:fill-primary-hover", "active:hover:fill-primary-active")}/>
 
-    const modeButtonsCN = classNames("p-2 border-top border-bottom dark:text-white")
-    const modeButtonsSelectedCN = classNames("bg-blue-600 text-white")
-    return <Form.Group as={Col} md={props.md} className={classNames(props.className ? props.className : "")}>
-        <Form.Label className={"w-100"}>
-            <div className={"flex"}>
-                <div className={"self-center fw-bold mr-2 dark:text-white"}>Draft Mode</div>
+    const modeButtonsCN = classNames("p-2 border-t-2 border-b-2 border-dark dark:border-light dark:text-light")
+    const modeButtonsSelectedCN = classNames("bg-primary text-light")
+    return <div className={classNames(props.className ? props.className : "")}>
+        <div className={"w-full"}>
+            <div className={"flex mb-2"}>
+                <div className={"self-center font-bold mr-2 dark:text-light"}>Draft Mode</div>
                 {expanded ? ExpandIcon : CollapsedIcon}
             </div>
             {expanded ? <div>
-                <Alert className={"mb-0 mt-1"}>Defines the mode for the draft:<br/>
-                    <span className={"fw-bold"}>Rounds</span> - Play a fixed amount of rounds.<br/>
-                    <span className={"fw-bold"}>BestOf</span> - Play a game until one player wins at leat half of the
+                <Alert variant={"info"} className={"mb-2"}>Defines the mode for the draft:<br/>
+                    <span className={"font-bold"}>Rounds</span> - Play a fixed amount of rounds.<br/>
+                    <span className={"font-bold"}>BestOf</span> - Play a game until one player wins at leat half of the
                     rounds.</Alert>
             </div> : <></>}
-        </Form.Label>
+        </div>
         <div>
-            <button className={classNames("border-start border-end rounded-tl rounded-bl", modeButtonsCN, props.value === "rounds" ? modeButtonsSelectedCN : "")} onClick={event => {
+            <button className={classNames("border-l-2 border-r-2 rounded-tl rounded-bl", modeButtonsCN, props.value === "rounds" ? modeButtonsSelectedCN : "")} onClick={event => {
                 props.setValue("rounds")
                 event.preventDefault()
             }
             }>
                 Rounds
             </button>
-            <button className={classNames("border-end rounded-tr rounded-br", modeButtonsCN, props.value === "bestof" ? modeButtonsSelectedCN : "")} onClick={event => {
+            <button className={classNames("border-r-2 rounded-tr rounded-br", modeButtonsCN, props.value === "bestof" ? modeButtonsSelectedCN : "")} onClick={event => {
                 props.setValue("bestof")
                 event.preventDefault()
             }
@@ -60,7 +60,7 @@ function SettingsModeSelectEntry(props: SettingsModeSelectEntryProps) {
                 BestOf
             </button>
         </div>
-    </Form.Group>
+    </div>
 }
 
 export default SettingsModeSelectEntry

@@ -1,9 +1,5 @@
-import {useQuery, UseQueryResult} from "react-query";
-import {Card, Deck} from "../../CardModel";
-import {PUBLIC_URL} from "../../../index";
-import {QueryKey} from "react-query/types/core/types";
-import {CardFilter, FilterToQuery} from "../../CardFilter";
-import axios from "axios";
+import {UseQueryResult} from "react-query";
+import {Deck} from "../../CardModel";
 import {useMagicMethod} from "./useCards";
 
 const QueryParameterCardIDs = "cards"

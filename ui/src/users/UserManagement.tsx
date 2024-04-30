@@ -1,16 +1,14 @@
 import React, {useState} from "react";
 import {User, useUsers} from "../api/hooks/users/useUsers";
-import {Alert, Button, Modal, Spinner} from "react-bootstrap";
 import classNames from "classnames";
 import {useQueryClient} from "react-query";
 import {enqueueSnackbar} from "notistack";
 import {useDeleteUser} from "../api/hooks/users/useDeleteUser";
-import SvgIconButton from "../core/SvgIconButton";
-
-const TrashIcon = <SvgIconButton size={18} classNames={"fill-white"}>
-    <path
-        d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
-</SvgIconButton>
+import Spinner from "../core/Spinner";
+import ConfirmModal from "../core/ConfirmModal";
+import Alert from "../core/Alert";
+import YgoIcon from "../core/YgoIcon";
+import Button from "../core/Button";
 
 function UserManagement() {
     const [currentPage, setCurrentPage] = useState<number>(0);
@@ -43,7 +41,7 @@ function UserManagement() {
     let tableEntries: JSX.Element[] = []
     if (error) {
         tableEntries.push(<tr>
-            <td colSpan={5}><Alert variant={"danger"}>Failed to load users!</Alert></td>
+            <td colSpan={5}><Alert variant={'danger'}>Failed to load users!</Alert></td>
         </tr>)
     } else if (isLoading) {
         tableEntries = createPlaceholderEntries()
@@ -62,19 +60,20 @@ function UserManagement() {
 
         users.forEach(user => {
             const entry = <tr key={`row-${user.id}`}
-                              className={"odd:bg-gray-50 odd:dark:bg-gray-900 even:bg-gray-100 even:dark:bg-gray-800 border-b dark:border-gray-700"}>
+                              className={"odd:bg-light-1 odd:dark:bg-dark-1 even:bg-light-2 even:dark:bg-dark-2 border-l border-r border-dark dark:border-light"}>
                 <td className="px-6 py-2">{user.id}</td>
                 <td className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">{user.email}</td>
                 <td className="px-6 py-2">{user.display_name}</td>
                 <td className="px-6 py-2">{user.is_admin ? "Admin" : "User"}</td>
                 <td className="px-6 py-2">
-                    <button disabled={deleteUserMutation.isLoading} className={"btn btn-danger"} onClick={() => {
-                        setToBeDeletedUserEmail(user.email)
-                        setShowAbortDialog(true)
-                    }}>
+                    <Button variant={"danger"} disabled={deleteUserMutation.isLoading} className={"!p-1"}
+                            onClick={() => {
+                                setToBeDeletedUserEmail(user.email)
+                                setShowAbortDialog(true)
+                            }}>
                         {toBeDeletedUserEmail === user.email && deleteUserMutation.isLoading ?
-                            <Spinner size={"sm"} animation={"border"}/> : TrashIcon}
-                    </button>
+                            <Spinner/> : <YgoIcon icon={"trash"} size={18} classNames={"fill-white"}/>}
+                    </Button>
                 </td>
             </tr>
             tableEntries.push(entry)
@@ -84,25 +83,12 @@ function UserManagement() {
     }
 
     function createModal(): JSX.Element {
-        return <Modal show={showAbortDialog}>
-            <Modal.Header closeButton className={"bg-ygo-light dark:bg-ygo-dark dark:text-white"}>
-                <Modal.Title>Delete User?</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className={"bg-ygo-light dark:bg-ygo-dark dark:text-white"}>The user {toBeDeletedUserEmail} is
-                going to be
-                deleted. This cannot be reversed.</Modal.Body>
-            <Modal.Footer className={"bg-ygo-light dark:bg-ygo-dark dark:text-white"}>
-                <Button variant="secondary" onClick={() => setShowAbortDialog(false)}>
-                    No
-                </Button>
-                <Button variant="danger" onClick={() => {
-                    deleteSelectedUser()
-                    setShowAbortDialog(false)
-                }}>
-                    Yes
-                </Button>
-            </Modal.Footer>
-        </Modal>
+        return <ConfirmModal show={showAbortDialog}
+                             setShow={setShowAbortDialog}
+                             confirmName={"Delete"}
+                             onConfirm={() => deleteSelectedUser()}
+                             title={"Delete User"}
+                             description={`The user ${toBeDeletedUserEmail} is going to be deleted. This cannot be reversed!`}/>
     }
 
     function createPlaceholderEntries(): JSX.Element[] {
@@ -117,7 +103,7 @@ function UserManagement() {
         </td>
         for (let i = 0; i < 15; i++) {
             const entry = <tr key={`row-placeholder-${i}`}
-                              className={"odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"}>
+                              className={"odd:bg-light-1 odd:dark:bg-dark-1 even:bg-light-2 even:dark:bg-dark-2 border-l border-r border-dark dark:border-light"}>
                 {placeholderElement}
                 {placeholderElement}
                 {placeholderElement}
@@ -131,13 +117,14 @@ function UserManagement() {
     }
 
     function getTableHeader() {
-        return <thead className={"text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400"}>
+        const tableCN = classNames("text-xs text-dark dark:text-light uppercase", "bg-light-3 dark:bg-dark-3", "border border-dark dark:border-light")
+        return <thead className={tableCN}>
         <tr>
-            <th className="px-6 py-3 rounded-tl">ID</th>
-            <th className="px-6 py-3">Email</th>
-            <th className="px-6 py-3">Display Name</th>
-            <th className="px-6 py-3">Administrator</th>
-            <th className="px-6 py-3 rounded-tr">Actions</th>
+            <th className="px-6 py-3 rounded-tl text-sm">ID</th>
+            <th className="px-6 py-3 text-sm">Email</th>
+            <th className="px-6 py-3 text-sm">Display Name</th>
+            <th className="px-6 py-3 text-sm">Administrator</th>
+            <th className="px-6 py-3 text-sm rounded-tr">Actions</th>
         </tr>
         </thead>;
     }
@@ -153,33 +140,35 @@ function UserManagement() {
             maxUser = data.numberOfUsers
         }
 
-        const allButtonCN = classNames("py-2 px-4", "text-sm font-semibold", "bg-gray-300 hover:bg-gray-400 active:bg-gray-500 disabled:bg-gray-200", "text-gray-800 disabled:text-gray-300")
+        const allButtonCN = classNames("py-2 px-4", "text-sm font-semibold", "rounded-tr-none rounded-tl-none", "border !border-dark !dark:border-light")
         return <div
-            className="flex justify-content-between xs:flex-row items-center xs:justify-between">
-            <button
+            className="flex justify-content-between items-center justify-between">
+            <Button
+                variant={"primary"}
                 disabled={currentPage === 0}
-                className={classNames(allButtonCN, "rounded-bl")}
+                className={classNames(allButtonCN, "rounded-br-none")}
                 onClick={() => {
                     let newPage = currentPage - 1;
                     setCurrentPage(newPage < 0 ? 0 : newPage)
                 }
                 }>
                 Prev
-            </button>
+            </Button>
             <span
-                className="text-xs xs:text-sm text-gray-700 bg-gray-200 dark:bg-gray-700 dark:text-gray-400 flex-grow-1 py-2 text-center place-self-stretch">
-                            Showing {minUser} to {maxUser} of {data.numberOfUsers} Users
+                className="text-xs xs:text-sm text-dark dark:text-light bg-light-3 dark:bg-dark-3 flex-grow py-2 text-center place-self-stretch border-t border-b border-dark dark:border-light">
+                                Showing {minUser} to {maxUser} of {data.numberOfUsers} Users
                         </span>
-            <button
+            <Button
+                variant={"primary"}
                 disabled={data.numberOfUsers === maxUser}
-                className={classNames(allButtonCN, "rounded-br")}
+                className={classNames(allButtonCN, "rounded-bl-none")}
                 onClick={() => {
                     let newPage = currentPage + 1;
                     setCurrentPage(newPage)
                 }
                 }>
                 Next
-            </button>
+            </Button>
         </div>
     }
 

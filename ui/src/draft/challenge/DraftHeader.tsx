@@ -8,9 +8,9 @@ import {Friend} from "../../api/UserModel";
 import YgoIcon from "../../core/YgoIcon";
 
 const CollapsedIcon = <YgoIcon icon={"collapse"} size={18}
-                               classNames={"fill-gray-700 hover:fill-gray-600 active:fill-gray-500 dark:fill-gray-400 hover:dark:fill-gray-300 active:dark:fill-gray-200"}/>
+                               classNames={"fill-dark dark:fill-light hover:fill-dark-1 hover:dark:fill-light-1 active:fill-dark-2 active:dark:fill-light-2"}/>
 const ExpandIcon = <YgoIcon icon={"expand"} size={18}
-                            classNames={"fill-gray-700 hover:fill-gray-600 active:fill-gray-500 dark:fill-gray-400 hover:dark:fill-gray-300 active:dark:fill-gray-200"}/>
+                            classNames={"fill-dark dark:fill-light hover:fill-dark-1 hover:dark:fill-light-1 active:fill-dark-2 active:dark:fill-light-2"}/>
 
 type DraftHeaderProps = {
     draft: Draft;
@@ -21,18 +21,18 @@ type DraftHeaderProps = {
 function DraftHeader(props: DraftHeaderProps) {
     const [settingCollapsed, setSettingCollapsed] = useState<boolean>(true)
 
-    const settingsHeaderCN = classNames("flex-grow-1 pl-2", "rounded-tl rounded-tr", settingCollapsed ? "rounded-bl rounded-br" : "", "border dark:border-white", "bg-gray-200 dark:bg-gray-600")
-    const settingsBodyCN = classNames("p-2", "rounded-bl rounded-br", "border-start border-bottom border-end dark:border-white", "bg-gray-200 dark:bg-gray-600")
+    const settingsHeaderCN = classNames("flex-grow pl-2", "rounded-tl rounded-tr", settingCollapsed ? "rounded-bl rounded-br" : "", "border border-light-3 dark:border-dark-3", "bg-gray-200 dark:bg-gray-600")
+    const settingsBodyCN = classNames("p-2", "rounded-bl rounded-br", "border-l border-b border-r  border-light-3 dark:border-dark-3", "bg-lightI dark:bg-dark")
 
-    return <div className={"w-100 text-gray-400 dark:text-gray-100"}>
+    return <div className={"w-full text-dark dark:text-light"}>
         <DraftBattleBadge playerNameOne={props.player.display_name} playerNameTwo={props.enemy.name}/>
 
-        <div className={classNames("flex justify-content-center", "mt-2", settingsHeaderCN)}>
+        <div className={classNames("flex justify-center", "mt-2", settingsHeaderCN)}>
             <div
-                className={classNames("align-self-center mr-1 uppercase fw-bold")}>
+                className={classNames("self-center mr-1 uppercase fw-bold")}>
                 Draft Settings
             </div>
-            <div className={"align-self-center"} onClick={() => setSettingCollapsed(!settingCollapsed)}>
+            <div className={"self-center"} onClick={() => setSettingCollapsed(!settingCollapsed)}>
                 {settingCollapsed ? CollapsedIcon : ExpandIcon}
             </div>
         </div>

@@ -1,8 +1,10 @@
 import React, {useState} from "react";
 import {useSendFriendRequest} from "../api/hooks/friends/useSendFriendRequest";
-import {Spinner} from "react-bootstrap";
 import {enqueueSnackbar} from "notistack";
 import {useCurrentUser} from "../api/hooks/users/useUser";
+import Spinner from "../core/Spinner";
+import Button from "../core/Button";
+import classNames from "classnames";
 
 function AddNewFriendWidget() {
     var user = useCurrentUser();
@@ -45,15 +47,15 @@ function AddNewFriendWidget() {
         setInvalidInput("")
     }
 
-    const errorBlock = <div className={"flex bg-rose-100 dark:bg-rose-700 p-2 border-start border-end border-bottom"}>
-        <div className={"align-self-center dark:text-white"}><b>{invalidInput}</b>
+    const errorBlock = <div className={"flex bg-rose-100 dark:bg-rose-700 p-2 border-l border-r border-b border-dark dark:border-light"}>
+        <div className={"self-center dark:text-white"}><b>{invalidInput}</b>
         </div>
     </div>
 
     return <div>
         <div className={"flex"}>
             <input
-                className={"rounded-tl-lg flex-grow-1 border-bottom border-start border-top focus:no-border pl-2 dark:text-white bg-gray-200 dark:bg-gray-600 is-invalid"}
+                className={classNames("flex-grow pl-2", "outline-none", "text-dark dark:text-light", "placeholder-dark-3 dark:placeholder-light-3", "bg-light-3 dark:bg-dark-3", "rounded-tl-lg", "border-b border-l border-t border-dark dark:border-light")}
                 placeholder={"add a new friend"}
                 value={newFriendName}
                 onBlur={() => setShowError(false)}
@@ -64,15 +66,16 @@ function AddNewFriendWidget() {
                 }
                 }>
             </input>
-            <button disabled={invalidInput !== ""}
-                    className={"bg-ygo-success hover:bg-ygo-success-hover active:bg-ygo-success-active disabled:bg-ygo-success-disabled rounded-tr-lg p-2 border-bottom border-end border-top text-neutral-50 disabled:text-gray-500"}
+            <Button disabled={invalidInput !== ""}
+                    className={"!rounded-l-none !rounded-br-none !border-dark dark:!border-light"}
+                    variant={"success"}
                     onClick={() => {
                         sendFriendRequest.mutate(newFriendName)
                         setNewFriendName("")
                     }
                     }>
-                {sendFriendRequest.isLoading ? <Spinner size={"sm"} animation={"border"}/> : <span>Add Friend</span>}
-            </button>
+                {sendFriendRequest.isLoading ? <Spinner/> : <span>Add Friend</span>}
+            </Button>
         </div>
         {(invalidInput !== "" && showError) ? errorBlock : <></>}
     </div>

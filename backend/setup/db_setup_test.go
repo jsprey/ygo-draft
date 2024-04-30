@@ -14,7 +14,7 @@ import (
 func TestTestNewDatabase(t *testing.T) {
 	t.Run("create a new setup", func(t *testing.T) {
 		// given
-		dbMock := &mocks.DatabaseClient{}
+		dbMock := mocks.NewDatabaseClient(t)
 		usermgtMock := &mocks.UsermgtClient{}
 
 		// when
@@ -28,7 +28,7 @@ func TestTestNewDatabase(t *testing.T) {
 func TestDatabaseSetup_Setup(t *testing.T) {
 	t.Run("fail as retrieving admin throws error", func(t *testing.T) {
 		// given
-		dbMock := &mocks.DatabaseClient{}
+		dbMock := mocks.NewDatabaseClient(t)
 		usermgtMock := &mocks.UsermgtClient{}
 		databaseSetup := setup.NewDatabaseSetup(dbMock, usermgtMock)
 
@@ -46,7 +46,7 @@ func TestDatabaseSetup_Setup(t *testing.T) {
 
 	t.Run("perform setup fails on error", func(t *testing.T) {
 		// given
-		dbMock := &mocks.DatabaseClient{}
+		dbMock := mocks.NewDatabaseClient(t)
 		usermgtMock := &mocks.UsermgtClient{}
 		databaseSetup := setup.NewDatabaseSetup(dbMock, usermgtMock)
 
@@ -63,7 +63,7 @@ func TestDatabaseSetup_Setup(t *testing.T) {
 
 	t.Run("creates admin account if not existent", func(t *testing.T) {
 		// given
-		dbMock := &mocks.DatabaseClient{}
+		dbMock := mocks.NewDatabaseClient(t)
 		defer mock.AssertExpectationsForObjects(t, dbMock)
 		usermgtMock := &mocks.UsermgtClient{}
 		defer mock.AssertExpectationsForObjects(t, usermgtMock)
@@ -82,7 +82,7 @@ func TestDatabaseSetup_Setup(t *testing.T) {
 
 	t.Run("run setup without creatin admin account as it already exists", func(t *testing.T) {
 		// given
-		dbMock := &mocks.DatabaseClient{}
+		dbMock := mocks.NewDatabaseClient(t)
 		defer mock.AssertExpectationsForObjects(t, dbMock)
 		usermgtMock := &mocks.UsermgtClient{}
 		defer mock.AssertExpectationsForObjects(t, usermgtMock)

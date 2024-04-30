@@ -1,5 +1,4 @@
 import React, {useState} from "react";
-import {Alert, Col, Form, Placeholder, Row} from "react-bootstrap";
 import {CardSet, SetList, sortSets} from "../../api/Sets";
 import {useSets} from "../../api/hooks/cards/useSets";
 import CardSelectedSetList, {CardSetReceiver} from "./CardSelectedSetList";
@@ -7,6 +6,8 @@ import SvgIconButton, {SvgIconButtonProps} from "../../core/SvgIconButton";
 import SetDetailModal from "./SetDetailModal";
 import YgoIcon from "../../core/YgoIcon";
 import classNames from "classnames";
+import Alert from "../../core/Alert";
+import Spinner from "../../core/Spinner";
 
 export type CardSetSelectorProps = {
     tooltip: string
@@ -16,18 +17,18 @@ export type CardSetSelectorProps = {
 }
 
 const IconEye = <SvgIconButton size={25}
-                               classNames={classNames("fill-blue-600 dark:fill-blue-400", "hover:fill-blue-500 hover:dark:fill-blue-300", "active:hover:fill-blue-400 active:hover:dark:fill-blue-200")}>
+                               classNames={classNames("fill-secondary", "hover:fill-secondary-hover", "active:hover:fill-secondary-active")}>
     <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
     <path
         d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
 </SvgIconButton>
 const IconArrowRight = <SvgIconButton size={25}
-                                      classNames={classNames("fill-green-600 dark:fill-green-400", "hover:fill-green-500 hover:dark:fill-green-300", "active:hover:fill-green-400 active:hover:dark:fill-green-200")}>
+                                      classNames={classNames("fill-success", "hover:fill-success-hover", "active:hover:fill-success-active")}>
     <path
         d="M0 14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v12zm4.5-6.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5a.5.5 0 0 1 0-1z"/>
 </SvgIconButton>
 const IconArrowLeft = <SvgIconButton size={25}
-                                     classNames={classNames("fill-red-600 dark:fill-red-400", "hover:fill-red-500 hover:dark:fill-red-300", "active:hover:fill-red-400 active:hover:dark:fill-red-200")}>
+                                     classNames={classNames("fill-danger", "hover:fill-danger-hover", "active:hover:fill-danger-active")}>
     <path
         d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1z"/>
 </SvgIconButton>
@@ -45,14 +46,9 @@ function CardSetSelector(props: CardSetSelectorProps) {
 
     let allSetItems: JSX.Element = <></>
     if (isLoading) {
-        allSetItems = <Placeholder animation="glow">
-            <Placeholder xs={12} bg="primary"/>
-            <Placeholder xs={12} bg="primary"/>
-            <Placeholder xs={12} bg="primary"/>
-            <Placeholder xs={12} bg="primary"/>
-        </Placeholder>
+        allSetItems = <Spinner/>
     } else if (error) {
-        allSetItems = <Alert variant={"danger"}>Failed to load all sets!</Alert>
+        allSetItems = <Alert variant={'danger'}>Failed to load all sets!</Alert>
     } else if (data && data.sets) {
         let filteredSets = data.sets.filter(availableSet => {
             let selectCardSet = true
@@ -76,12 +72,16 @@ function CardSetSelector(props: CardSetSelectorProps) {
         })
 
         allSetItems = <>
-            <CardSelectedSetList isTargetList={false} title={"Available Sets"} cardSets={filteredSets}
-                                 actionList={actionList} allAction={function () {
-                let newSelectedCardSets: CardSet[]
-                newSelectedCardSets = (data as SetList).sets
-                props.setSelectedSets(sortSets(newSelectedCardSets))
-            }}/>
+            <CardSelectedSetList isTargetList={false}
+                                 title={"Available Sets"}
+                                 cardSets={filteredSets}
+                                 rootClassName={"pr-1"}
+                                 actionList={actionList}
+                                 allAction={function () {
+                                     let newSelectedCardSets: CardSet[]
+                                     newSelectedCardSets = (data as SetList).sets
+                                     props.setSelectedSets(sortSets(newSelectedCardSets))
+                                 }}/>
         </>
     }
 
@@ -102,39 +102,47 @@ function CardSetSelector(props: CardSetSelectorProps) {
                                        setExpandedTooltip(true)
                                        event.preventDefault()
                                    }}
-                                   classNames={classNames("fill-neutral-900 dark:fill-neutral-50", "hover:fill-blue-500 hover:dark:fill-blue-200", "active:hover:fill-blue-600 active:hover:dark:fill-blue-300")}/>
+                                   classNames={classNames("fill-dark dark:fill-light", "hover:fill-primary", "active:hover:fill-primary-hover")}/>
     const ExpandIcon = <YgoIcon icon={"help-fill"}
                                 size={18}
                                 onClick={(event) => {
                                     setExpandedTooltip(false)
                                     event.preventDefault()
                                 }}
-                                classNames={classNames("fill-blue-600 dark:fill-blue-400", "hover:fill-blue-500 hover:dark:fill-blue-300", "active:hover:fill-blue-400 active:hover:dark:fill-blue-200")}/>
+                                classNames={classNames("fill-primary", "hover:fill-primary-hover", "active:hover:fill-primary-active")}/>
     return <>
-        <Row className={props.rowClass}><Form.Group as={Col}>
-            <Form.Label className={"w-100"}>
-                <div className={"flex"}>
-                    <div className={"self-center mr-2 fw-bold dark:text-white"}>Card Sets</div>
-                    {expandedTooltip ? ExpandIcon : CollapsedIcon}
+        <div className={classNames("flex", props.rowClass)}>
+            <div className={"w-full"}>
+                <div className={"w-full"}>
+                    <div className={"flex mb-2"}>
+                        <div className={"self-center mr-2 font-bold dark:text-white"}>Card Sets</div>
+                        {expandedTooltip ? ExpandIcon : CollapsedIcon}
+                    </div>
+                    {expandedTooltip ? <div>
+                        <Alert variant={"info"} className={"mb-2"}>{props.tooltip}</Alert>
+                    </div> : <></>}
                 </div>
-                {expandedTooltip ? <div>
-                    <Alert className={"mb-0 mt-1"}>{props.tooltip}</Alert>
-                </div> : <></>}
-            </Form.Label>
 
-            <div>
-                <div className={"grid grid-cols-2 gap-3"}>
-                    {allSetItems}
-                    <CardSelectedSetList isTargetList={true} title={"Selected Sets"} cardSets={props.selectedSets}
-                                         actionList={selectedCardsActionList} allAction={function () {
-                        let newSelectedCardSets: CardSet[] = []
-                        props.setSelectedSets(sortSets(newSelectedCardSets))
-                    }}/>
+                <div className={"w-full"}>
+                    <div className={"flex w-full"}>
+                        <div className={"w-2/4"}>
+                            {allSetItems}
+                        </div>
+                        <div className={"w-2/4"}>
+                            <CardSelectedSetList isTargetList={true}
+                                                 title={"Selected Sets"}
+                                                 cardSets={props.selectedSets}
+                                                 actionList={selectedCardsActionList}
+                                                 rootClassName={"pl-1"}
+                                                 allAction={function () {
+                                let newSelectedCardSets: CardSet[] = []
+                                props.setSelectedSets(sortSets(newSelectedCardSets))
+                            }}/>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-        </Form.Group>
-        </Row>
+        </div>
         {isShowingSetCardsView ? <SetDetailModal setCode={currentDetailSet} setShow={setIsShowingSetCardsView}
                                                  isShowing={isShowingSetCardsView}/> : <></>}
     </>

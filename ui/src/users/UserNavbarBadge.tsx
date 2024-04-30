@@ -1,22 +1,29 @@
-import SvgIconButton from "../core/SvgIconButton";
 import {useCurrentUser} from "../api/hooks/users/useUser";
-import {Nav, Spinner} from "react-bootstrap";
 import {Link} from "react-router-dom";
+import Spinner from "../core/Spinner";
+import classNames from "classnames";
+import {UserPath} from "../routes/AppRouter";
+import YgoIcon from "../core/YgoIcon";
 
-const userIcon = <SvgIconButton size={18} classNames={"fill-dark dark:fill-white"}>
-    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-    <path
-        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-</SvgIconButton>
+export type UserNavbarBadgeProps = {
+    className?: string
+    focused: boolean
+}
 
-function UserNavbarBadge() {
+function UserNavbarBadge(props: UserNavbarBadgeProps) {
     const {data, isLoading, error} = useCurrentUser()
+
+    let iconCN = classNames("fill-dark dark:fill-light")
+    if (props.focused) {
+        iconCN = classNames("fill-light")
+    }
+    const userIcon = <YgoIcon icon={"user"} size={18} classNames={iconCN}/>
 
     let content = <></>
     if (isLoading) {
         content = <div className={"flex align-content-center"}>
             {userIcon}
-            <Spinner animation={"grow"} size={"sm"}/>
+            <Spinner/>
         </div>
     } else if (error) {
         content = <div className={"flex align-content-center"}>
@@ -32,11 +39,9 @@ function UserNavbarBadge() {
         </div>
     }
 
-    return <>
-        <Nav.Link as={Link} to="/user" className="justify-content-end">
+    return <Link to={UserPath} className={classNames(props.className ? props.className : "")}>
             {content}
-        </Nav.Link>
-    </>
+        </Link>
 }
 
 export default UserNavbarBadge

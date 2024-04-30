@@ -1,68 +1,76 @@
-import {Container, Nav, Navbar} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {useAuth} from "../auth/AuthProvider";
-import {useNavigate} from "react-router";
+import {useLocation, useNavigate} from "react-router";
 import UserNavbarBadge from "../users/UserNavbarBadge";
 import React from "react";
 import ThemeSwitcher from "./ThemeSwitcher";
-import {useTheme} from "./context/ColorThemeProvider";
 import {useCurrentUser} from "../api/hooks/users/useUser";
-import SvgIconButton from "./SvgIconButton";
-
-const CogWheelIcon = <SvgIconButton size={18} classNames={"fill-neutral-600 dark:fill-neutral-50"}>
-    <path
-        d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
-</SvgIconButton>
+import classNames from "classnames";
+import {AdminPath, DraftDeckPath, HomePath, LoginPath, RandomDeckPath, UserPath} from "../routes/AppRouter";
+import YgoIcon from "./YgoIcon";
 
 function YgoNavbar() {
+    const {pathname} = useLocation();
     const navigation = useNavigate();
     const {token, setToken} = useAuth();
     const user = useCurrentUser()
-    const {isDarkMode} = useTheme();
 
     const logout = () => {
         setToken(null)
-        navigation("/login")
+        navigation(LoginPath)
     }
+
+    const unfocusedLinkCN = classNames("m-1 p-2 rounded", "bg-light dark:bg-dark", "hover:bg-light-1 dark:hover:bg-dark-1", "active:bg-light-2 dark:active:bg-dark-2")
+    const focusedLinkCN = classNames("m-1 p-2 rounded", "bg-primary hover:bg-primary-hover active:bg-primary-active", "text-light")
 
     let userInformation = <></>
     if (token) {
-        userInformation = <div className={"flex"}>
-            <UserNavbarBadge/>
-            <Navbar.Collapse className="justify-content-end">
-                <Nav.Link onClick={logout}>Logout</Nav.Link>
-            </Navbar.Collapse>
-        </div>
+        userInformation = <>
+            <UserNavbarBadge
+                className={classNames("justify-end", pathname === UserPath ? focusedLinkCN : unfocusedLinkCN)}
+                focused={pathname === UserPath}/>
+            <span className={classNames("justify-end", unfocusedLinkCN)} onClick={logout}>Logout</span>
+        </>
     }
 
+
+    // for class navBarContainer see index.scss
     // noinspection TypeScriptValidateTypes
     return <>
-        <Navbar expand="lg" className={"border-bottom border-body navBarContainer"} bg={isDarkMode ? "dark" : "light"}
-                data-bs-theme={isDarkMode ? "dark" : "light"}>
-            <Container>
-                <Navbar.Brand as={Link} to="/">
+        <div className={classNames("navBarContainer", "bg-light dark:bg-dark", "text-dark dark:text-light")}>
+            <div className={classNames("container mx-auto flex items-center")}>
+                <Link to={HomePath} className={classNames(unfocusedLinkCN, "flex items-center")}>
                     <img
                         alt=""
                         src="/logo.png"
                         width="30"
                         height="30"
-                        className="d-inline-block align-top"
+                        className="d-inline-block"
                     />{' '}
-                    YgoDraft
-                </Navbar.Brand>
-                <Nav className="me-auto">
-                    <Nav.Link as={Link} to="/">Home</Nav.Link>
-                    {token ? <Nav.Link as={Link} to="/randomdeck">Mode: Random</Nav.Link> : <></>}
-                    {token ? <Nav.Link as={Link} to="/draftdeck">Mode: Draft</Nav.Link> : <></>}
-                </Nav>
-                <Nav>
-                    <ThemeSwitcher/>
-                    {user && user.data?.is_admin ? <Nav.Link as={Link} to="/admin" className={"align-self-center"}>{CogWheelIcon}</Nav.Link> : <></>}
-                    {!token ? <Nav.Link as={Link} to="/login">Login</Nav.Link> : <></>}
+                    <span className={"text-xl font-bold ml-1"}>YgoDraft</span>
+                </Link>
+                <div className="me-auto flex">
+                    <Link to={HomePath}
+                          className={classNames(pathname === HomePath ? focusedLinkCN : unfocusedLinkCN)}>Home</Link>
+                    {token ? <Link to={RandomDeckPath}
+                                   className={pathname === RandomDeckPath ? focusedLinkCN : unfocusedLinkCN}>Mode:
+                        Random</Link> : <></>}
+                    {token ? <Link to={DraftDeckPath}
+                                   className={pathname === DraftDeckPath ? focusedLinkCN : unfocusedLinkCN}>Mode:
+                        Draft</Link> : <></>}
+                </div>
+                <div className={classNames("flex")}>
+                    <ThemeSwitcher className={unfocusedLinkCN}/>
+                    {user && user.data?.is_admin ?
+                        <Link to={AdminPath} className={classNames("flex items-center", pathname === AdminPath ? focusedLinkCN : unfocusedLinkCN)}>
+                            <YgoIcon icon={"cog"} size={18} classNames={classNames(pathname === AdminPath ? "fill-light" : "fill-dark dark:fill-light")}/>
+                        </Link> : <></>}
+                    {!token ? <Link to={LoginPath}
+                                    className={pathname === LoginPath ? focusedLinkCN : unfocusedLinkCN}>Login</Link> : <></>}
                     {token ? userInformation : <></>}
-                </Nav>
-            </Container>
-        </Navbar>
+                </div>
+            </div>
+        </div>
     </>
 }
 

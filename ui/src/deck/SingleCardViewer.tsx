@@ -1,6 +1,5 @@
 import {PUBLIC_URL} from "../index";
 import {Card} from "../api/CardModel";
-import {Image} from "react-bootstrap";
 import {useState} from "react";
 import CardDetailModal from "./CardDetailModal";
 import "./SingleCardViewer.css"
@@ -27,7 +26,7 @@ function SingleCardViewer(props: SingleCardViewerProps) {
     }
 
     if (!props.readonly) {
-        cardViewProps.className = "hover:outline-none hover:ring hover:ring-sky-600 active:outline-none active:ring active:ring-sky-400"
+        cardViewProps.className = "hover:ring hover:ring-primary active:ring active:ring-primary-active"
         cardViewProps.onClick = handleShowDetailModal
     }
 
@@ -44,7 +43,7 @@ function SingleCardViewer(props: SingleCardViewerProps) {
 
 function getCardAsImage(data: Card, onlyImage: boolean | undefined): JSX.Element {
     if (onlyImage) {
-        return <Image fluid={true}
+        return <img
                       className={"rounded-3"}
                       src={`${PUBLIC_URL}/images/cards/` + data.id + "/small.png"}
                       alt="new"
@@ -52,8 +51,7 @@ function getCardAsImage(data: Card, onlyImage: boolean | undefined): JSX.Element
         />
     }
 
-    return <Image fluid={true}
-           src={`${PUBLIC_URL}/images/cards/` + data.id + "/small.png"}
+    return <img src={`${PUBLIC_URL}/images/cards/` + data.id + "/small.png"}
            alt="new"
     />
 }

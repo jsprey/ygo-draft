@@ -2,11 +2,14 @@ import React, {useState} from "react";
 import {Card, Deck} from "../../api/CardModel";
 import {useRandomCards} from "../../api/hooks/cards/useCards";
 import DeckViewer from "../../deck/DeckViewer";
-import {Alert, Button, Modal, Spinner} from "react-bootstrap";
 import MultiCardDraftArea from "./MultiCardDraftArea";
 import {YgoQueryClient} from "../../index";
 import {usePrompt} from "../../api/hooks/usePromptBlocker";
 import {CardFilter} from "../../api/CardFilter";
+import Spinner from "../../core/Spinner";
+import Alert from "../../core/Alert";
+import ConfirmModal from "../../core/ConfirmModal";
+import Button from "../../core/Button";
 
 const componentRandomQueryID = "draft_generator"
 
@@ -22,6 +25,8 @@ export type PageDraftDeckProps = {
 }
 
 function PageDraftDeck(props: PageDraftDeckProps) {
+    usePrompt("Your unfinished deck is going to be deleted when leaving the page. Are you sure you want to leave?", true);
+
     const [draftDeck, setDraftDeck] = useState({cards: []} as Deck)
     const [isDrafted, setDrafted] = useState(false)
     const [currentDraftRound, setCurrentDraftRound] = useState(1)
@@ -33,7 +38,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
     })
 
     let handleNextClick = function (): void {
-        setDraftDeck({cards:[]} as Deck)
+        setDraftDeck({cards: []} as Deck)
         setDrafted(false)
         setCurrentDraftRound(1)
         setFinished(false)
@@ -42,7 +47,7 @@ function PageDraftDeck(props: PageDraftDeckProps) {
     }
 
     let draftCard = function (draftedCard: Card): void {
-        setDraftDeck({cards:[]} as Deck)
+        setDraftDeck({cards: []} as Deck)
         setDrafted(false)
         addCardToCurrentDeck(props.deck, props.setDeck, draftedCard)
 
@@ -59,10 +64,9 @@ function PageDraftDeck(props: PageDraftDeckProps) {
 
     // Abort modal used to verify the abort process.
     const [showAbortDialog, setShowAbortDialog] = useState(false)
-    const handleCloseAbortDraftProcessModal = () => setShowAbortDialog(false)
     let handleAbortDraftProcess = function (): void {
-        props.setDeck({cards:[]} as Deck)
-        setDraftDeck({cards:[]} as Deck)
+        props.setDeck({cards: []} as Deck)
+        setDraftDeck({cards: []} as Deck)
         setDrafted(false)
         setCurrentDraftRound(1)
         YgoQueryClient.removeQueries(["random", componentRandomQueryID])
@@ -72,63 +76,50 @@ function PageDraftDeck(props: PageDraftDeckProps) {
 
     let body
     if (isLoading) {
-        body = <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading Deck...</span>
-        </Spinner>
+        body = <Spinner/>
     } else if (error) {
-        body = <Alert variant={"danger"}>
+        body = <Alert variant={'danger'}>
             Could not load deck!
         </Alert>
     } else if (!isDrafted && data) {
         setDraftDeck(data)
         setDrafted(true)
     } else if (isDrafted && data?.cards.length === 0) {
-        body = <Alert variant={"danger"}>
+        body = <Alert variant={'danger'}>
             There are no cards that for the given filters. Abort Draft and choose different filters.
         </Alert>
     }
 
     const handleShow = () => setShowAbortDialog(true);
 
-    usePrompt("Your unfinished deck is going to be deleted when leaving the page. Are you sure you want to leave?", true);
-
-    return <>
+    return <div className={"mt-2"}>
+        <ConfirmModal show={showAbortDialog}
+                      setShow={setShowAbortDialog}
+                      confirmName={"Leave"}
+                      title={"Abort Draft"}
+                      description={"Your currently drafted deck is going to be deleted."}
+                      onConfirm={handleAbortDraftProcess}/>
         {body}
-        {!finished && isDrafted? <><MultiCardDraftArea name={"Draft Area"} maxRound={props.maxRounds} draftRound={currentDraftRound}
-                                           cards={draftDeck.cards}
-                                           draftAction={draftCard}/><br/></> : <></>}
-        <p className={"text-3xl dark:text-white"}>Current Deck</p>
-        <DeckViewer deck={props.deck}/>
-        <Modal show={showAbortDialog} onHide={handleCloseAbortDraftProcessModal}>
-            <Modal.Header closeButton className={"bg-ygo-light dark:bg-ygo-dark dark:text-white"}>
-                <Modal.Title>Abort Draft Process?</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className={"bg-ygo-light dark:bg-ygo-dark dark:text-white"}>Your currently drafted deck is going to be deleted.</Modal.Body>
-            <Modal.Footer className={"bg-ygo-light dark:bg-ygo-dark dark:text-white"}>
-                <Button variant="secondary" onClick={handleCloseAbortDraftProcessModal}>
-                    No
-                </Button>
-                <Button variant="danger" onClick={handleAbortDraftProcess}>
-                    Yes
-                </Button>
-            </Modal.Footer>
-        </Modal>
-
-        <div className={"flex place-content-end"}>
-            <Button className={"ml-4 object-center"}
-                    variant="danger"
+        {!finished && isDrafted ? <MultiCardDraftArea name={"Draft Area"} maxRound={props.maxRounds}
+                                                        draftRound={currentDraftRound}
+                                                        cards={draftDeck.cards}
+                                                        draftAction={draftCard}/> : null}
+        <p className={"text-3xl dark:text-white mt-2"}>Current Deck</p>
+        <DeckViewer deck={props.deck} className={"mt-2"}/>
+        <div className={"flex place-content-end mt-2"}>
+            <Button variant={"danger"}
+                    className={"ml-4 object-center"}
                     disabled={isLoading}
                     onClick={() => !isLoading ? handleShow() : null}>
                 Abort Draft
             </Button>
-            <Button className={"ml-4 object-center object-right"}
-                    variant="primary"
+            <Button variant={"primary"} className={"ml-4 object-center object-right"}
                     disabled={isLoading || (currentDraftRound <= props.maxRounds)}
                     onClick={() => !isLoading ? handleNextClick() : null}>
                 Next
             </Button>
         </div>
-    </>
+    </div>
 }
 
 function addCardToCurrentDeck(currentDeck: Deck, setCurrentDeck: React.Dispatch<React.SetStateAction<Deck>>, newCard: Card) {

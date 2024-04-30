@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import {useDraftRoundDecks, useDraftRoundDecksPayload} from "../../api/hooks/drafts/useDraftRoundDecks";
 import {useNavigate, useParams} from "react-router";
-import {Alert, Spinner} from "react-bootstrap";
 import {useDraft} from "../../api/hooks/drafts/useDraft";
 import {usePrompt} from "../../api/hooks/usePromptBlocker";
 import OnlineDeckDraftWizard from "./OnlineDeckDraftWizard";
@@ -9,6 +8,9 @@ import {Deck, ToStringList} from "../../api/CardModel";
 import {SubmitDeckRequest, useSubmitDeck} from "../../api/hooks/drafts/useSubmitDeck";
 import {enqueueSnackbar} from "notistack";
 import DeckListViewer from "../../deck/DeckListViewer";
+import Spinner from "../../core/Spinner";
+import Alert from "../../core/Alert";
+import Button from "../../core/Button";
 
 type DraftMyDeckPageParams = {
     id: string
@@ -39,28 +41,27 @@ function DraftMyDeckPage() {
     })
 
     if (roundDecksQuery.isLoading || draftQuery.isLoading) {
-        return <div className={"p-2 flex justify-content-center align-items-center"}>
-            <Spinner animation={"border"}/>
+        return <div className={"p-2 flex justify-center items-center"}>
+            <Spinner/>
         </div>
     }
 
     if (roundDecksQuery.error || !roundDecksQuery.data) {
-        return <div className={"pt-2 flex justify-content-center align-items-center"}>
-            <Alert variant={"danger"}>Failed to load the draft round deck!</Alert>
+        return <div className={"pt-2 flex justify-center items-center"}>
+            <Alert variant={'danger'}>Failed to load the draft round deck!</Alert>
         </div>
     }
 
     if (draftQuery.error || !draftQuery.data) {
-        return <div className={"pt-2 flex justify-content-center align-items-center"}>
-            <Alert variant={"danger"}>Failed to load the draft settings!</Alert>
+        return <div className={"pt-2 flex justify-center items-center"}>
+            <Alert variant={'danger'}>Failed to load the draft settings!</Alert>
         </div>
     }
 
     if (roundDecksQuery.data && roundDecksQuery.data.user_deck.length > 0) {
-        return <div className={"p-2 pb-1"}>
-            <span className={"btn btn-primary"} onClick={() => navigate(`/draft/${params.id}`)}>Back</span>
-            <br/>
-            <DeckListViewer deckList={roundDecksQuery.data.user_deck}/>
+        return <div className={"flex flex-col"}>
+            <DeckListViewer className={"flex flex-col gap-2"} deckList={roundDecksQuery.data.user_deck}/>
+            <Button variant={"primary"} className={"mt-2 self-end"} onClick={() => navigate(`/draft/${params.id}`)}>Back</Button>
         </div>
     }
 

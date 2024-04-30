@@ -12,7 +12,7 @@ import (
 func TestNewYgoCache(t *testing.T) {
 	t.Run("create new cache", func(t *testing.T) {
 		// given
-		dbMock := &mocks.DatabaseClient{}
+		dbMock := mocks.NewDatabaseClient(t)
 
 		// when
 		myCache, err := cache.NewYgoCache(dbMock)
@@ -28,7 +28,7 @@ func TestNewYgoCache(t *testing.T) {
 		defer func() { query.TemplateContentSelectCardByID = originalTemplate }()
 		query.TemplateContentSelectCardByID = "SELECT * FROM public.cards {{}{}}"
 
-		dbMock := &mocks.DatabaseClient{}
+		dbMock := mocks.NewDatabaseClient(t)
 
 		// when
 		_, err := cache.NewYgoCache(dbMock)

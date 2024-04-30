@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import {DraftSettings} from "../../api/Draft";
 import classNames from "classnames";
 
@@ -12,12 +12,27 @@ type DraftSettingsDetailsProps = {
 function DraftSettingsDetails(props: DraftSettingsDetailsProps) {
     const settings = props.settings
 
-    const containerCN = classNames("grid grid-cols-8", props.containerClasses)
-    const labelCN = classNames("col-span-2", "fw-bold text-neutral-900 dark:text-neutral-50", props.labelClasses)
-    const textCN = classNames("col-span-6", "text-neutral-900 dark:text-neutral-50", props.textClasses)
+    const containerCN = classNames(props.containerClasses)
+    const gridCN = classNames("grid grid-cols-8")
+    const labelCN = classNames("col-span-2", "fw-bold", props.labelClasses)
+    const textCN = classNames("col-span-6", props.textClasses)
 
-    return <div>
-        <div className={containerCN}>
+    function getSets(): ReactNode {
+        return <>
+            <div className={"p-2 mb-0 mt-2 font-bold bg-light-3 dark:bg-dark-3"}>
+                Sets
+            </div>
+            <div style={{maxHeight: "15rem"}}
+                 className={classNames(textCN, "overflow-y-auto p-2 mb-1 bg-light-1 dark:bg-dark-1")}>
+                {props.settings.sets.map(value => {
+                    return <li key={`draft-settings-details-set-${value.set_code}`}>{value.set_name}</li>
+                })}
+            </div>
+        </>
+    }
+
+    return <div className={containerCN}>
+        <div className={gridCN}>
             <span className={labelCN}>Mode:</span>
             <span
                 className={textCN}>{settings.mode === "bestof" ? `Best of ${settings.mode_value} Rounds` : `${settings.mode_value} Rounds`}</span>
@@ -30,15 +45,7 @@ function DraftSettingsDetails(props: DraftSettingsDetailsProps) {
             <span className={labelCN}>Extra Deck Drafts Size:</span>
             <span className={textCN}>{settings.extra_deck_size}</span>
         </div>
-        <div className={"p-2 mb-0 mt-2 font-bold bg-gray-400 dark:bg-gray-700 dark:text-white"}>
-            Sets
-        </div>
-        <div style={{maxHeight: "15rem"}}
-             className={classNames(textCN, "overflow-y-auto p-2 mb-1 bg-gray-200 dark:bg-gray-600 dark:text-white")}>
-            {props.settings.sets.map(value => {
-                return <li key={`draft-settings-details-set-${value.set_code}`}>{value.set_name}</li>
-            })}
-        </div>
+        {props.settings.sets.length === 0 ? <span className={"font-bold"}>All cards allowed!</span> : getSets()}
     </div>
 }
 

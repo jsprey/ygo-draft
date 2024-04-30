@@ -1,23 +1,25 @@
 import {
-    Deck,
     FilterByExtraCards,
     FilterByMainCards,
     SortDeck
 } from "../api/CardModel";
 import MultiCardViewer from "./MultiCardViewer";
 import {useCardsBulk} from "../api/hooks/cards/useCardsBulk";
-import {Alert, Spinner} from "react-bootstrap";
 import React from "react";
+import Spinner from "../core/Spinner";
+import Alert from "../core/Alert";
+import classNames from "classnames";
 
 export type DeckListViewerProps = {
     deckList: string[]
+    className?: string
 }
 
 function DeckListViewer(props: DeckListViewerProps) {
     const {isLoading, data, error} = useCardsBulk(props.deckList)
 
     if (isLoading) {
-        return <Spinner animation={"border"}></Spinner>
+        return <Spinner/>
     }
 
     if (error || !data) {
@@ -28,10 +30,11 @@ function DeckListViewer(props: DeckListViewerProps) {
     let mainDeckCards = FilterByMainCards(deck.cards)
     let extraDeckCards = FilterByExtraCards(deck.cards)
 
-    return <>
+    const rootCN = classNames(props.className ? props.className : "")
+    return <div className={rootCN}>
         <MultiCardViewer name={"Main Deck"} showDetails={true} cards={mainDeckCards}/>
         <MultiCardViewer name={"Extra Deck"} showDetails={true} cards={extraDeckCards}/>
-    </>
+    </div>
 }
 
 export default DeckListViewer

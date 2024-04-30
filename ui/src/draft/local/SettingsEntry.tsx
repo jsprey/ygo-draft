@@ -1,7 +1,7 @@
 import React, {useState} from "react";
-import {Alert, Col, Form} from "react-bootstrap";
 import YgoIcon from "../../core/YgoIcon";
 import classNames from "classnames";
+import Alert from "../../core/Alert";
 
 export type SettingsEntryProps = {
     value: number
@@ -13,7 +13,6 @@ export type SettingsEntryProps = {
     min: number
     max: number
     className?: string
-    md: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 }
 
 function SettingsEntry(props: SettingsEntryProps) {
@@ -25,26 +24,26 @@ function SettingsEntry(props: SettingsEntryProps) {
                                        setExpanded(true)
                                        event.preventDefault()
                                    }}
-                                   classNames={classNames("fill-neutral-900 dark:fill-neutral-50", "hover:fill-blue-500 hover:dark:fill-blue-200", "active:hover:fill-blue-600 active:hover:dark:fill-blue-300")}/>
+                                   classNames={classNames("fill-dark dark:fill-light", "hover:fill-primary", "active:hover:fill-primary-hover")}/>
     const ExpandIcon = <YgoIcon icon={"help-fill"}
                                 size={18}
                                 onClick={(event) => {
                                     setExpanded(false)
                                     event.preventDefault()
                                 }}
-                                classNames={classNames("fill-blue-600 dark:fill-blue-400", "hover:fill-blue-500 hover:dark:fill-blue-300", "active:hover:fill-blue-400 active:hover:dark:fill-blue-200")}/>
+                                classNames={classNames("fill-primary", "hover:fill-primary-hover", "active:hover:fill-primary-active")}/>
     
-    return <Form.Group as={Col} md={props.md} className={classNames(props.className ? props.className : "")}>
-        <Form.Label className={"w-100"}>
-            <div className={"flex"}>
-                <div className={"self-center fw-bold mr-2 dark:text-white"}>{props.title}</div>
+    return <div className={classNames(props.className ? props.className : "")}>
+        <div className={"w-full"}>
+            <div className={"flex mb-2"}>
+                <div className={"self-center font-bold mr-2 dark:text-light"}>{props.title}</div>
                 {expanded ? ExpandIcon : CollapsedIcon}
             </div>
             {expanded ? <div>
-                <Alert className={"mb-0 mt-1"}>{props.tooltip}</Alert>
+                <Alert variant={"info"} className={"mb-2"}>{props.tooltip}</Alert>
             </div> : <></>}
-        </Form.Label>
-        <Form.Control
+        </div>
+        <input
             required
             value={props.value}
             type="number"
@@ -64,10 +63,9 @@ function SettingsEntry(props: SettingsEntryProps) {
                 }
             }
             }
-            isInvalid={props.error !== ""}
         />
-        {props.error !== "" ? <div className={"text-red-600 dark:text-red-400"}>{props.error}</div> : <></>}
-    </Form.Group>
+        {props.error !== "" ? <div className={"text-danger dark:text-danger"}>{props.error}</div> : <></>}
+    </div>
 }
 
 

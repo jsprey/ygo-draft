@@ -1,4 +1,6 @@
 import React from "react";
+import YgoIcon from "../YgoIcon";
+import classNames from "classnames";
 
 export type StepperStepProps = {
     stepNr: number
@@ -8,27 +10,23 @@ export type StepperStepProps = {
     isDone?: boolean
 }
 
-const CheckmarkSvg = <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  className="bi bi-check2 fill-white" viewBox="0 0 16 16">
-    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-</svg>
-
 function StepperStep(props: StepperStepProps) {
-    let stepNumberClasses = "text-xl text-white fw-bold justify-center items-center flex rounded-2 shadow-sm m-2 h-10 w-10"
+    let stepNumberClasses = classNames("h-14 w-14", "flex justify-center items-center", "text-xl font-bold", "rounded-tl-lg rounded-bl-lg shadow-sm", "border-l border-t border-b border-light-3 dark:border-dark-3")
     if (props.isDone) {
-        stepNumberClasses += " bg-green-600"
+        stepNumberClasses = classNames(stepNumberClasses, "bg-success text-light")
     } else if (props.isActive) {
-        stepNumberClasses += " bg-blue-600"
+        stepNumberClasses = classNames(stepNumberClasses, "bg-primary text-light")
     } else {
-        stepNumberClasses += " bg-blue-400"
+        stepNumberClasses = classNames(stepNumberClasses, "bg-primary-light text-dark")
     }
 
     return <div className={"m-2 flex"}>
         <div className={stepNumberClasses}>
-            {props.isDone ? CheckmarkSvg : props.stepNr}
+            {props.isDone ? <YgoIcon icon={"checkmark"} size={20}/> : props.stepNr}
         </div>
-        <div className={"grid grid-rows-2"}>
-            <span className={props.isActive ? "text-lg fw-bold dark:text-white" : "text-lg dark:text-white"}>{props.stepName}</span>
-            <span className={"text-base italic dark:text-white"}>{props.stepDescription}</span>
+        <div className={"h-14 grid grid-rows-2 text-dark dark:text-light"}>
+            <span className={classNames("text-lg pl-2 pr-2 bg-light dark:bg-dark rounded-tr-lg border-t border-r border-light-3 dark:border-dark-3", props.isActive ? "font-bold" : "")}>{props.stepName}</span>
+            <span className={"truncate bg-light-1 dark:bg-dark-1 pl-2 pr-2 text-base italic text-dark-1 dark:text-light-1 rounded-br-lg border-b border-r border-light-3 dark:border-dark-3"}>{props.stepDescription}</span>
         </div>
     </div>
 }

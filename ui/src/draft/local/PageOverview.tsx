@@ -1,7 +1,7 @@
 import React from "react";
 import {Deck} from "../../api/CardModel";
 import DeckViewer from "../../deck/DeckViewer";
-import {Button} from "react-bootstrap";
+import Button from "../../core/Button";
 
 export type PageOverviewProps = {
     deck: Deck
@@ -11,10 +11,10 @@ export type PageOverviewProps = {
 
 function PageOverview(props: PageOverviewProps) {
     return <>
-        <DeckViewer deck={props.deck}/>
+        <DeckViewer className={"mt-2"} deck={props.deck}/>
         <div className={"flex place-content-end"}>
-            <Button className={"ml-4 object-center"}
-                    variant="primary"
+            <Button variant={"primary"}
+                    className={"mt-2"}
                     onClick={() => props.onSubmit(props.deck)}>
                 {props.submitName}
             </Button>

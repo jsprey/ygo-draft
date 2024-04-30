@@ -1,19 +1,10 @@
 import React, {useState} from "react";
-import SvgIconButton from "../core/SvgIconButton";
 import {AddUserPayload, useAddUser} from "../api/hooks/users/useAddUser";
 import {enqueueSnackbar} from "notistack";
 import {useQueryClient} from "react-query";
-import {Spinner} from "react-bootstrap";
 import classNames from "classnames";
-
-const CollapsedIcon = <SvgIconButton size={18} classNames={"text-gray-700 hover:text-gray-600 active:text-gray-500 dark:fill-gray-400 hover:dark:text-gray-300 active:dark:text-gray-200"}>
-    <path
-        d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
-</SvgIconButton>
-const ExpandIcon = <SvgIconButton size={18} classNames={"text-gray-700 hover:text-gray-600 active:text-gray-500 dark:fill-gray-400 hover:dark:text-gray-300 active:dark:text-gray-200"}>
-        <path
-            d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-</SvgIconButton>
+import Spinner from "../core/Spinner";
+import YgoIcon from "../core/YgoIcon";
 
 function AddNewUserWidget() {
     const [collapsed, setCollapsed] = useState<boolean>(true)
@@ -40,19 +31,19 @@ function AddNewUserWidget() {
 
     function getWidgetBody() {
         return <>
-            <div className="mb-2">
-                <label className="form-label" htmlFor={"newUser_email"}>Email address</label>
-                <input value={email} type="email" className="form-control" id={"newUser_email"}
+            <div className="mb-2 flex flex-col">
+                <label className="font-bold" htmlFor={"newUser_email"}>Email address</label>
+                <input value={email} type="email" className="" id={"newUser_email"}
                        onChange={event => setEmail(event.target.value)}/>
             </div>
-            <div className="mb-2">
-                <label className="form-label" htmlFor={"newUser_name"}>Display Name</label>
-                <input value={displayName} type="email" className="form-control" id={"newUser_name"}
+            <div className="mb-2 flex flex-col">
+                <label className="font-bold" htmlFor={"newUser_name"}>Display Name</label>
+                <input value={displayName} type="email" className="" id={"newUser_name"}
                        onChange={event => setDisplayName(event.target.value)}/>
             </div>
-            <div className="mb-2">
-                <label className="form-label" htmlFor={"newUser_password"}>Password</label>
-                <input value={password} type="password" className="form-control" id={"newUser_password"}
+            <div className="mb-2 flex flex-col">
+                <label className="font-bold" htmlFor={"newUser_password"}>Password</label>
+                <input value={password} type="password" className="" id={"newUser_password"}
                        onChange={event => setPassword(event.target.value)}/>
             </div>
             <div className="mb-2 form-check">
@@ -69,17 +60,20 @@ function AddNewUserWidget() {
                 }
                 addUserMutation.mutate(payload)
             }}>
-                {addUserMutation.isLoading ? <Spinner animation={"border"} size={"sm"}/> : <>Create</>}
+                {addUserMutation.isLoading ? <Spinner/> : <>Create</>}
             </button>
         </>;
     }
 
     return <div>
-        <div className={classNames("flex", collapsed ? "" : "mb-3")}>
-            <div className={classNames("mt-3 ml-1 mr-2 text-xl uppercase text-gray-700 dark:text-gray-400 fw-bold")}>Add New Users</div>
-            <div className={"mt-3 align-self-center"} onClick={() => setCollapsed(!collapsed)}>
-                {collapsed ? CollapsedIcon : ExpandIcon}
+        <div className={classNames("flex", collapsed ? "" : "mb-2")}>
+            <div className={classNames("ml-1 mr-2 text-xl uppercase text-dark dark:text-light fw-bold")}>Add New
+                Users
             </div>
+            <YgoIcon icon={collapsed ? "collapse" : "expand"}
+                     onClick={() => setCollapsed(!collapsed)}
+                     size={18}
+                     classNames={"text-dark hover:text-dark-1 active:text-dark-2 dark:fill-light hover:dark:text-light-1 active:dark:text-light-2"}/>
         </div>
         {collapsed ? <></> : getWidgetBody()}
     </div>

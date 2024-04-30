@@ -1,22 +1,27 @@
 import HeaderImage from '../images/header.jpg';
-import {Link} from "react-router-dom";
+import {useNavigate} from "react-router";
+import Button from "./Button";
+import {DraftDeckPath} from "../routes/AppRouter";
 
-var sectionStyle = {
+const sectionStyle = {
     backgroundImage: `url(${HeaderImage})`,
     backgroundRepeat: "no-repeat",
     backgroundAttachment: "fixed",
-    backgroundPosition: "center top"
+    backgroundPosition: "center top",
+    backgroundSize: 'cover',
 }
 
 function Jumbotron() {
+    var navigateFunction = useNavigate();
+
     return <>
-        <div className="container-fluid text-light p-1 mb-2">
-            <div style={sectionStyle} className="container-fluid text-light p-0 ">
-                <div className="container bg-dark bg-opacity-75 p-5">
-                    <h1 className="display-4">Welcome to YGO Draft</h1>
+        <div className="mb-2 text-light">
+            <div style={sectionStyle} className="p-0">
+                <div className="container bg-dark bg-opacity-75 px-10 py-20">
+                    <p className={"text-3xl font-bold"}>Welcome to YGO Draft</p>
                     <hr/>
-                    <p>Create your first randomized deck!</p>
-                    <Link to="/randomdeck" className="btn btn-light" >Create Deck!</Link>
+                    <p className={"text-light-3"}>Create your first randomized deck!</p>
+                    <Button className={"mt-2"} variant={"primary"} onClick={() => {navigateFunction(DraftDeckPath)}}>Create Deck!</Button>
                 </div>
             </div>
         </div>

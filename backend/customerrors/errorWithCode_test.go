@@ -31,7 +31,7 @@ func TestWithCode_Error(t *testing.T) {
 		errorText := myErr.Error()
 
 		// then
-		assert.Equal(t, "failed to test [TEST]: assert.AnError general error for testing", errorText)
+		assert.Equal(t, "failed to test TEST: assert.AnError general error for testing", errorText)
 	})
 }
 

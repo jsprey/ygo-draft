@@ -1,4 +1,3 @@
-import {Modal, Spinner} from "react-bootstrap";
 import {Draft} from "../../api/Draft";
 import {useAcceptDraftChallenge} from "../../api/hooks/drafts/useAcceptDraftChallenge";
 import {useDeclineDraftChallenge} from "../../api/hooks/drafts/useDeclineDraftChallenge";
@@ -6,6 +5,9 @@ import {enqueueSnackbar} from "notistack";
 import DraftSettingsDetails from "./DraftSettingsDetails";
 import React from "react";
 import {useQueryClient} from "react-query";
+import Spinner from "../../core/Spinner";
+import Modal from "../../core/Modal";
+import Button from "../../core/Button";
 
 export type DraftChallengeDetailModalProps = {
     challenge: Draft
@@ -25,6 +27,7 @@ function DraftChallengeDetailModal(props: DraftChallengeDetailModalProps) {
 
         props.setShow(false)
     }
+
     function showError(message: string) {
         enqueueSnackbar(message, {
             autoHideDuration: 6000,
@@ -55,32 +58,29 @@ function DraftChallengeDetailModal(props: DraftChallengeDetailModalProps) {
 
     const settings = props.challenge.settings
     return <Modal show={props.isShowing}
-                  onHide={handleClose}
-                  size={"xl"}
-                  contentClassName={""}>
-        <Modal.Header className={"bg-ygo-light dark:bg-ygo-dark border dark:text-white"}>
-            <div className={"text-xl fw-bold"}>
-                You got a challenge!
-            </div>
-        </Modal.Header>
-        <Modal.Body className={"bg-ygo-light dark:bg-ygo-dark border dark:text-white"}>
-            <div className={"fw-bold"}>Settings</div>
-            <DraftSettingsDetails settings={settings}/>
-        </Modal.Body>
-        <Modal.Footer className={"bg-ygo-light dark:bg-ygo-dark border dark:text-white"}>
-            <button disabled={declineChallengeMutation.isLoading || acceptChallengeMutation.isLoading} className={"btn btn-success"} onClick={() => {
+                  setShow={props.setShow}
+                  onHide={handleClose}>
+        <div className={"text-2xl font-bold"}>
+            You got a challenge!
+        </div>
+        <div className={"mt-2 font-semibold"}>Settings</div>
+        <DraftSettingsDetails settings={settings}/>
+        <div className={"mt-2 flex justify-end"}>
+            <Button variant={"primary"} disabled={declineChallengeMutation.isLoading || acceptChallengeMutation.isLoading}
+                    className={"mr-2"} onClick={() => {
                 acceptChallengeMutation.mutate(props.challenge.id)
             }
             }>
-                {declineChallengeMutation.isLoading || acceptChallengeMutation.isLoading ? <Spinner animation={"border"} size={"sm"}></Spinner> : "Accept"}
-            </button>
-            <button disabled={declineChallengeMutation.isLoading || acceptChallengeMutation.isLoading} className={"btn btn-danger"} onClick={() => {
+                {declineChallengeMutation.isLoading || acceptChallengeMutation.isLoading ? <Spinner/> : "Accept"}
+            </Button>
+            <Button variant={"danger"} disabled={declineChallengeMutation.isLoading || acceptChallengeMutation.isLoading}
+                    className={""} onClick={() => {
                 declineChallengeMutation.mutate(props.challenge.id)
             }
             }>
-                {declineChallengeMutation.isLoading || acceptChallengeMutation.isLoading ? <Spinner animation={"border"} size={"sm"}></Spinner> : "Decline"}
-            </button>
-        </Modal.Footer>
+                {declineChallengeMutation.isLoading || acceptChallengeMutation.isLoading ? <Spinner/> : "Decline"}
+            </Button>
+        </div>
     </Modal>
 }
 
