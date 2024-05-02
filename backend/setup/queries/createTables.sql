@@ -94,8 +94,32 @@ CREATE TABLE IF NOT EXISTS draft_rounds
     draft_id       INT REFERENCES drafts (id) NOT NULL,
     round_number   INT                        NOT NULL,
     status         VARCHAR(20)                NOT NULL,
-    winner_user_id INT NOT NULL,
+    winner_user_id INT                        NOT NULL,
     CONSTRAINT unique_round_per_draft UNIQUE (draft_id, round_number)
+);
+
+-- Table: draft_points
+-- This table contains the points for each user and draft
+CREATE TABLE IF NOT EXISTS draft_points
+(
+    id       SERIAL PRIMARY KEY,
+    draft_id INT REFERENCES drafts (id) NOT NULL,
+    user_id  INT REFERENCES users (id)  NOT NULL,
+    points   INT                        NOT NULL,
+    CONSTRAINT unique_user_per_draft UNIQUE (draft_id, user_id)
+);
+
+-- Table: draft_store
+-- This table contains the purchases available to buy while refining your deck
+CREATE TABLE IF NOT EXISTS draft_store
+(
+    id           TEXT PRIMARY KEY,
+    display_name TEXT NOT NULL,
+    category     TEXT NOT NULL,
+    description  TEXT NOT NULL,
+    rarity       TEXT NOT NULL,
+    tags         TEXT not null,
+    costs        INT  NOT NULL
 );
 
 -- Table: draft_deck

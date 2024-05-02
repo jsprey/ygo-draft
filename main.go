@@ -87,7 +87,11 @@ func setupDB(ygoCtx *config.YgoContext) (*postgresql.PostgresClient, error) {
 		return nil, fmt.Errorf("failed to create new usermgt client: %w", err)
 	}
 
-	databaseSetup := setup.NewDatabaseSetup(client, usermgtClient)
+	databaseSetup, err := setup.NewDatabaseSetup(client, usermgtClient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create database setup: %w", err)
+	}
+
 	err = databaseSetup.Setup()
 	if err != nil {
 		return nil, fmt.Errorf("failed to perform database setup: %w", err)

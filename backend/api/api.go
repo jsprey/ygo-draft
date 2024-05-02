@@ -66,6 +66,8 @@ func setupAuthenticatedUserApi(router gin.IRoutes, draftHandler *draftsHandler, 
 	router.POST("drafts", draftHandler.CreateDraftChallenge)
 	router.GET("drafts/:id", draftHandler.GetDraft)
 	router.GET("drafts/:id/rounds", draftHandler.GetDraftRounds)
+	router.GET("drafts/:id/shop", draftHandler.GetDraftShopProducts)
+	router.GET("drafts/:id/shop/balance", draftHandler.GetDraftShopBalance)
 	router.POST("drafts/:id/accept", draftHandler.AcceptDraftChallenge)
 	router.POST("drafts/:id/decline", draftHandler.DeclineChallenge)
 	router.POST("drafts/:id/surrender", draftHandler.PostSurrenderDraft)

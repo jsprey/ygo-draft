@@ -63,6 +63,18 @@ definitions:
           $ref: '#/definitions/model.DraftRound'
         type: array
     type: object
+  api.GetDraftShopBalance.getDraftPointsResponse:
+    properties:
+      points:
+        type: integer
+    type: object
+  api.GetDraftShopProducts.getDraftShopProductsResponse:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/model.DraftStoreProduct'
+        type: array
+    type: object
   api.GetDrafts.getDraftsResponse:
     properties:
       drafts:
@@ -280,6 +292,23 @@ definitions:
     - DraftStatusRunning
     - DraftStatusSurrender
     - DraftStatusFinished
+  model.DraftStoreProduct:
+    properties:
+      category:
+        type: string
+      costs:
+        type: integer
+      description:
+        type: string
+      display_name:
+        type: string
+      id:
+        type: string
+      rarity:
+        $ref: '#/definitions/model.ProductRarity'
+      tags:
+        type: string
+    type: object
   model.Friend:
     properties:
       id:
@@ -296,6 +325,18 @@ definitions:
       name:
         type: string
     type: object
+  model.ProductRarity:
+    enum:
+    - common
+    - rare
+    - epic
+    - legendary
+    type: string
+    x-enum-varnames:
+    - ProductRarityCommon
+    - ProductRarityRare
+    - ProductRarityEpic
+    - ProductRarityLegendary
   model.User:
     properties:
       display_name:
@@ -591,6 +632,80 @@ paths:
       summary: Get all the draft rounds of a given draft.
       tags:
       - Draft
+  /drafts/{id}/shop:
+    get:
+      description: Get all draft shop products.
+      parameters:
+      - description: Contains the id of the draft.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetDraftShopProducts.getDraftShopProductsResponse'
+        "400":
+          description: Missing draft id.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "404":
+          description: No access to draft.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error.
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get all draft shop products.
+      tags:
+      - Draft - Shop
+  /drafts/{id}/shop/balance:
+    get:
+      description: Get the points of a current user in a specific draft.
+      parameters:
+      - description: Contains the id of the draft.
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.GetDraftShopBalance.getDraftPointsResponse'
+        "400":
+          description: Missing draft id.
+          schema:
+            type: string
+        "401":
+          description: Unauthorized.
+          schema:
+            type: string
+        "404":
+          description: No access to draft.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error.
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get the points of a current user in a specific draft.
+      tags:
+      - Draft - Shop
   /drafts/{id}/surrender:
     post:
       description: Surrender a draft.

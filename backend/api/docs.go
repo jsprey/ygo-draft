@@ -472,6 +472,122 @@ const docTemplate = `{
                 }
             }
         },
+        "/drafts/{id}/shop": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get all draft shop products.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft - Shop"
+                ],
+                "summary": "Get all draft shop products.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Contains the id of the draft.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetDraftShopProducts.getDraftShopProductsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing draft id.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "No access to draft.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/drafts/{id}/shop/balance": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get the points of a current user in a specific draft.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Draft - Shop"
+                ],
+                "summary": "Get the points of a current user in a specific draft.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Contains the id of the draft.",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetDraftShopBalance.getDraftPointsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing draft id.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "No access to draft.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/drafts/{id}/surrender": {
             "post": {
                 "security": [
@@ -1464,6 +1580,25 @@ const docTemplate = `{
                 }
             }
         },
+        "api.GetDraftShopBalance.getDraftPointsResponse": {
+            "type": "object",
+            "properties": {
+                "points": {
+                    "type": "integer"
+                }
+            }
+        },
+        "api.GetDraftShopProducts.getDraftShopProductsResponse": {
+            "type": "object",
+            "properties": {
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DraftStoreProduct"
+                    }
+                }
+            }
+        },
         "api.GetDrafts.getDraftsResponse": {
             "type": "object",
             "properties": {
@@ -1791,6 +1926,32 @@ const docTemplate = `{
                 "DraftStatusFinished"
             ]
         },
+        "model.DraftStoreProduct": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "costs": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "rarity": {
+                    "$ref": "#/definitions/model.ProductRarity"
+                },
+                "tags": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Friend": {
             "type": "object",
             "properties": {
@@ -1815,6 +1976,21 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.ProductRarity": {
+            "type": "string",
+            "enum": [
+                "common",
+                "rare",
+                "epic",
+                "legendary"
+            ],
+            "x-enum-varnames": [
+                "ProductRarityCommon",
+                "ProductRarityRare",
+                "ProductRarityEpic",
+                "ProductRarityLegendary"
+            ]
         },
         "model.User": {
             "type": "object",

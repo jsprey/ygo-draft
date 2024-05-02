@@ -28,6 +28,8 @@ func NewSqlQueryTemplater() (*sqlQueryTemplater, error) {
 	templater.AddUserTemplates(templateStringMap)
 	templater.AddFriendsTemplates(templateStringMap)
 	templater.AddDraftQueries(templateStringMap)
+	templater.AddDraftPointsQueries(templateStringMap)
+	templater.AddDraftStoreQueries(templateStringMap)
 
 	for templateName, templateString := range *templateStringMap {
 		parsedTemplate, err := template.New(templateName).Funcs(customFunctions).Parse(templateString)

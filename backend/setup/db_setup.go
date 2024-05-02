@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
+	"ygodraft/backend/client/draft"
 	"ygodraft/backend/config"
 	"ygodraft/backend/model"
 )
@@ -14,12 +15,35 @@ var createTablesQuery string
 
 // DatabaseSetup is responsible to setup the database including the creation of the database and the data tables.
 type DatabaseSetup struct {
-	Client        model.DatabaseClient
-	UsermgtClient model.UsermgtClient
+	Client            model.DatabaseClient
+	DraftClient       model.DraftClient
+	DraftPointsClient model.DraftPointsClient
+	DraftStoreClient  model.DraftStoreClient
+	UsermgtClient     model.UsermgtClient
 }
 
-func NewDatabaseSetup(client model.DatabaseClient, usermgtClient model.UsermgtClient) *DatabaseSetup {
-	return &DatabaseSetup{Client: client, UsermgtClient: usermgtClient}
+func NewDatabaseSetup(client model.DatabaseClient, usermgtClient model.UsermgtClient) (*DatabaseSetup, error) {
+	draftClient, err := draft.NewDraftClient(client)
+	if err != nil {
+		return nil, fmt.Errorf("failed to draft client: %w", err)
+	}
+
+	draftPointClient, err := draft.NewDraftPointsClient(client, draftClient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create draft points client: %w", err)
+	}
+
+	draftStoreClient, err := draft.NewDraftStoreClient(client, draftClient, draftPointClient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create draft store client: %w", err)
+	}
+
+	return &DatabaseSetup{Client: client,
+		DraftClient:       draftClient,
+		DraftPointsClient: draftPointClient,
+		DraftStoreClient:  draftStoreClient,
+		UsermgtClient:     usermgtClient,
+	}, nil
 }
 
 func (ds *DatabaseSetup) Setup() error {
@@ -34,7 +58,16 @@ func (ds *DatabaseSetup) Setup() error {
 		return fmt.Errorf("failed to setup usermgt database stuff: %w", err)
 	}
 
+	err = ds.setupProductStore()
+	if err != nil {
+		return fmt.Errorf("failed to setup product store: %w", err)
+	}
+
 	return nil
+}
+
+func (ds *DatabaseSetup) setupProductStore() error {
+	return ds.DraftStoreClient.SyncCatalog()
 }
 
 func (ds *DatabaseSetup) setupUsermgt() error {

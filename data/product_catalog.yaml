@@ -1,0 +1,29 @@
+products:
+  - id: draw_monster_normal
+    displayname: "Draw: Normal"
+    description: You can draw another normal card.
+    category: Draws
+    rarity: common
+    tags: positive_effect,gain_card
+    costs: 50
+  - id: draw_monster_effect
+    displayname: "Draw: Effect"
+    description: You can draw another effect card.
+    category: Draws
+    rarity: common
+    tags: positive_effect,gain_card
+    costs: 50
+  - id: draw_spell
+    displayname: "Draw: Spell"
+    description: You can draw another spell card.
+    category: Draws
+    rarity: common
+    tags: positive_effect,gain_card
+    costs: 50
+  - id: draw_trap
+    displayname: "Draw: Trap"
+    description: You can draw another trap card.
+    category: Draws
+    rarity: common
+    tags: positive_effect,gain_card
+    costs: 50

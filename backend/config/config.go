@@ -10,6 +10,8 @@ const (
 	StageProductive  = "production"
 	StageDevelopment = "development"
 	AdminUserEmail   = "admin@admin"
+
+	ProductCatalogFilePath = "data/product_catalog.yaml"
 )
 
 // YgoContext contains various configuration values used while running ygo draft.

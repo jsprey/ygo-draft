@@ -15,8 +15,10 @@ import (
 const IDParameter = "id"
 
 type draftsHandler struct {
-	DraftClient   model.DraftClient
-	UsermgtClient model.UsermgtClient
+	DraftClient       model.DraftClient
+	DraftPointsClient model.DraftPointsClient
+	DraftStoreClient  model.DraftStoreClient
+	UsermgtClient     model.UsermgtClient
 }
 
 func newDraftsHandler(dbClient model.DatabaseClient, usermgtClient model.UsermgtClient) (*draftsHandler, error) {
@@ -25,9 +27,21 @@ func newDraftsHandler(dbClient model.DatabaseClient, usermgtClient model.Usermgt
 		return nil, fmt.Errorf("failed to create new draft client: %w", err)
 	}
 
+	draftPointsClient, err := draft.NewDraftPointsClient(dbClient, draftClient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new draft client: %w", err)
+	}
+
+	draftStoreClient, err := draft.NewDraftStoreClient(dbClient, draftClient, draftPointsClient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new draft client: %w", err)
+	}
+
 	return &draftsHandler{
-		UsermgtClient: usermgtClient,
-		DraftClient:   draftClient,
+		UsermgtClient:     usermgtClient,
+		DraftPointsClient: draftPointsClient,
+		DraftStoreClient:  draftStoreClient,
+		DraftClient:       draftClient,
 	}, nil
 }
 

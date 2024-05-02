@@ -450,6 +450,7 @@ func (d draftClient) SetWinnerForDraftRound(roundID int, winnerUser int) error {
 	return nil
 }
 
+// NewDraftClient creates a new instance of the draft client.
 func NewDraftClient(dbClient model.DatabaseClient) (*draftClient, error) {
 	queryTemplater, err := query.NewSqlQueryTemplater()
 	if err != nil {
