@@ -55,7 +55,7 @@ function AddNewFriendWidget() {
     return <div>
         <div className={"flex"}>
             <input
-                className={classNames("flex-grow pl-2", "outline-none", "text-dark dark:text-light", "placeholder-dark-3 dark:placeholder-light-3", "bg-light-3 dark:bg-dark-3", "rounded-tl-lg", "border-b border-l border-t border-border")}
+                className={classNames("flex-grow pl-2", "text-dark dark:text-light", "placeholder-dark-3 dark:placeholder-light-3", "bg-light-3 dark:bg-dark-3", "rounded-tl-lg", "border-b border-l border-t border-border")}
                 placeholder={"add a new friend"}
                 value={newFriendName}
                 onBlur={() => setShowError(false)}

@@ -27,17 +27,15 @@ function PageSettings(props: PageSettingsProps) {
     const [extraDraftRoundError, setExtraDraftRoundError] = useState("")
     const [extraDraftSize, setExtraDraftSize] = useState(2)
     const [extraDraftSizeError, setExtraDraftSizeError] = useState("")
-    const [validated, setValidated] = useState(false)
 
     const isLocalSettings = props.local ? props.local : false
 
     function isValid(): boolean {
-        return mode !== undefined && mainDraftRoundError === "" && mainDraftSizeError === "" && mainDraftRoundError === "" && extraDraftRoundError === "" && extraDraftSizeError === ""
+        return mode !== undefined && numberOfRoundsError === "" && mainDraftRoundError === "" && mainDraftSizeError === "" && extraDraftRoundError === "" && extraDraftSizeError === "";
     }
 
     const handleSubmit = () => {
         if (isValid()) {
-            setValidated(true)
 
             const draftSettings: DraftSettings = {
                 mode: mode,
@@ -77,7 +75,7 @@ function PageSettings(props: PageSettingsProps) {
                                    error={numberOfRoundsError}
                                    setError={setNumberOfRoundsError}
                                    min={2} max={20}
-                                   title={"Number of Rounds"}
+                                   label={"Number of Rounds"}
                                    className={"mb-2 pl-1"}
                                    tooltip={"Defines the number of bestof/normal rounds."}/>
                 </div>
@@ -94,7 +92,7 @@ function PageSettings(props: PageSettingsProps) {
                                    min={5} max={80}
                                    error={mainDraftRoundError}
                                    setError={setMainDraftRoundError}
-                                   title={"Number of Draws"}
+                                   label={"Number of Draws"}
                                    className={"pr-1"}
                                    tooltip={"Defines the number of draw rounds while drafting the main deck. The resulting main deck will have the same size as the draw number. Valid Values: [40-80]."}/>
                 </div>
@@ -103,7 +101,7 @@ function PageSettings(props: PageSettingsProps) {
                                    min={2} max={10}
                                    error={mainDraftSizeError}
                                    setError={setMainDraftSizeError}
-                                   title={"Card Each Draw"}
+                                   label={"Card Each Draw"}
                                    className={"pl-1"}
                                    tooltip={"Defines the number of cards that are proposed for every draw round of the draft while drafting the main deck. Valid Values: [2-10]."}/>
                 </div>
@@ -118,7 +116,7 @@ function PageSettings(props: PageSettingsProps) {
                                    setError={setExtraDraftRoundError}
                                    min={0} max={20}
                                    className={"pr-1"}
-                                   title={"Number of Draws"}
+                                   label={"Number of Draws"}
                                    tooltip={"Defines the number of draw rounds while drafting the extra deck. The resulting extra deck will have the same size as the draw number. Valid Values: [0-20]."}/>
                 </div>
                 <div className={"w-2/4"}>
@@ -128,7 +126,7 @@ function PageSettings(props: PageSettingsProps) {
                                    setError={setExtraDraftSizeError}
                                    min={2} max={10}
                                    className={"pl-1"}
-                                   title={"Card Each Draw"}
+                                   label={"Card Each Draw"}
                                    tooltip={"Defines the number of cards that are proposed for every draw of the draft while drafting the extra deck. Valid Values: [2-10]."}/>
                 </div>
             </div>

@@ -1,7 +1,5 @@
-import React, {useState} from "react";
-import YgoIcon from "../../core/YgoIcon";
+import React from "react";
 import classNames from "classnames";
-import Alert from "../../core/Alert";
 import Input from "../../core/Input";
 
 export type SettingsEntryProps = {
@@ -9,7 +7,7 @@ export type SettingsEntryProps = {
     setValue: React.Dispatch<React.SetStateAction<number>>
     error: string
     setError: React.Dispatch<React.SetStateAction<string>>
-    title: string
+    label: string
     tooltip: string
     min: number
     max: number
@@ -17,41 +15,18 @@ export type SettingsEntryProps = {
 }
 
 function SettingsEntry(props: SettingsEntryProps) {
-    const [expanded, setExpanded] = useState<boolean>(false)
-
-    const CollapsedIcon = <YgoIcon icon={"help-outline"}
-                                   size={18}
-                                   onClick={(event) => {
-                                       setExpanded(true)
-                                       event.preventDefault()
-                                   }}
-                                   classNames={classNames("fill-dark dark:fill-light", "hover:fill-primary", "active:hover:fill-primary-hover")}/>
-    const ExpandIcon = <YgoIcon icon={"help-fill"}
-                                size={18}
-                                onClick={(event) => {
-                                    setExpanded(false)
-                                    event.preventDefault()
-                                }}
-                                classNames={classNames("fill-primary", "hover:fill-primary-hover", "active:hover:fill-primary-active")}/>
-
     return <div className={classNames(props.className ? props.className : "")}>
-        <div className={"w-full"}>
-            <div className={"flex mb-2"}>
-                <div className={"self-center font-bold mr-2 dark:text-light"}>{props.title}</div>
-                {expanded ? ExpandIcon : CollapsedIcon}
-            </div>
-            {expanded ? <div>
-                <Alert variant={"info"} className={"mb-2"}>{props.tooltip}</Alert>
-            </div> : <></>}
-        </div>
         <Input isValid={props.error === ""}
                value={props.value}
-               className={"w-full"}
+               label={props.label}
+               tooltip={props.tooltip}
+               rootClassNames={"w-full"}
+               inputClassNames={"w-full"}
                type={"number"}
                onChange={event => {
-                   if (isNaN(parseInt(event.target.value))) {
-                       props.setValue(0)
-                       props.setError(`Value needs to be between [${props.min} - ${props.max}].`)
+                   if (event.target.value === "" || isNaN(parseInt(event.target.value))) {
+                       props.setValue(props.min)
+                       props.setError("")
                    } else {
                        const setValue = parseInt(event.target.value)
                        if (setValue < props.min || setValue > props.max) {
