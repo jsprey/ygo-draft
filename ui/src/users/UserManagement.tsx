@@ -60,7 +60,7 @@ function UserManagement() {
 
         users.forEach(user => {
             const entry = <tr key={`row-${user.id}`}
-                              className={"odd:bg-light-1 odd:dark:bg-dark-1 even:bg-light-2 even:dark:bg-dark-2 border-l border-r border-dark dark:border-light"}>
+                              className={"odd:bg-light-1 odd:dark:bg-dark-1 even:bg-light-2 even:dark:bg-dark-2 border-l border-r border-border"}>
                 <td className="px-6 py-2">{user.id}</td>
                 <td className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">{user.email}</td>
                 <td className="px-6 py-2">{user.display_name}</td>
@@ -103,7 +103,7 @@ function UserManagement() {
         </td>
         for (let i = 0; i < 15; i++) {
             const entry = <tr key={`row-placeholder-${i}`}
-                              className={"odd:bg-light-1 odd:dark:bg-dark-1 even:bg-light-2 even:dark:bg-dark-2 border-l border-r border-dark dark:border-light"}>
+                              className={"odd:bg-light-1 odd:dark:bg-dark-1 even:bg-light-2 even:dark:bg-dark-2 border-l border-r border-border"}>
                 {placeholderElement}
                 {placeholderElement}
                 {placeholderElement}
@@ -117,7 +117,7 @@ function UserManagement() {
     }
 
     function getTableHeader() {
-        const tableCN = classNames("text-xs text-dark dark:text-light uppercase", "bg-light-3 dark:bg-dark-3", "border border-dark dark:border-light")
+        const tableCN = classNames("text-xs text-dark dark:text-light uppercase", "bg-light-3 dark:bg-dark-3", "border border-border")
         return <thead className={tableCN}>
         <tr>
             <th className="px-6 py-3 rounded-tl text-sm">ID</th>
@@ -140,7 +140,7 @@ function UserManagement() {
             maxUser = data.numberOfUsers
         }
 
-        const allButtonCN = classNames("py-2 px-4", "text-sm font-semibold", "rounded-tr-none rounded-tl-none", "border !border-dark !dark:border-light")
+        const allButtonCN = classNames("py-2 px-4", "text-sm font-semibold", "rounded-tr-none rounded-tl-none", "border !border-border")
         return <div
             className="flex justify-content-between items-center justify-between">
             <Button
@@ -155,7 +155,7 @@ function UserManagement() {
                 Prev
             </Button>
             <span
-                className="text-xs xs:text-sm text-dark dark:text-light bg-light-3 dark:bg-dark-3 flex-grow py-2 text-center place-self-stretch border-t border-b border-dark dark:border-light">
+                className="text-xs xs:text-sm text-dark dark:text-light bg-light-3 dark:bg-dark-3 flex-grow py-2 text-center place-self-stretch border-t border-b border-border">
                                 Showing {minUser} to {maxUser} of {data.numberOfUsers} Users
                         </span>
             <Button

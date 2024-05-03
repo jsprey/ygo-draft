@@ -29,7 +29,7 @@ function FriendList() {
             content = <div>{friendsEntries}</div>
         })
     } else if (data && data.length === 0) {
-        content = <div className={"flex bg-blue-100 dark:bg-gray-700 p-2 border-l border-r border-b border-dark dark:border-light"}>
+        content = <div className={"flex bg-blue-100 dark:bg-gray-700 p-2 border-l border-r border-b border-border"}>
             <div className={"self-center dark:text-white"}>
                 <b>You currently have no friends.</b>
             </div>

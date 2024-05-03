@@ -19,7 +19,7 @@ function Input(props: InputProps) {
 
     let rootCN = classNames("p-1", "rounded-lg", "bg-light-1 dark:bg-dark-1 dark:text-light", "outline-none border-2", props.className ? props.className : "")
     if (props.isValid) {
-        rootCN = classNames(rootCN, "border-light-border dark:border-dark-border")
+        rootCN = classNames(rootCN, "border-border")
     } else {
         rootCN = classNames(rootCN, "border-danger dark:border-danger text-danger")
     }

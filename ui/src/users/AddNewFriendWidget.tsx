@@ -47,7 +47,7 @@ function AddNewFriendWidget() {
         setInvalidInput("")
     }
 
-    const errorBlock = <div className={"flex bg-rose-100 dark:bg-rose-700 p-2 border-l border-r border-b border-dark dark:border-light"}>
+    const errorBlock = <div className={"flex bg-rose-100 dark:bg-rose-700 p-2 border-l border-r border-b border-border"}>
         <div className={"self-center dark:text-white"}><b>{invalidInput}</b>
         </div>
     </div>
@@ -55,7 +55,7 @@ function AddNewFriendWidget() {
     return <div>
         <div className={"flex"}>
             <input
-                className={classNames("flex-grow pl-2", "outline-none", "text-dark dark:text-light", "placeholder-dark-3 dark:placeholder-light-3", "bg-light-3 dark:bg-dark-3", "rounded-tl-lg", "border-b border-l border-t border-dark dark:border-light")}
+                className={classNames("flex-grow pl-2", "outline-none", "text-dark dark:text-light", "placeholder-dark-3 dark:placeholder-light-3", "bg-light-3 dark:bg-dark-3", "rounded-tl-lg", "border-b border-l border-t border-border")}
                 placeholder={"add a new friend"}
                 value={newFriendName}
                 onBlur={() => setShowError(false)}
@@ -67,7 +67,7 @@ function AddNewFriendWidget() {
                 }>
             </input>
             <Button disabled={invalidInput !== ""}
-                    className={"!rounded-l-none !rounded-br-none !border-dark dark:!border-light"}
+                    className={"!rounded-l-none !rounded-br-none !border-norder"}
                     variant={"success"}
                     onClick={() => {
                         sendFriendRequest.mutate(newFriendName)

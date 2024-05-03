@@ -11,7 +11,7 @@ export type StepperStepProps = {
 }
 
 function StepperStep(props: StepperStepProps) {
-    let stepNumberClasses = classNames("h-14 w-14", "flex justify-center items-center", "text-xl font-bold", "rounded-tl-lg rounded-bl-lg shadow-sm", "border-l border-t border-b border-light-border dark:border-dark-border")
+    let stepNumberClasses = classNames("h-14 w-14", "flex justify-center items-center", "text-xl font-bold", "rounded-tl-lg rounded-bl-lg shadow-sm", "border-l border-t border-b border-border")
     if (props.isDone) {
         stepNumberClasses = classNames(stepNumberClasses, "bg-success text-light")
     } else if (props.isActive) {
@@ -25,8 +25,8 @@ function StepperStep(props: StepperStepProps) {
             {props.isDone ? <YgoIcon icon={"checkmark"} size={20}/> : props.stepNr}
         </div>
         <div className={"h-14 grid grid-rows-2 text-dark dark:text-light"}>
-            <span className={classNames("text-lg pl-2 pr-2 bg-light dark:bg-dark rounded-tr-lg border-t border-r border-light-border dark:border-dark-border", props.isActive ? "font-bold" : "")}>{props.stepName}</span>
-            <span className={"truncate bg-light-1 dark:bg-dark-1 pl-2 pr-2 text-base italic text-dark-1 dark:text-light-1 rounded-br-lg border-b border-r border-light-border dark:border-dark-border"}>{props.stepDescription}</span>
+            <span className={classNames("text-lg pl-2 pr-2 bg-light dark:bg-dark rounded-tr-lg border-t border-r border-border", props.isActive ? "font-bold" : "")}>{props.stepName}</span>
+            <span className={"truncate bg-light-1 dark:bg-dark-1 pl-2 pr-2 text-base italic text-dark-1 dark:text-light-1 rounded-br-lg border-b border-r border-border"}>{props.stepDescription}</span>
         </div>
     </div>
 }

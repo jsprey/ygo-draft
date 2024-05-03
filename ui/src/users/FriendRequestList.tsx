@@ -44,7 +44,7 @@ function FriendRequestList() {
         let requestEntries: JSX.Element[] = [];
         let isHighlightedBackground = true
         data.forEach((request, index) => {
-            let cNames = classNames("flex p-2 border-l border-r border-dark dark:border-light", isHighlightedBackground ? "bg-light-1 dark:bg-dark-1" : "bg-light-2 dark:bg-dark-2", index === data.length-1 ? "border-b" : "")
+            let cNames = classNames("flex p-2 border-l border-r border-border", isHighlightedBackground ? "bg-light-1 dark:bg-dark-1" : "bg-light-2 dark:bg-dark-2", index === data.length-1 ? "border-b" : "")
             let entry = <div key={request.id}
                              className={cNames}>
                 <span

@@ -61,7 +61,7 @@ function PageSettings(props: PageSettingsProps) {
         </Alert> : null
     }
 
-    const headingCN = classNames("title mb-2 text-xl border-b border-light-border dark:border-dark-border font-bold dark:text-white")
+    const headingCN = classNames("title mb-2 text-xl border-b border-border font-bold dark:text-white")
     return <>
         {showDraftInformation()}
 

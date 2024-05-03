@@ -86,7 +86,7 @@ function FriendListEntry(props: FriendListEntryProps) {
         }
     }
 
-    const cNames = classNames("flex justify-between p-2 border-l border-r border-dark dark:border-light", props.highlightBackground ? "bg-light-1 dark:bg-dark-1" : "bg-light-2 dark:bg-dark-2", props.borderBottom ? "border-b" : "")
+    const cNames = classNames("flex justify-between p-2 border-l border-r border-border", props.highlightBackground ? "bg-light-1 dark:bg-dark-1" : "bg-light-2 dark:bg-dark-2", props.borderBottom ? "border-b" : "")
     return <div className={cNames}>
         <div className={"self-center dark:text-white"}>
             <b>

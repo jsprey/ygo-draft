@@ -36,7 +36,7 @@ function Modal(props: ModalProps) {
                         leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                         leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                     >
-                        <Dialog.Panel style={{maxWidth: "80%", maxHeight: "80%"}} className="text-dark dark:text-light bg-light dark:bg-dark p-2 relative transform overflow-hidden rounded-lg text-left shadow-xl transition-all sm:my-8 sm:w-full border border-dark dark:border-light">
+                        <Dialog.Panel style={{maxWidth: "80%", maxHeight: "80%"}} className="text-dark dark:text-light bg-light dark:bg-dark p-2 relative transform overflow-hidden rounded-lg text-left shadow-xl transition-all sm:my-8 sm:w-full border border-border">
                             {props.children ? props.children : null}
                         </Dialog.Panel>
                     </Transition.Child>

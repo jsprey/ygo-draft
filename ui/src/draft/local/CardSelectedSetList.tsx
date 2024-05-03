@@ -51,7 +51,7 @@ function CardSelectedSetList(props: CardSetListProps) {
     })
 
 
-    const iconCN = classNames("p-1", "border-b border-r border-t border-dark dark:border-light", props.isTargetList ? "stroke-danger hover:stroke-danger-hover active:stroke-danger-active" : "stroke-success hover:stroke-success-hover active:stroke-success-active")
+    const iconCN = classNames("p-1", "border-b border-r border-t border-border", props.isTargetList ? "stroke-danger hover:stroke-danger-hover active:stroke-danger-active" : "stroke-success hover:stroke-success-hover active:stroke-success-active")
     const AllActionIcon = <YgoIcon icon={props.isTargetList ? "double-arrow-left" : "double-arrow-right"}
                                    size={30}
                                    onClick={(event) => {
@@ -61,11 +61,11 @@ function CardSelectedSetList(props: CardSetListProps) {
                                    classNames={iconCN}/>
 
     return <div className={classNames(props.rootClassName)}>
-        <div className={"rounded-tl rounded-tr flex-grow border-l border-r border-t focus:no-border p-2 text-dark dark:text-light bg-light-3 dark:bg-dark-3 border-dark dark:border-light"}>{props.title}</div>
+        <div className={"rounded-tl rounded-tr flex-grow border-l border-r border-t focus:no-border p-2 text-dark dark:text-light bg-light-3 dark:bg-dark-3 border-border"}>{props.title}</div>
         <div className={"flex justify-content-center"}>
             <input
                 autoFocus
-                className="flex-fill flex-grow border outline-none pl-2 text-dark dark:text-light bg-gray-200 dark:bg-gray-600 border-dark dark:border-light"
+                className="flex-fill flex-grow border outline-none pl-2 text-dark dark:text-light bg-gray-200 dark:bg-gray-600 border-border"
                 placeholder="Type to filter..."
                 onChange={(e) => {
                     setFilter(e.target.value)
@@ -73,7 +73,7 @@ function CardSelectedSetList(props: CardSetListProps) {
             {AllActionIcon}
         </div>
 
-        <div className={"bg-light-1 dark:bg-dark-1 border-l border-b border-r border-dark dark:border-light"}>
+        <div className={"bg-light-1 dark:bg-dark-1 border-l border-b border-r border-border"}>
             <div className={"overflow-y-auto h-56 grid grid-cols-1 auto-rows-min"}>
                 {listItems}
             </div>

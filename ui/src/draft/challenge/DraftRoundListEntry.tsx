@@ -175,12 +175,12 @@ function DraftRoundListEntry(props: DraftRoundListEntryProps) {
         winnerMutation.mutate(request)
     }
 
-    const containerCN = classNames("grid-cols-5 grid", "w-100 p-0", "rounded", "bg-light-1 dark:bg-dark-1", "border border-light-border dark:border-dark-border")
+    const containerCN = classNames("grid-cols-5 grid", "w-100 p-0", "rounded", "bg-light-1 dark:bg-dark-1", "border border-border")
     return <div className={containerCN}>
         <div className={"flex items-center"}>{createPlayerElement()}</div>
         {getLeftPlayerStatus()}
         <div
-            className={classNames("flex flex-col items-center", "p-2", "text-dark", "bg-secondary-light", "border-l border-r border-light-border dark:border-dark-border")}>
+            className={classNames("flex flex-col items-center", "p-2", "text-dark", "bg-secondary-light", "border-l border-r border-border")}>
             <span className={"fw-bold text-xl"}>Round {round.round_number}</span>
             <span>{getStatusDisplayMessage(round)}</span>
         </div>
