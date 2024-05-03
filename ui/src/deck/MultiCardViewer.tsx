@@ -21,13 +21,13 @@ function MultiCardViewer(props: MultiCardViewerProps) {
         <span key={myInt++}><SingleCardViewer card={card}/></span>
     );
 
-    const normalEffectMonsterBadge = classNames("rounded-lg p-1", "text-light border border-dark-1 dark:border-light-1", "bg-cardcolors-effect")
-    const spellCardBadge = classNames("rounded-lg p-1", "text-light border border-dark-1 dark:border-light-1", "bg-cardcolors-spell")
-    const trapCardsBadge = classNames("rounded-lg p-1", "text-light border border-dark-1 dark:border-light-1", "bg-cardcolors-trap")
+    const normalEffectMonsterBadge = classNames("rounded-lg p-1", "text-light border-1 border-light-border", "bg-cardcolors-effect")
+    const spellCardBadge = classNames("rounded-lg p-1", "text-light border-2 border-light-border dark:border-dark-border", "bg-cardcolors-spell")
+    const trapCardsBadge = classNames("rounded-lg p-1", "text-light border-2 border-light-border dark:border-dark-border", "bg-cardcolors-trap")
 
     return <div className={classNames("flex flex-col dark:text-light")}>
         <div
-            className={classNames("flex-grow-1 flex items-center p-2", "bg-light-1 dark:bg-dark-1", "rounded-tl rounded-tr", "border border-dark-2 dark:border-light-2")}>
+            className={classNames("flex-grow-1 flex items-center p-2", "bg-light-1 dark:bg-dark-1", "rounded-tl rounded-tr", "border border-dark-border dark:border-light-border")}>
            <span className={classNames("p-1 mr-2", "font-bold text-2xl")}>
                {props.name}
            </span>
@@ -44,7 +44,7 @@ function MultiCardViewer(props: MultiCardViewerProps) {
             </div> : <></>}
         </div>
         <div
-            className={classNames("p-2 grid grid-cols-10 gap-1", "bg-dark-3", "border-l border-b border-r border-dark-2 dark:border-light-2")}>
+            className={classNames("p-2 grid grid-cols-10 gap-1", "bg-dark-3", "border-l border-b border-r border-dark-border dark:border-light-border")}>
             {cardsViewBody}
         </div>
     </div>

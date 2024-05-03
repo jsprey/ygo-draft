@@ -42,6 +42,11 @@ const User = <>
     <path
         d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
 </>
+const Eye = <>
+    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+    <path
+        d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+</>
 
 export type YgoIconName =
     "collapse"
@@ -55,6 +60,7 @@ export type YgoIconName =
     | "xcircle"
     | "checkmark"
     | "user"
+    | "eye"
 
 export type YgoIconsProps = {
     icon: YgoIconName
@@ -91,6 +97,8 @@ function YgoIcon(props: YgoIconsProps) {
                 return Checkmark
             case "user":
                 return User
+            case "eye":
+                return Eye
             default:
                 console.error("Icon not found: " + icon)
                 return <div className={"bg-red-500 m-2 rounded"}>ICON NOT FOUND</div>

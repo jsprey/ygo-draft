@@ -25,7 +25,7 @@ function MultiCardDraftArea(props: MultiCardDraftAreaProps) {
 
     return <div className={"text-dark dark:text-light"}>
         <div
-            className={classNames("flex-grow-1 flex items-center p-2 justify-between", "bg-light-1 dark:bg-dark-1", "rounded-tl rounded-tr", "border border-dark-2 dark:border-light-2")}>
+            className={classNames("flex-grow-1 flex items-center p-2 justify-between", "bg-light-1 dark:bg-dark-1", "rounded-tl rounded-tr", "border border-dark-border dark:border-light-border")}>
             <span className={classNames("p-1", "font-bold text-2xl")}>
                {props.name}
            </span>
@@ -33,7 +33,7 @@ function MultiCardDraftArea(props: MultiCardDraftAreaProps) {
                Round: {props.draftRound} / {props.maxRound}
            </span>
         </div>
-        <div className={classNames("p-2 grid grid-cols-10 gap-1", "bg-dark-3", "border-l border-b border-r border-dark-2 dark:border-light-2")}>{cardsViewBody}</div>
+        <div className={classNames("p-2 grid grid-cols-10 gap-1", "bg-dark-3", "border-l border-b border-r border-dark-border dark:border-light-border")}>{cardsViewBody}</div>
     </div>
 }
 

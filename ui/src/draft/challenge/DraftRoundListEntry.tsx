@@ -12,12 +12,7 @@ import {useQueryClient} from "react-query";
 import Spinner from "../../core/Spinner";
 import Alert from "../../core/Alert";
 import Button from "../../core/Button";
-
-const IconEye = <SvgIconButton size={25} classNames={"fill-white mr-1"}>
-    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-    <path
-        d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-</SvgIconButton>
+import YgoIcon from "../../core/YgoIcon";
 
 type DraftRoundListEntryProps = {
     round: DraftRound
@@ -53,16 +48,21 @@ function DraftRoundListEntry(props: DraftRoundListEntryProps) {
         let playerActions: JSX.Element
         if (isDeckEmpty && props.draft.status === "surrender") {
             playerActions = <></>
-        } else if (isDeckEmpty) {
+        } else if (isDeckEmpty && props.draft.current_round_number == 1) {
             playerActions =
                 <Button variant={"primary"} className={""} onClick={() => navigate(`/draft/${round.draft_id}/${round.id}`)}>
-                Draft Deck
-            </Button>
+                    Draft Deck
+                </Button>
+        }else if (isDeckEmpty && props.draft.current_round_number > 1) {
+            playerActions =
+                <Button variant={"primary"} className={""} onClick={() => navigate(`/draft/${round.draft_id}/${round.id}`)}>
+                    Refine Deck
+                </Button>
         } else {
             playerActions =
                 <Button variant={"primary"} className={""} onClick={() => navigate(`/draft/${round.draft_id}/${round.id}`)}>
                 <div className={"flex justify-between"}>
-                {IconEye}Inspect Deck
+                {<YgoIcon icon={"eye"} size={25} classNames={"fill-white mr-1"}/>} Inspect Deck
             </div>
             </Button>
         }
@@ -175,12 +175,12 @@ function DraftRoundListEntry(props: DraftRoundListEntryProps) {
         winnerMutation.mutate(request)
     }
 
-    const containerCN = classNames("grid-cols-5 grid", "w-100 p-0", "rounded", "bg-light-1 dark:bg-dark-1", "border border-light-3 dark:border-dark-3")
+    const containerCN = classNames("grid-cols-5 grid", "w-100 p-0", "rounded", "bg-light-1 dark:bg-dark-1", "border border-light-border dark:border-dark-border")
     return <div className={containerCN}>
         <div className={"flex items-center"}>{createPlayerElement()}</div>
         {getLeftPlayerStatus()}
         <div
-            className={classNames("flex flex-col items-center", "p-2", "text-dark", "bg-secondary-light", "border-l border-r border-light-3 dark:border-dark-3")}>
+            className={classNames("flex flex-col items-center", "p-2", "text-dark", "bg-secondary-light", "border-l border-r border-light-border dark:border-dark-border")}>
             <span className={"fw-bold text-xl"}>Round {round.round_number}</span>
             <span>{getStatusDisplayMessage(round)}</span>
         </div>

@@ -1,25 +1,35 @@
-import React, {ChangeEvent, ReactNode} from "react";
+import React, {ChangeEvent, HTMLInputTypeAttribute, ReactNode} from "react";
 import classNames from "classnames";
 
 type InputProps = {
     className?: string
     disabled?: boolean
     children?: ReactNode | undefined
-    onValueChanged?: (value: ChangeEvent<HTMLInputElement>) => void
+    onChange?: (value: ChangeEvent<HTMLInputElement>) => void
     isValid?: boolean
+    type?: HTMLInputTypeAttribute | undefined;
+    value?: string | ReadonlyArray<string> | number | undefined;
 };
 
 function Input(props: InputProps) {
     const inputAttributes: React.InputHTMLAttributes<HTMLInputElement> = {}
-    if (props.onValueChanged) {
-        inputAttributes.onChange = props.onValueChanged
+    if (props.onChange) {
+        inputAttributes.onChange = props.onChange
     }
 
-    let rootCN = classNames("p-1", "rounded-lg", "bg-light dark:bg-dark", "outline-none border", props.className ? props.className : "")
-    if (!props.isValid) {
-        rootCN = classNames(rootCN, "border-danger dark:border-danger text-danger-dark")
+    let rootCN = classNames("p-1", "rounded-lg", "bg-light-1 dark:bg-dark-1 dark:text-light", "outline-none border-2", props.className ? props.className : "")
+    if (props.isValid) {
+        rootCN = classNames(rootCN, "border-light-border dark:border-dark-border")
     } else {
-        rootCN = classNames(rootCN, "border-light-3 dark:border-dark-3")
+        rootCN = classNames(rootCN, "border-danger dark:border-danger text-danger")
+    }
+
+    if (props.value) {
+        inputAttributes.value = props.value
+    }
+
+    if (props.type) {
+        inputAttributes.type = props.type
     }
 
     return <input className={rootCN}

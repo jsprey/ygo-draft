@@ -31,8 +31,12 @@ function PageSettings(props: PageSettingsProps) {
 
     const isLocalSettings = props.local ? props.local : false
 
+    function isValid(): boolean {
+        return mode !== undefined && mainDraftRoundError === "" && mainDraftSizeError === "" && mainDraftRoundError === "" && extraDraftRoundError === "" && extraDraftSizeError === ""
+    }
+
     const handleSubmit = () => {
-        if (mode !== undefined && mainDraftRoundError === "" && mainDraftSizeError === "" && mainDraftRoundError === "" && extraDraftRoundError === "" && extraDraftSizeError === "") {
+        if (isValid()) {
             setValidated(true)
 
             const draftSettings: DraftSettings = {
@@ -57,7 +61,7 @@ function PageSettings(props: PageSettingsProps) {
         </Alert> : null
     }
 
-    const headingCN = classNames("title mb-2 text-xl border-b border-light-3 dark:border-dark-3 font-bold dark:text-white")
+    const headingCN = classNames("title mb-2 text-xl border-b border-light-border dark:border-dark-border font-bold dark:text-white")
     return <>
         {showDraftInformation()}
 
@@ -130,7 +134,7 @@ function PageSettings(props: PageSettingsProps) {
             </div>
             <div className={"flex place-content-end"}>
                 <Button variant={"primary"} className={"mt-3"} onClick={handleSubmit}
-                        disabled={!validated}>
+                        disabled={!isValid()}>
                     {props.submitButtonName}
                 </Button>
             </div>

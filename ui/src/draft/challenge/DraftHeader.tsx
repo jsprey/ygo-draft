@@ -21,8 +21,8 @@ type DraftHeaderProps = {
 function DraftHeader(props: DraftHeaderProps) {
     const [settingCollapsed, setSettingCollapsed] = useState<boolean>(true)
 
-    const settingsHeaderCN = classNames("flex-grow pl-2", "rounded-tl rounded-tr", settingCollapsed ? "rounded-bl rounded-br" : "", "border border-light-3 dark:border-dark-3", "bg-gray-200 dark:bg-gray-600")
-    const settingsBodyCN = classNames("p-2", "rounded-bl rounded-br", "border-l border-b border-r  border-light-3 dark:border-dark-3", "bg-lightI dark:bg-dark")
+    const settingsHeaderCN = classNames("flex-grow pl-2", "rounded-tl rounded-tr", settingCollapsed ? "rounded-bl rounded-br" : "", "border border-light-border dark:border-dark-border", "bg-gray-200 dark:bg-gray-600")
+    const settingsBodyCN = classNames("p-2", "rounded-bl rounded-br", "border-l border-b border-r  border-light-border dark:border-dark-border", "bg-lightI dark:bg-dark")
 
     return <div className={"w-full text-dark dark:text-light"}>
         <DraftBattleBadge playerNameOne={props.player.display_name} playerNameTwo={props.enemy.name}/>

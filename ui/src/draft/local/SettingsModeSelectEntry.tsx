@@ -29,7 +29,7 @@ function SettingsModeSelectEntry(props: SettingsModeSelectEntryProps) {
                                 }}
                                 classNames={classNames("fill-primary", "hover:fill-primary-hover", "active:hover:fill-primary-active")}/>
 
-    const modeButtonsCN = classNames("p-2 border-t-2 border-b-2 border-dark dark:border-light dark:text-light")
+    const modeButtonsCN = classNames("p-2 border-t-2 border-b-2 border-light-border border-dark-border dark:text-light")
     const modeButtonsSelectedCN = classNames("bg-primary text-light")
     return <div className={classNames(props.className ? props.className : "")}>
         <div className={"w-full"}>

@@ -42,6 +42,7 @@ const AppRouter = () => {
             <Route path={UserPath} element={withAll(<UserPage/>)}/>
             <Route path={"/challenge"} element={withAll(<ChallengeDraftPage/>)}/>
             <Route path={"/draft/:id"} element={withAll(<DraftOverviewPage/>)}/>
+            <Route path={"/draft/:id/draftDeck"} element={withAll(<DraftMyRoundDeckPage/>)}/>
             <Route path={"/draft/:id/:roundID"} element={withAll(<DraftMyRoundDeckPage/>)}/>
         </Route>
     </>
@@ -84,7 +85,7 @@ function withBackground(element: JSX.Element) {
 
 function withContainer(element: JSX.Element) {
     return <>
-        <div className={classNames("container mx-auto bg-light dark:bg-dark", "border-t-2 border-light-1 dark:border-dark-1")}>
+        <div className={classNames("container mx-auto bg-light dark:bg-dark", "border-t-2 border-light-border dark:border-dark-border")}>
             <div className={"p-4"}>
                 {element}
             </div>

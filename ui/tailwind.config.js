@@ -47,17 +47,20 @@ module.exports = {
                     'active': '#cca300',
                     'dark': '#b38f00'
                 },
+                border: '#d1d1d1',
                 light: {
                     DEFAULT: '#f8f8f8',
-                    1: '#dfdfdf',
-                    2: '#c6c6c6',
-                    3: '#aeaeae',
+                    1: '#f0f0f0',
+                    2: '#e6e6e6',
+                    3: '#dbdbdb',
+                    border: '#d1d1d1',
                 },
                 dark: {
-                    DEFAULT: '#0d1117',
-                    1: '#25292e',
-                    2: '#3d4145',
-                    3: '#56585d',
+                    DEFAULT: '#1a222e',
+                    1: '#212b3b',
+                    2: '#293548',
+                    3: '#303f55',
+                    border: '#374862',
                 },
                 cardcolors: {
                     effect: '#bb6034',

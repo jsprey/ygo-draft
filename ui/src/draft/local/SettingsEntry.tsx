@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import YgoIcon from "../../core/YgoIcon";
 import classNames from "classnames";
 import Alert from "../../core/Alert";
+import Input from "../../core/Input";
 
 export type SettingsEntryProps = {
     value: number
@@ -32,7 +33,7 @@ function SettingsEntry(props: SettingsEntryProps) {
                                     event.preventDefault()
                                 }}
                                 classNames={classNames("fill-primary", "hover:fill-primary-hover", "active:hover:fill-primary-active")}/>
-    
+
     return <div className={classNames(props.className ? props.className : "")}>
         <div className={"w-full"}>
             <div className={"flex mb-2"}>
@@ -43,27 +44,25 @@ function SettingsEntry(props: SettingsEntryProps) {
                 <Alert variant={"info"} className={"mb-2"}>{props.tooltip}</Alert>
             </div> : <></>}
         </div>
-        <input
-            required
-            value={props.value}
-            type="number"
-            onChange={event => {
-                if (isNaN(parseInt(event.target.value))) {
-                    props.setValue(0)
-                    props.setError(`Value needs to be between [${props.min} - ${props.max}].`)
-                } else {
-                    const setValue = parseInt(event.target.value)
-                    if (setValue < props.min || setValue > props.max) {
-                        props.setValue(parseInt(event.target.value))
-                        props.setError(`Value needs to be between [${props.min} - ${props.max}].`)
-                    } else {
-                        props.setValue(parseInt(event.target.value))
-                        props.setError("")
-                    }
-                }
-            }
-            }
-        />
+        <Input isValid={props.error === ""}
+               value={props.value}
+               className={"w-full"}
+               type={"number"}
+               onChange={event => {
+                   if (isNaN(parseInt(event.target.value))) {
+                       props.setValue(0)
+                       props.setError(`Value needs to be between [${props.min} - ${props.max}].`)
+                   } else {
+                       const setValue = parseInt(event.target.value)
+                       if (setValue < props.min || setValue > props.max) {
+                           props.setValue(parseInt(event.target.value))
+                           props.setError(`Value needs to be between [${props.min} - ${props.max}].`)
+                       } else {
+                           props.setValue(parseInt(event.target.value))
+                           props.setError("")
+                       }
+                   }
+               }}/>
         {props.error !== "" ? <div className={"text-danger dark:text-danger"}>{props.error}</div> : <></>}
     </div>
 }

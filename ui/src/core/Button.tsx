@@ -16,7 +16,7 @@ function Button(props: ButtonProps) {
     const classAttributes: React.ClassAttributes<HTMLButtonElement> = {}
 
     if (props.disabled) {
-        rootCN = classNames(rootCN, "text-dark-3 dark:text-light-3", "bg-light-1 dark:bg-dark-1 border border-light-2 dark:border-dark-2", "cursor-not-allowed")
+        rootCN = classNames(rootCN, "text-dark-3 dark:text-light-3", "bg-light-1 dark:bg-dark-1 border border-light-border dark:border-dark-border", "cursor-not-allowed")
     } else {
         attributes.onClick = event => {
             event.preventDefault()

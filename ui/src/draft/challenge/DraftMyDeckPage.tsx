@@ -29,8 +29,9 @@ function DraftMyDeckPage() {
             if (data) {
                 setPrompt(false)
             }
-        }
+        },
     })
+
     const submitDeckMutation = useSubmitDeck({
         onSuccess: () => {
             ShowSuccessfulSnack("Deck submitted")
@@ -58,13 +59,6 @@ function DraftMyDeckPage() {
         </div>
     }
 
-    if (roundDecksQuery.data && roundDecksQuery.data.user_deck.length > 0) {
-        return <div className={"flex flex-col"}>
-            <DeckListViewer className={"flex flex-col gap-2"} deckList={roundDecksQuery.data.user_deck}/>
-            <Button variant={"primary"} className={"mt-2 self-end"} onClick={() => navigate(`/draft/${params.id}`)}>Back</Button>
-        </div>
-    }
-
     function onSubmitDeck(deck: Deck) {
         const request: SubmitDeckRequest = {
             roundID: parseInt(params.roundID),
@@ -80,12 +74,29 @@ function DraftMyDeckPage() {
         }
     }
 
-    return <div>
-        <OnlineDeckDraftWizard submitName={"Finish"}
-                               onSubmit={onSubmitDeck}
-                               onAbort={onAbortDraft}
-                               settings={draftQuery.data.settings}/>
-    </div>
+    if (draftQuery.data && roundDecksQuery.data && roundDecksQuery.data.user_deck.length > 0) {
+        // inspect deck show deck
+        return <div className={"flex flex-col"}>
+            <DeckListViewer className={"flex flex-col gap-2"} deckList={roundDecksQuery.data.user_deck}/>
+            <Button variant={"primary"} className={"mt-2 self-end"} onClick={() => navigate(`/draft/${params.id}`)}>Back</Button>
+        </div>
+    } else if (roundDecksQuery.data && draftQuery.data.current_round_number === 1) {
+        // create initial deck
+        return <div>
+            <OnlineDeckDraftWizard submitName={"Finish"}
+                                   onSubmit={onSubmitDeck}
+                                   onAbort={onAbortDraft}
+                                   settings={draftQuery.data.settings}/>
+        </div>
+    } else if (roundDecksQuery.data && draftQuery.data.current_round_number >= 1) {
+        // refine existing deck
+        return <div className={"flex flex-col"}>
+            <span>Lets refine!</span>
+            <Button variant={"primary"} className={"mt-2 self-end"} onClick={() => navigate(`/draft/${params.id}`)}>Back</Button>
+        </div>
+    }
+
+    return <span>This should not happen</span>
 }
 
 export function ShowSuccessfulSnack(message: string) {
