@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"io"
 	"strconv"
 	"ygodraft/backend/client/auth"
@@ -94,6 +95,8 @@ func GetRequestData(ctx *gin.Context, myStruct interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	logrus.Info("Request body: ", string(body))
 
 	err = json.Unmarshal(body, myStruct)
 	if err != nil {

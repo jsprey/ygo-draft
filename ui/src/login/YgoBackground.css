@@ -11,4 +11,8 @@
     max-width: 100px;
     min-width: 100px;
     height: auto;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
 }

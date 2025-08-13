@@ -702,7 +702,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Contains the email of the target user.",
-                        "name": "targetUser",
+                        "name": "friend_email",
                         "in": "body",
                         "required": true,
                         "schema": {

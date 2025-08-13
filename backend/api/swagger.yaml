@@ -702,7 +702,7 @@ paths:
       parameters:
       - description: Contains the email of the target user.
         in: body
-        name: targetUser
+        name: friend_email
         required: true
         schema:
           type: integer

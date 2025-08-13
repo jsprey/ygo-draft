@@ -476,7 +476,7 @@ func (ah *userManagementHandler) PostFriendRequest(ctx *gin.Context) {
 // @Security Bearer
 // @Accept json
 // @Produce json
-// @Param targetUser body int true "Contains the email of the target user."
+// @Param friend_email body int true "Contains the email of the target user."
 // @Param authorization header string true "Contains the authorization token."
 // @Success 204
 // @Failure 400 {string} string "Cannot post a request to yourself."
@@ -491,7 +491,7 @@ func (ah *userManagementHandler) PostFriendRequestByEmail(ctx *gin.Context) {
 	logrus.Debugf("API-Handler -> GetCurrentUser -> Call to PostFriendRequestByEmail endoint...")
 
 	var bodyData postFriendRequestViaEmailRequest
-	err := GetRequestData(ctx, bodyData)
+	err := GetRequestData(ctx, &bodyData)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to get request data: %w", err))
 		return

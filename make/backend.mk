@@ -21,7 +21,7 @@ b-run: generate-api-docs dc-up ## Run the go backend.
 
 .PHONY: b-run-air
 b-run-air: $(GO_AIR) generate-api-docs dc-up ## Run the go backend.
-	@GOOS=$(GOOS) GOARCH=$(GOARCH) $(GO_AIR) .
+	@GOOS=$(GOOS) GOARCH=$(GOARCH) $(GO_AIR) -build.exclude_dir=ui .
 
 .PHONY: b-build
 b-build: $(BUILD_DIR) generate-api-docs ## Builds the golang backend of YGODraft and creates a statically linked binary.
