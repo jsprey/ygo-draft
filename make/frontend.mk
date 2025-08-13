@@ -15,6 +15,7 @@ f-build: $(BUILD_DIR)
 .PHONY: f-run
 f-run:
 	@echo "Starting development server..."
+	@cd $(UI_DIR) && yarn install
 	@cd $(UI_DIR) && yarn start
 
 .PHONY: f-start-api-mock

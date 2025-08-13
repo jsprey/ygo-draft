@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 	"ygodraft/backend/model"
 )
 
@@ -89,7 +90,7 @@ func isFileExisting(path string) (bool, error) {
 }
 
 func getFolderPath(cardID int) string {
-	return path.Join(".", ImagesDirectoryName, string(rune(cardID)))
+	return path.Join(".", ImagesDirectoryName, strconv.Itoa(cardID))
 }
 
 func ensurePathExists(folder string) error {

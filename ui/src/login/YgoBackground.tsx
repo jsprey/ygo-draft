@@ -7,7 +7,7 @@ import {Alert, Spinner} from "react-bootstrap";
 import React from "react";
 
 function YgoBackground() {
-    const {data, isLoading, error} = useRandomCards("login", 90, {} as CardFilter, {
+    const {data, isLoading, error} = useRandomCards("login", 180, {} as CardFilter, {
         refetchOnWindowFocus: false
     })
 
@@ -22,9 +22,9 @@ function YgoBackground() {
         let myInt = 50000
 
         let cardsViewBody = data.cards.map((card: Card) =>
-            <span key={myInt++}><SingleCardViewer card={card} onlyImage={true} readonly={true}/></span>
+            <span key={myInt++}><SingleCardViewer className={"card"} card={card} onlyImage={true} readonly={true}/></span>
         );
-        content = <div className={"blur-sm loginBackgroundContainer mySpecialBackground p-3 grid gap-3 bg-black -z-50"}>
+        content = <div className={"blur-sm loginBackgroundContainer mySpecialBackground flex flex-wrap gap-3 bg-black -z-50"}>
             {cardsViewBody}
         </div>
     }

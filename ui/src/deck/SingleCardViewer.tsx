@@ -10,6 +10,7 @@ export type SingleCardViewerProps = {
     bottomElement ?: JSX.Element
     onlyImage ?: boolean
     readonly ?: boolean
+    className ?: string
 }
 
 type CardViewDivProps = {
@@ -31,7 +32,7 @@ function SingleCardViewer(props: SingleCardViewerProps) {
     }
 
     return <>
-        <div className={"justify-center place-content-center flex flex-wrap"}>
+        <div className={`justify-center place-content-center flex flex-wrap ${props.className}`}>
             <div {...cardViewProps}>
                 {getCardAsImage(props.card, props.onlyImage)}
             </div>
