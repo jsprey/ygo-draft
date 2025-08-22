@@ -31,7 +31,7 @@ function YgoBackground() {
         let cardsViewBody = data.cards.map((card: Card) =>
             <span key={myInt++}><SingleCardViewer className={"card"} card={card} onlyImage={true} readonly={true}/></span>
         );
-        content = <div className={"blur-sm loginBackgroundContainer mySpecialBackground p-3 grid gap-3 bg-black -z-50 select-none"}>
+        content = <div className={"blur-sm loginBackgroundContainer mySpecialBackground flex flex-wrap p-3 gap-3 bg-black -z-50 select-none"}>
             {cardsViewBody}
         </div>
     }
