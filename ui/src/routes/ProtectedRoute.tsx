@@ -1,4 +1,4 @@
-import {useAuth} from "../auth/AuthProvider";
+import {useAuth} from "../core/auth/AuthProvider";
 import {Navigate, Outlet} from "react-router";
 import {LoginPath} from "./AppRouter";
 

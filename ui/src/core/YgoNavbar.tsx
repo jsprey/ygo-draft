@@ -1,5 +1,5 @@
 import {Link} from "react-router-dom";
-import {useAuth} from "../auth/AuthProvider";
+import {useAuth} from "./auth/AuthProvider";
 import {useLocation, useNavigate} from "react-router";
 import UserNavbarBadge from "../users/UserNavbarBadge";
 import React from "react";
@@ -32,7 +32,6 @@ function YgoNavbar() {
             <span className={classNames("justify-end", unfocusedLinkCN)} onClick={logout}>Logout</span>
         </>
     }
-
 
     // for class navBarContainer see index.scss
     // noinspection TypeScriptValidateTypes

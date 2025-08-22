@@ -1,6 +1,6 @@
 import React from 'react';
 import AppRouter from "./routes/AppRouter";
-import AuthProvider from "./auth/AuthProvider";
+import AuthProvider from "./core/auth/AuthProvider";
 import ColorThemeProvider from "./core/context/ColorThemeProvider";
 import {SnackbarProvider} from "notistack";
 

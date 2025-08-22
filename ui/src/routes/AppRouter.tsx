@@ -1,19 +1,19 @@
-import {useAuth} from "../auth/AuthProvider";
+import {useAuth} from "../core/auth/AuthProvider";
 import YgoNavbar from "../core/YgoNavbar";
 import YgoBackground from "../login/YgoBackground";
 import React from "react";
 import Home from "../home/Home";
-import DeckRandomGeneratorPage from "../deck/DeckRandomGeneratorPage";
-import DeckDraftWizard from "../draft/local/DeckDraftWizard";
-import {Route, Routes} from "react-router-dom";
-import LoginPage from "../auth/LoginPage";
+import DeckRandomGeneratorPage from "../draft/shared/deck/DeckRandomGeneratorPage";
+import LocaleDraftWizard from "../draft/local/LocaleDraftWizard";
+import {createBrowserRouter, Route, Routes} from "react-router-dom";
+import LoginPage from "../core/auth/LoginPage";
 import {ProtectedRoute} from "./ProtectedRoute";
 import UserPage from "../users/UserPage";
 import AdminPage from "../users/AdminPage";
-import {Navigate} from "react-router";
-import ChallengeDraftPage from "../draft/challenge/ChallengeDraftPage";
-import DraftOverviewPage from "../draft/challenge/DraftOverviewPage";
-import DraftMyRoundDeckPage from "../draft/challenge/DraftMyDeckPage";
+import {Navigate, RouterProvider} from "react-router";
+import OnlineChallengePage from "../draft/online/challengePage/OnlineChallengePage";
+import DraftOverviewPage from "../draft/online/draftPage/DraftOverviewPage";
+import DraftMyRoundDeckPage from "../draft/online/roundPages/RoundPage";
 import classNames from "classnames";
 import Footer from "../core/Footer";
 
@@ -25,8 +25,16 @@ export const DraftDeckPath = "/draftdeck"
 export const UserPath = "/user"
 export const ChallengeUserPath = "/challenge"
 
+export function DraftPagePath(draftID: string | number): string {
+    return `/draft/${draftID}`
+}
 
-const AppRouter = () => {
+// 3️⃣ Router singleton created
+const router = createBrowserRouter([
+    {path: "*", element: <Root/>},
+]);
+
+function Root() {
     const {token} = useAuth();
 
     // Define public routes accessible to all users
@@ -38,9 +46,9 @@ const AppRouter = () => {
     const routesForAuthenticatedOnly: JSX.Element = <>
         <Route element={<ProtectedRoute/>}>
             <Route path={RandomDeckPath} element={withAll(<DeckRandomGeneratorPage/>)}/>
-            <Route path={DraftDeckPath} element={withAll(<DeckDraftWizard/>)}/>
+            <Route path={DraftDeckPath} element={withAll(<LocaleDraftWizard/>)}/>
             <Route path={UserPath} element={withAll(<UserPage/>)}/>
-            <Route path={"/challenge"} element={withAll(<ChallengeDraftPage/>)}/>
+            <Route path={"/challenge"} element={withAll(<OnlineChallengePage/>)}/>
             <Route path={"/draft/:id"} element={withAll(<DraftOverviewPage/>)}/>
             <Route path={"/draft/:id/draftDeck"} element={withAll(<DraftMyRoundDeckPage/>)}/>
             <Route path={"/draft/:id/:roundID"} element={withAll(<DraftMyRoundDeckPage/>)}/>
@@ -65,9 +73,9 @@ const AppRouter = () => {
         {routesForAuthenticatedOnly}
         {!token ? routesForNotAuthenticatedOnly : <></>}
         {routesForAdminOnly}
-        {<Route path="*" element={<Navigate to={HomePath} replace />} />}
+        {<Route path="*" element={<Navigate to={HomePath} replace/>}/>}
     </Routes>
-};
+}
 
 function withNavbar(element: JSX.Element) {
     return <>
@@ -96,6 +104,10 @@ function withContainer(element: JSX.Element) {
 
 function withAll(element: JSX.Element) {
     return withBackground(withNavbar(withContainer(element)))
+}
+
+function AppRouter() {
+    return <RouterProvider router={router}/>;
 }
 
 export default AppRouter;

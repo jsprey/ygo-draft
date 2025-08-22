@@ -1,11 +1,11 @@
 import React, {useState} from "react";
 import classNames from "classnames";
 import {Link} from "react-router-dom";
-import {ChallengeDraftState} from "../draft/challenge/ChallengeDraftPage";
+import {OnlineChallengeState} from "../draft/online/challengePage/OnlineChallengePage";
 import {useDraftChallenges} from "../api/hooks/drafts/useDraftChallenges";
 import {Friend} from "../api/UserModel";
 import {Draft} from "../api/Draft";
-import DraftChallengeDetailModal from "../draft/challenge/DraftChallengeDetailModal";
+import DraftChallengeDetailModal from "../draft/online/challengePage/DraftChallengeDetailModal";
 import {useDrafts} from "../api/hooks/drafts/useDrafts";
 import {useNavigate} from "react-router";
 import Spinner from "../core/Spinner";
@@ -26,7 +26,7 @@ function FriendListEntry(props: FriendListEntryProps) {
     const [showChallengeModal, setShowChallengeModal] = useState<boolean>(false)
     const [inspectChallenge, setInspectChallenge] = useState<Draft>({} as Draft)
 
-    const friendChallengeState: ChallengeDraftState = {
+    const friendChallengeState: OnlineChallengeState = {
         friendID: props.friend.id,
         friendName: props.friend.name
     }

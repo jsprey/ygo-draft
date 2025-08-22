@@ -1,5 +1,5 @@
 import {Card,} from "../api/CardModel"
-import SingleCardViewer from "../deck/SingleCardViewer";
+import SingleCardViewer from "../draft/shared/deck/SingleCardViewer";
 import "./YgoBackground.css"
 import {useRandomCards} from "../api/hooks/cards/useCards";
 import {CardFilter} from "../api/CardFilter";
