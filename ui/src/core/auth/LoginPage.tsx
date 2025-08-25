@@ -2,6 +2,7 @@ import React from "react";
 import {LoginVariables, useLoginMutation} from "../../api/hooks/useLogin";
 import {useNavigate} from "react-router";
 import {useAuth} from "./AuthProvider";
+import {PUBLIC_URL} from "../../index";
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -42,7 +43,7 @@ function LoginPage() {
                     <div className={"flex justify-center items-center"}>
                         <img
                             alt=""
-                            src="/ui/public/logo.png"
+                            src={`${PUBLIC_URL}/logo.png`}
                             width="96"
                             height="96"
                             className="d-inline-block align-top"
